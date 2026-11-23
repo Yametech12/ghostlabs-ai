@@ -6,6 +6,11 @@
 <title>GhostLabs AI - Autonomous AI Infrastructure That Ships Itself</title>
 <meta name="description" content="GhostLabs routes, verifies, and deploys your AI workflows across the edge in under 180ms, no glue code, no lock-in.">
 <meta name="theme-color" content="#090A0F">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%2322d3ee'/%3E%3Cpath d='M16 7a7 7 0 0 0-7 7v9l2.5-2 2.5 2 2-2 2 2 2.5-2 .5.4V14a7 7 0 0 0-5-7Z' fill='%23090A0F'/%3E%3C/svg%3E">
+<meta property="og:type" content="website">
+<meta property="og:title" content="GhostLabs AI - Autonomous AI Infrastructure That Ships Itself">
+<meta property="og:description" content="GhostLabs routes, verifies, and deploys your AI workflows across the edge in under 180ms, no glue code, no lock-in.">
+<meta name="twitter:card" content="summary">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -13,7 +18,7 @@
 :root{
   --bg:#090A0F; --surface:#11131B; --surface-2:#151824; --border:rgba(255,255,255,0.08);
   --cyan:#22d3ee; --violet:#8b5cf6;
-  --text:#F8FAFC; --text-2:#94A3B8; --muted:#64748B;
+  --text:#F8FAFC; --text-2:#94A3B8; --muted:#71809A;
   --cta-bg:#FFFFFF; --cta-text:#090A0F;
   --radius:14px; --header-h:68px;
   --ease:cubic-bezier(0.22,1,0.36,1);
@@ -32,8 +37,9 @@ button{font-family:inherit;cursor:pointer}
 @media(min-width:1024px){.container{padding-left:2rem;padding-right:2rem}}
 section{padding:3.5rem 0}
 @media(min-width:1024px){section{padding:6.25rem 0}}
-.section-head{max-width:720px;margin:0 auto 3rem;text-align:center}
-.section-head p{color:var(--text-2);margin-top:1rem}
+.section-head{max-width:none;margin:0 0 2.5rem;text-align:left;border-top:1px solid var(--border);padding-top:1.1rem}
+.section-head::before{content:attr(data-num);display:block;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--cyan);letter-spacing:.08em;margin-bottom:.6rem}
+.section-head p{color:var(--text-2);margin-top:.7rem;max-width:640px}
 .mono{font-family:'JetBrains Mono',monospace}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;border-radius:10px;padding:.8rem 1.5rem;font-size:.95rem;font-weight:600;border:1px solid transparent;transition:opacity .2s var(--ease),background .2s var(--ease),border-color .2s var(--ease);text-decoration:none;min-height:48px}
 .btn-primary{background:var(--cta-bg);color:var(--cta-text)}
@@ -58,7 +64,12 @@ header{position:sticky;top:0;z-index:60;height:var(--header-h);background:rgba(9
 .drawer a:last-of-type{border-bottom:none}
 /* Hero */
 .hero{padding-top:3.5rem;text-align:center;position:relative;overflow:hidden}
-@media(min-width:1024px){.hero{padding-top:6rem}}
+@media(min-width:1024px){.hero{padding-top:2.75rem;text-align:left}
+.hero .container{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:2.5rem;align-items:start}
+.hero h1{margin-left:0;margin-right:0}
+.hero .sub{margin-left:0;margin-right:0}
+.hero .hero-ctas{justify-content:flex-start}
+.hero .playground{margin-top:0;max-width:none}}
 .hero::before{content:"";position:absolute;inset:0;background:radial-gradient(600px 300px at 50% -50px,rgba(34,211,238,.14),transparent 70%),radial-gradient(500px 260px at 75% 0,rgba(139,92,246,.12),transparent 70%);pointer-events:none}
 .badge{display:inline-flex;align-items:center;gap:.5rem;border:1px solid var(--border);background:var(--surface);border-radius:999px;padding:.4rem .9rem;font-size:.82rem;color:var(--text-2);font-weight:500;position:relative}
 .badge .dot{width:8px;height:8px;border-radius:50%;background:var(--cyan);flex:none}
@@ -72,7 +83,8 @@ header{position:sticky;top:0;z-index:60;height:var(--header-h);background:rgba(9
 .presets{display:flex;gap:.5rem;flex-wrap:wrap;padding:1rem 1.25rem 0}
 .preset{border:1px solid var(--border);background:transparent;color:var(--text-2);border-radius:999px;padding:.5rem 1rem;font-size:.85rem;font-weight:500;min-height:40px}
 .preset[aria-selected="true"]{background:#fff;color:var(--cta-text);border-color:#fff}
-.pg-body{padding:1.25rem;display:grid;gap:1rem}
+.pg-body{padding:1.25rem;display:grid;gap:1rem;grid-template-columns:minmax(0,1fr)}
+.pg-output-wrap{min-width:0}
 .pg-label{font-size:.78rem;font-weight:600;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;margin-bottom:.4rem}
 .pg-input{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.9rem 1rem;color:var(--text);font-size:.95rem}
 .pg-trace{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.9rem 1rem;font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--text-2);min-height:96px}
@@ -83,15 +95,31 @@ header{position:sticky;top:0;z-index:60;height:var(--header-h);background:rgba(9
 .pg-meta{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.5rem}
 .tag{font-family:'JetBrains Mono',monospace;font-size:.75rem;border:1px solid var(--border);border-radius:999px;padding:.25rem .7rem;color:var(--cyan);background:rgba(34,211,238,.07)}
 .tag.latency{color:#a5b4fc;background:rgba(139,92,246,.12)}
-pre.code{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:1rem;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:.85rem;line-height:1.55;color:#e2e8f0;white-space:pre-wrap;word-break:break-word}
+pre.code{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:1rem;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:.85rem;line-height:1.55;color:#e2e8f0;white-space:pre;word-break:normal}
 .copy-btn{border:1px solid var(--border);background:var(--surface-2);color:var(--text);border-radius:8px;padding:.45rem .9rem;font-size:.82rem;font-weight:500;min-height:38px}
 .copy-btn:hover{border-color:rgba(255,255,255,.25)}
 .code-head{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:.5rem}
+/* GT80 playground engine: model selector, run-state tags, streaming caret */
+.models{display:flex;gap:.45rem;flex-wrap:wrap}
+.model-btn{font-family:'JetBrains Mono',monospace;font-size:.74rem;border:1px solid var(--border);background:transparent;color:var(--text-2);border-radius:8px;padding:.42rem .7rem;min-height:36px}
+.model-btn:hover{border-color:rgba(255,255,255,.25);color:var(--text)}
+.model-btn[aria-pressed="true"]{background:var(--surface-2);color:var(--cyan);border-color:rgba(34,211,238,.45)}
+.pg-model-note{font-size:.72rem;color:var(--muted);margin-top:.45rem}
+.tag.status{color:#6ee7b7;background:rgba(52,211,153,.08);border-color:rgba(52,211,153,.3)}
+.tag.status.running{color:#fcd34d;background:rgba(252,211,77,.08);border-color:rgba(252,211,77,.3)}
+pre.code.streaming::after{content:"\258C";color:var(--cyan);animation:pgblink 1s steps(1) infinite}
+@keyframes pgblink{50%{opacity:0}}
+/* GT84 model routes strip */
+.route-card .prov{font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--cyan);margin:0 0 .5rem}
+.route-card .best{margin-top:.7rem;color:var(--text-2)}
+.route-card .best strong{color:var(--text);font-weight:600}
 /* Logo cloud */
 .logocloud{padding:2.5rem 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
-.logocloud p{text-align:center;color:var(--muted);font-size:.85rem;margin-bottom:1.5rem}
-.logo-row{display:flex;flex-wrap:wrap;gap:1rem 2.5rem;justify-content:center;align-items:center}
-.wordmark{font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:1.05rem;color:rgba(248,250,252,.45);letter-spacing:-0.02em;white-space:nowrap}
+.logocloud p{text-align:left;color:var(--muted);font-size:.85rem;margin-bottom:1.5rem;font-family:'JetBrains Mono',monospace}
+.logo-row{display:grid;grid-template-columns:repeat(2,1fr);border-top:1px solid var(--border);border-left:1px solid var(--border)}
+.wordmark{font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:.98rem;color:rgba(248,250,252,.58);letter-spacing:-0.02em;text-align:center;padding:1rem .5rem;border-right:1px solid var(--border);border-bottom:1px solid var(--border);display:grid;place-items:center;min-height:56px}
+.logo-row .wordmark:last-child{grid-column:span 2}
+@media(min-width:1024px){.logo-row{grid-template-columns:repeat(7,1fr)}.logo-row .wordmark:last-child{grid-column:auto}.wordmark{font-size:.88rem;padding:1rem .35rem}}
 /* Features */
 .grid-3{display:grid;gap:1.25rem}
 @media(min-width:760px){.grid-3{grid-template-columns:repeat(2,1fr)}}
@@ -103,7 +131,7 @@ pre.code{background:var(--bg);border:1px solid var(--border);border-radius:10px;
 /* Steps */
 .step-num{font-family:'JetBrains Mono',monospace;font-size:.85rem;color:var(--cyan);border:1px solid var(--border);border-radius:999px;width:40px;height:40px;display:grid;place-items:center;margin-bottom:1.1rem;background:var(--bg)}
 /* Tabs */
-.tabs{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center;margin-bottom:2rem}
+.tabs{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:flex-start;margin-bottom:2rem}
 .tab{border:1px solid var(--border);background:transparent;color:var(--text-2);border-radius:999px;padding:.65rem 1.3rem;font-size:.92rem;font-weight:600;min-height:44px}
 .tab[aria-selected="true"]{background:#fff;color:var(--cta-text);border-color:#fff}
 .tab-panel{display:none}
@@ -113,13 +141,14 @@ pre.code{background:var(--bg);border:1px solid var(--border);border-radius:10px;
 .tab-panel li{color:var(--text-2);padding-left:1.6rem;position:relative}
 .tab-panel li::before{content:"";position:absolute;left:0;top:.45em;width:9px;height:9px;border-radius:50%;background:var(--cyan)}
 /* Stats */
-.stats{background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
-.stats-grid{display:grid;gap:2rem;text-align:center}
+.stats{background:transparent;border-top:none;border-bottom:none;padding:2rem 0}
+.stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:0;text-align:left;border-top:1px solid var(--border);border-left:1px solid var(--border);background:var(--surface)}
+.stats-grid>div{padding:1.1rem 1.25rem;border-right:1px solid var(--border);border-bottom:1px solid var(--border)}
 @media(min-width:760px){.stats-grid{grid-template-columns:repeat(4,1fr)}}
-.stat-num{font-family:'Plus Jakarta Sans',sans-serif;font-size:clamp(2rem,4vw,2.9rem);font-weight:800;letter-spacing:-0.025em}
-.stat-label{color:var(--text-2);font-size:.92rem;margin-top:.3rem}
+.stat-num{font-family:'JetBrains Mono',monospace;font-size:clamp(1.55rem,3.4vw,2.3rem);font-weight:600;letter-spacing:-0.02em}
+.stat-label{color:var(--text-2);font-size:.88rem;margin-top:.25rem}
 /* Pricing */
-.toggle-wrap{display:flex;align-items:center;justify-content:center;gap:1rem;margin-bottom:2.5rem}
+.toggle-wrap{display:flex;align-items:center;justify-content:flex-start;gap:1rem;margin-bottom:2.5rem}
 .toggle{width:60px;height:32px;border-radius:999px;background:var(--surface-2);border:1px solid var(--border);position:relative;flex:none}
 .toggle::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:transform .25s var(--ease)}
 .toggle[aria-checked="true"]::after{transform:translateX(28px)}
@@ -131,22 +160,28 @@ pre.code{background:var(--bg);border:1px solid var(--border);border-radius:10px;
 .pop{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--cyan);border:1px solid rgba(34,211,238,.4);border-radius:999px;padding:.2rem .65rem;display:inline-block;margin-bottom:1rem}
 .price{font-family:'Plus Jakarta Sans',sans-serif;font-size:2.6rem;font-weight:800;letter-spacing:-0.025em;margin:.8rem 0 .2rem}
 .price small{font-size:1rem;color:var(--muted);font-weight:500;font-family:'Inter',sans-serif;letter-spacing:0}
-.price-card ul{list-style:none;margin:1.4rem 0 2rem;display:grid;gap:.7rem;flex:1}
+.price-card ul{list-style:none;margin:1.4rem 0 2rem;display:grid;gap:.7rem}
+.price-card .btn{margin-top:auto}
 .price-card li{color:var(--text-2);font-size:.94rem;padding-left:1.5rem;position:relative}
 .price-card li::before{content:"";position:absolute;left:0;top:.5em;width:8px;height:8px;border-radius:50%;background:var(--violet)}
 .price-card .btn{width:100%}
 /* FAQ */
-.faq-list{max-width:800px;margin:0 auto;display:grid;gap:.8rem}
-.faq-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
-.faq-q{width:100%;display:flex;justify-content:space-between;align-items:center;gap:1rem;background:none;border:none;color:var(--text);text-align:left;padding:1.2rem 1.4rem;font-size:1rem;font-weight:600;min-height:56px}
+.faq-list{max-width:none;margin:0;display:grid;gap:0;border-bottom:1px solid var(--border);counter-reset:faq}
+.faq-item{background:transparent;border:none;border-top:1px solid var(--border);border-radius:0;overflow:hidden}
+.faq-q{width:100%;display:flex;justify-content:space-between;align-items:center;gap:1rem;background:none;border:none;color:var(--text);text-align:left;padding:1.15rem .25rem;font-size:1rem;font-weight:600;min-height:56px}
+.faq-q>span:first-child::before{counter-increment:faq;content:counter(faq,decimal-leading-zero) "  ";font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--cyan);font-weight:500}
 .faq-q .chev{color:var(--muted);flex:none;transition:transform .25s var(--ease)}
 .faq-q[aria-expanded="true"] .chev{transform:rotate(180deg)}
-.faq-a{display:none;padding:0 1.4rem 1.3rem;color:var(--text-2)}
-.faq-a.open{display:block}
+.faq-a{display:grid;grid-template-rows:0fr;visibility:hidden;color:var(--text-2);transition:grid-template-rows .34s var(--ease),visibility 0s linear .34s}
+.faq-a-in{overflow:hidden;min-height:0}
+.faq-a-pad{padding:0 .25rem 1.3rem 2.1rem}
+.faq-a.open{grid-template-rows:1fr;visibility:visible;transition:grid-template-rows .34s var(--ease),visibility 0s}
 /* CTA banner */
 .banner{background:linear-gradient(135deg,rgba(34,211,238,.13),rgba(139,92,246,.15));border:1px solid var(--border);border-radius:20px;padding:3rem 2rem;text-align:center}
 .banner p{color:var(--text-2);max-width:560px;margin:1rem auto 0}
-.banner .hero-ctas{margin-top:2rem}
+.banner .hero-ctas{margin:2rem auto 0;display:grid;grid-template-columns:1fr;gap:.75rem;max-width:340px}
+.banner .hero-ctas .btn{width:100%}
+@media(min-width:760px){.banner .hero-ctas{grid-template-columns:repeat(3,1fr);max-width:820px}}
 /* Footer */
 footer{border-top:1px solid var(--border);padding:3.5rem 0 2.5rem}
 .foot-grid{display:grid;gap:2.5rem}
@@ -158,6 +193,90 @@ footer{border-top:1px solid var(--border);padding:3.5rem 0 2.5rem}
 .foot-bottom{display:flex;flex-wrap:wrap;gap:1rem;justify-content:space-between;align-items:center;border-top:1px solid var(--border);margin-top:2.5rem;padding-top:1.5rem;color:var(--muted);font-size:.88rem}
 .status{display:inline-flex;align-items:center;gap:.5rem;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--text-2)}
 .status .dot{width:9px;height:9px;border-radius:50%;background:#34d399}
+
+/* GT69 structural system: console framing, hairline rules, mono numerals */
+#featureGrid{counter-reset:feat}
+#featureGrid .card{position:relative}
+#featureGrid .card::before{counter-increment:feat;content:counter(feat,decimal-leading-zero);position:absolute;top:1rem;right:1.1rem;font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--muted)}
+#featureGrid .card:first-child::after{content:"> Routing request to ghost-router-v2";display:block;margin-top:1.1rem;padding:.65rem .75rem;background:var(--bg);border:1px solid var(--border);border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--text-2);white-space:nowrap;overflow:hidden}
+@media(min-width:1024px){
+ #featureGrid{grid-template-columns:repeat(4,1fr)}
+ #featureGrid .card:nth-child(1){grid-column:span 2}
+ #featureGrid .card:nth-child(6){grid-column:span 2}
+}
+.rail{display:grid;gap:1.25rem;position:relative}
+.rail .card{position:relative}
+@media(min-width:1024px){
+ .rail{grid-template-columns:repeat(3,1fr)}
+ .rail::before{content:"";position:absolute;top:20px;left:6%;right:6%;border-top:1px solid var(--border)}
+}
+@media(max-width:1023px){
+ .rail::before{content:"";position:absolute;top:6%;bottom:6%;left:20px;border-left:1px solid var(--border)}
+}
+.price-grid{align-items:stretch}
+@media(min-width:1024px){
+ .price-grid{grid-template-columns:1fr 1.18fr 1fr}
+ .price-card.featured{background:var(--surface-2);box-shadow:inset 0 3px 0 var(--cyan),0 0 0 1px rgba(34,211,238,.35);transform:translateY(-10px)}
+}
+/* Phone hero compression: engine in the first screen */
+@media(max-width:639px){
+ :root{--header-h:56px}
+ .logo{font-size:1rem}
+ .hero{padding-top:.75rem;padding-bottom:1.4rem}
+ .badge{font-size:.7rem;padding:.28rem .65rem}
+ .hero h1{font-size:1.58rem;line-height:1.08;margin-top:.55rem}
+ .hero .sub{font-size:.87rem;line-height:1.42;margin-top:.5rem}
+ .hero-ctas{margin-top:.65rem;gap:.5rem;flex-wrap:nowrap}
+ .hero-ctas .btn{padding:.5rem .8rem;min-height:38px;font-size:.85rem;white-space:nowrap}
+ .playground{margin-top:.7rem;border-radius:12px}
+ .pg-head{padding:.45rem .65rem;gap:.5rem}
+ .pg-title{font-size:.68rem}
+ .presets{flex-wrap:nowrap;overflow-x:auto;padding:.5rem .65rem 0;gap:.4rem;scrollbar-width:none}
+ .presets::-webkit-scrollbar{display:none}
+ .preset{flex:none;white-space:nowrap;padding:.3rem .6rem;font-size:.72rem;min-height:30px}
+ .pg-body{padding:.55rem .65rem .65rem;gap:.5rem}
+ .pg-label{font-size:.64rem;margin-bottom:.22rem}
+ .pg-input{padding:.42rem .55rem;font-size:.8rem;line-height:1.35}
+ .pg-trace{padding:.45rem .55rem;font-size:.68rem;line-height:1.4;min-height:0;overflow-x:auto}
+ .pg-trace .line{white-space:nowrap;padding:.08rem 0}
+ .pg-meta{gap:.4rem;margin-bottom:0}
+ .tag{font-size:.64rem;padding:.14rem .5rem}
+ .model-btn{font-size:.62rem;padding:.26rem .5rem;min-height:28px}
+ .models{display:grid;grid-template-columns:1fr 1fr;gap:.4rem;overflow:visible;-webkit-mask-image:none;mask-image:none}
+ .model-btn{white-space:nowrap;text-align:center}
+ .copy-btn{padding:.3rem .65rem;font-size:.72rem;min-height:30px}
+ .code-head{margin-bottom:.35rem}
+ pre.code{padding:.5rem .55rem;font-size:.68rem;line-height:1.4}
+ section{padding:2.6rem 0}
+}
+/* GT69 S6 fix round: D1 to D4, CSS only, no copy change */
+.stat-num{white-space:nowrap}
+@media(max-width:759px){
+ /* D1: break the uniform phone feature stack with two extra treatments */
+ #featureGrid .card:nth-child(3){background:transparent;border:none;border-top:1px solid var(--border);border-bottom:1px solid var(--border);border-radius:0;padding-left:.25rem;padding-right:.25rem}
+ #featureGrid .card:nth-child(6){background:var(--surface-2);box-shadow:inset 0 3px 0 var(--cyan)}
+ /* D3: SOC2 cell numeral sized to stay on one line in the 2x2 band */
+ .stats-grid>div:last-child .stat-num{font-size:1.02rem;letter-spacing:-0.03em}
+}
+/* D2: CTA banner reframed in the console language */
+.banner{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:inset 0 3px 0 var(--cyan);text-align:left;position:relative}
+.banner::before{content:"06";display:block;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--cyan);letter-spacing:.08em;margin-bottom:.6rem}
+.banner p{margin:1rem 0 0}
+.banner .hero-ctas{margin:2rem 0 0}
+@media(max-width:639px){
+ /* D4: right-edge fade mask on the scrolling preset row */
+ .presets{-webkit-mask-image:linear-gradient(to right,#000 0,#000 calc(100% - 28px),transparent 100%);mask-image:linear-gradient(to right,#000 0,#000 calc(100% - 28px),transparent 100%)}
+}
+/* GT80 design pass: hierarchy tick, headline gradient word, badge pulse, card hover lift */
+.section-head{position:relative}
+.section-head::after{content:"";position:absolute;top:-1px;left:0;width:44px;height:2px;background:linear-gradient(90deg,var(--cyan),var(--violet))}
+.grad{background:linear-gradient(92deg,var(--cyan),var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent;white-space:nowrap}
+.badge .dot{animation:pgpulse 2.4s ease-in-out infinite}
+@keyframes pgpulse{0%,100%{opacity:1}50%{opacity:.35}}
+.card{transition:transform .25s var(--ease),border-color .25s var(--ease)}
+.card:hover{transform:translateY(-3px);border-color:rgba(255,255,255,.16)}
+.price-card.featured:hover{transform:translateY(-3px)}
+@media(min-width:1024px){.price-card.featured:hover{transform:translateY(-13px)}}
 /* Modal */
 .modal-backdrop{display:none;position:fixed;inset:0;background:rgba(3,4,8,.75);backdrop-filter:blur(6px);z-index:100;align-items:center;justify-content:center;padding:1rem}
 .modal-backdrop.open{display:flex}
@@ -179,6 +298,26 @@ footer{border-top:1px solid var(--border);padding:3.5rem 0 2.5rem}
 .success.show{display:block}
 .modal .btn{margin-top:1.4rem}
 .w-full{width:100%}
+/* GT83: workflow stepper and scroll-triggered sequential lighting. The dim state exists
+   only under .stepper-on, a class JS adds, so JS-off renders the steps at full strength. */
+.rail .card{transition:transform .25s var(--ease),border-color .4s var(--ease),opacity .45s var(--ease)}
+.rail.stepper-on .card{opacity:.42}
+.rail.stepper-on .card.lit{opacity:1;border-color:rgba(34,211,238,.45)}
+.rail.stepper-on .card.lit .step-num{background:var(--cyan);color:#090A0F;border-color:var(--cyan)}
+.stepper{display:flex;align-items:center;gap:.9rem;margin-top:1.6rem}
+.step-btn{width:42px;height:42px;flex:none;display:grid;place-items:center;border:1px solid var(--border);border-radius:50%;background:var(--surface);color:var(--text-2)}
+.step-btn:hover{border-color:rgba(255,255,255,.25);color:var(--text)}
+.step-btn[aria-disabled="true"]{opacity:.38}
+.step-dots{display:flex;gap:.55rem}
+.step-dot{width:34px;height:34px;border-radius:50%;border:1px solid var(--border);background:transparent;display:grid;place-items:center;color:var(--muted)}
+.step-dot:hover{border-color:rgba(255,255,255,.25)}
+.step-dot .pip{width:8px;height:8px;border-radius:50%;background:currentColor}
+.step-dot[aria-current="step"]{border-color:rgba(34,211,238,.55);color:var(--cyan)}
+/* GT83 (post Fresh-Eye): the preset tab row had the same phone clip defect as the model
+   row; wrap it on phone and drop the fade mask. */
+@media(max-width:639px){
+ .presets{flex-wrap:wrap;overflow:visible;-webkit-mask-image:none;mask-image:none}
+}
 @media(prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
   *,*::before,*::after{animation-duration:.01ms !important;transition-duration:.01ms !important}
@@ -186,6 +325,7 @@ footer{border-top:1px solid var(--border);padding:3.5rem 0 2.5rem}
 </style>
 </head>
 <body>
+<noscript><p style="padding:1rem;text-align:center;color:#94A3B8">Features, use cases and the FAQ need JavaScript to display.</p></noscript>
 <header>
   <div class="container nav">
     <a class="logo" href="#top" aria-label="GhostLabs AI home">
@@ -199,6 +339,7 @@ footer{border-top:1px solid var(--border);padding:3.5rem 0 2.5rem}
         <li><a href="#usecases">Use cases</a></li>
         <li><a href="#pricing">Pricing</a></li>
         <li><a href="#faq">FAQ</a></li>
+        <li><a href="login.html">Login</a></li>
       </ul>
     </nav>
     <div class="nav-actions">
@@ -214,18 +355,21 @@ footer{border-top:1px solid var(--border);padding:3.5rem 0 2.5rem}
     <a href="#usecases">Use cases</a>
     <a href="#pricing">Pricing</a>
     <a href="#faq">FAQ</a>
+    <a href="login.html">Login</a>
   </div>
 </header>
 <main id="top">
 <!-- 2. Hero + Playground -->
 <section class="hero">
   <div class="container">
+    <div class="hero-intro">
     <span class="badge"><span class="dot" aria-hidden="true"></span>v2.4 Now Live, Sub-180ms Edge Routing</span>
-    <h1>Autonomous AI Infrastructure That Ships Itself</h1>
+    <h1>Autonomous AI Infrastructure That <span class="grad">Ships Itself</span></h1>
     <p class="sub">GhostLabs routes, verifies, and deploys your AI workflows across the edge in under 180ms, no glue code, no lock-in.</p>
     <div class="hero-ctas">
       <button class="btn btn-primary" data-open-modal="key" type="button">Get API key</button>
       <a class="btn btn-ghost" href="#playground">View live demo</a>
+    </div>
     </div>
     <div class="playground" id="playground">
       <div class="pg-head">
@@ -234,6 +378,11 @@ footer{border-top:1px solid var(--border);padding:3.5rem 0 2.5rem}
       </div>
       <div class="presets" role="tablist" aria-label="Playground presets" id="presetList"></div>
       <div class="pg-body">
+        <div class="pg-model-block">
+          <div class="pg-label">Model</div>
+          <div class="models" id="modelList" role="group" aria-label="Model selector"></div>
+          <p class="pg-model-note mono" id="modelNote"></p>
+        </div>
         <div>
           <div class="pg-label">Input</div>
           <div class="pg-input" id="pgInput"></div>
@@ -247,7 +396,7 @@ footer{border-top:1px solid var(--border);padding:3.5rem 0 2.5rem}
             <div class="pg-meta" id="pgMeta"></div>
             <button class="copy-btn" id="pgCopy" type="button">Copy</button>
           </div>
-          <pre class="code" id="pgOutput" tabindex="0"></pre>
+          <pre class="code" id="pgOutput" tabindex="0" aria-label="Playground output, JSON"></pre>
         </div>
       </div>
     </div>
@@ -256,7 +405,7 @@ footer{border-top:1px solid var(--border);padding:3.5rem 0 2.5rem}
 <!-- 3. LogoCloud -->
 <div class="logocloud">
   <div class="container">
-    <p>Built to run across the model and edge ecosystem</p>
+    <p>Works with the models and platforms you already use</p>
     <div class="logo-row" aria-label="Ecosystem">
       <span class="wordmark">OpenAI</span>
       <span class="wordmark">Anthropic</span>
@@ -266,12 +415,23 @@ footer{border-top:1px solid var(--border);padding:3.5rem 0 2.5rem}
       <span class="wordmark">Postgres</span>
       <span class="wordmark">Webhooks</span>
     </div>
+    <p style="margin:1.25rem 0 0;font-size:.75rem">Names shown for compatibility only. All trademarks belong to their owners.</p>
   </div>
 </div>
+<!-- 3b. Model routes (GT84) -->
+<section id="models">
+  <div class="container">
+    <div class="section-head">
+      <h2>One router, the models you already know</h2>
+      <p>Demo routing profiles for the playground above. Pacing and latency inside the playground are simulated demo data, not measurements of the real models.</p>
+    </div>
+    <div class="grid-3" id="modelStrip"></div>
+  </div>
+</section>
 <!-- 4. FeatureGrid -->
 <section id="features">
   <div class="container">
-    <div class="section-head">
+    <div class="section-head" data-num="01">
       <h2>Everything you need to ship AI in production</h2>
       <p>Six concrete pillars, from edge routing to schema guardrails, in one infrastructure layer.</p>
     </div>
@@ -281,21 +441,30 @@ footer{border-top:1px solid var(--border);padding:3.5rem 0 2.5rem}
 <!-- 5. HowItWorks -->
 <section id="how">
   <div class="container">
-    <div class="section-head">
+    <div class="section-head" data-num="02">
       <h2>From prompt to production in three steps</h2>
       <p>Connect your sources, orchestrate with guardrails, and deploy to the edge.</p>
     </div>
-    <div class="grid-3">
+    <div class="rail">
       <div class="card"><div class="step-num">01</div><h3>Connect Sources</h3><p>Plug in your APIs, databases, and tools in minutes.</p></div>
       <div class="card"><div class="step-num">02</div><h3>Orchestrate &amp; Verify</h3><p>Build multi-step agents with guardrails and human review.</p></div>
       <div class="card"><div class="step-num">03</div><h3>Ship to Production</h3><p>Deploy to the edge with one click and monitor every run.</p></div>
+    </div>
+    <div class="stepper" id="howStepper">
+      <button class="step-btn" id="stepPrev" type="button" aria-label="Previous step"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+      <div class="step-dots" role="group" aria-label="Workflow steps">
+        <button class="step-dot" type="button" data-step="1" aria-label="Step 1: Connect Sources" aria-current="step"><span class="pip" aria-hidden="true"></span></button>
+        <button class="step-dot" type="button" data-step="2" aria-label="Step 2: Orchestrate and Verify"><span class="pip" aria-hidden="true"></span></button>
+        <button class="step-dot" type="button" data-step="3" aria-label="Step 3: Ship to Production"><span class="pip" aria-hidden="true"></span></button>
+      </div>
+      <button class="step-btn" id="stepNext" type="button" aria-label="Next step"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
     </div>
   </div>
 </section>
 <!-- 6. UseCaseTabs -->
 <section id="usecases">
   <div class="container">
-    <div class="section-head">
+    <div class="section-head" data-num="03">
       <h2>One platform, four ways teams use it</h2>
       <p>Pick a use case to see the workflow and the code that runs it.</p>
     </div>
@@ -307,9 +476,9 @@ footer{border-top:1px solid var(--border);padding:3.5rem 0 2.5rem}
 <section class="stats" aria-label="Platform stats">
   <div class="container">
     <div class="stats-grid">
-      <div><div class="stat-num">99.98%</div><div class="stat-label">Uptime</div></div>
-      <div><div class="stat-num">&lt;180ms</div><div class="stat-label">p95 Latency</div></div>
-      <div><div class="stat-num">4.2x</div><div class="stat-label">Throughput</div></div>
+      <div><div class="stat-num" data-count="99.98" data-decimals="2" data-suffix="%">99.98%</div><div class="stat-label">Uptime</div></div>
+      <div><div class="stat-num" data-count="180" data-decimals="0" data-prefix="&lt;" data-suffix="ms">&lt;180ms</div><div class="stat-label">p95 Latency</div></div>
+      <div><div class="stat-num" data-count="4.2" data-decimals="1" data-suffix="x">4.2x</div><div class="stat-label">Throughput</div></div>
       <div><div class="stat-num">SOC2 Type II</div><div class="stat-label">Compliance</div></div>
     </div>
   </div>
@@ -317,7 +486,7 @@ footer{border-top:1px solid var(--border);padding:3.5rem 0 2.5rem}
 <!-- 8. Pricing -->
 <section id="pricing">
   <div class="container">
-    <div class="section-head">
+    <div class="section-head" data-num="04">
       <h2>Pricing that scales with your requests</h2>
       <p>Start small, move to Pro as you ship, and talk to us when compliance needs grow.</p>
     </div>
@@ -326,7 +495,7 @@ footer{border-top:1px solid var(--border);padding:3.5rem 0 2.5rem}
       <button class="toggle" id="billingToggle" type="button" role="switch" aria-checked="false" aria-label="Toggle annual billing"></button>
       <span class="toggle-label" id="lblAnnual">Annual</span>
     </div>
-    <div class="grid-3" style="align-items:stretch">
+    <div class="grid-3 price-grid" style="align-items:stretch">
       <div class="card price-card">
         <h3>Starter</h3>
         <p>For indie hackers and side projects</p>
@@ -355,7 +524,7 @@ footer{border-top:1px solid var(--border);padding:3.5rem 0 2.5rem}
 <!-- 9. FAQ -->
 <section id="faq">
   <div class="container">
-    <div class="section-head">
+    <div class="section-head" data-num="05">
       <h2>Frequently asked questions</h2>
       <p>Speed, models, fallback, security, trials, and cancellation, answered plainly.</p>
     </div>
@@ -446,7 +615,7 @@ footer{border-top:1px solid var(--border);padding:3.5rem 0 2.5rem}
         <div class="field" data-field="message"><label for="fMessage">What are you building?</label><textarea id="fMessage" name="message" rows="4" placeholder="e.g. A support agent that reads invoices…"></textarea><span class="err">Please add a short message.</span></div>
         <button class="btn btn-primary w-full" type="submit">Request demo</button>
         <div class="success" id="formSuccess" role="status">Request received. This demo build records the request in this browser session only, and the team flow continues once an endpoint is connected.</div>
-        <p class="note">Footnote: this demo build sends nothing until a form endpoint or webhook is connected. Submitting shows the received state locally only.</p>
+        <p class="note" id="demoNote">Footnote: this demo build sends nothing until a form endpoint or webhook is connected. Submitting shows the received state locally only.</p>
       </form>
       <p class="note">Want to try it yourself first? <button class="foot-link-btn" id="switchToKey" type="button" style="color:var(--cyan);font-size:.82rem">Generate a sandbox key</button></p>
     </div>
@@ -464,6 +633,7 @@ footer{border-top:1px solid var(--border);padding:3.5rem 0 2.5rem}
 (function(){
 "use strict";
 var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+var FORM_ENDPOINT=""; /* paste a Formspree, Basin or webhook URL to receive demo requests */
 function $(s,c){return (c||document).querySelector(s)}
 function $$(s,c){return Array.prototype.slice.call((c||document).querySelectorAll(s))}
 /* Data from spec */
@@ -528,40 +698,117 @@ function copyText(text,btn){
  else{fallback();}
  function fallback(){var ta=document.createElement("textarea");ta.value=text;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");}catch(e){}document.body.removeChild(ta);done();}
 }
-/* Playground */
-var presetList=$("#presetList"), pgTimers=[], currentPreset=0;
+/* Playground engine (GT80, extended GT84): simulated streaming run, live latency and token
+   counters, model selector. All client-side simulation, as labeled in the playground header.
+   Preset inputs, traces, outputs, and base latencies are the frozen spec data; the selector
+   re-routes the same preset through another demo model, which restates the routing line and
+   re-derives latency and pacing. GT84 adds real named models alongside the GhostLabs demo
+   routes: each carries a demo profile (latency factor, streaming chunk, wrapper line) defined
+   here on this page. The profiles describe this demo's behavior, not the real models. */
+var MODELS={
+ "ghost-router-v2":{name:"Ghost Router",provider:"GhostLabs",factor:1,chunk:6,note:"Balanced routing and structured extraction.",route:"ghost-router-v2",wrap:"",best:"Mixed workloads: the router picks the route per request."},
+ "ghost-guard-v1":{name:"Ghost Guard",provider:"GhostLabs",factor:0.68,chunk:10,note:"Policy checks on the fastest path.",route:"ghost-guard-v1",wrap:"",best:"Policy checks that must clear before anything ships."},
+ "ghost-agent-v2":{name:"Ghost Agent",provider:"GhostLabs",factor:1.28,chunk:4,note:"Multi-step plans with deeper traces.",route:"ghost-agent-v2",wrap:"",best:"Multi-step plans that need a full trace."},
+ "ghost-voice-v1":{name:"Ghost Voice",provider:"GhostLabs",factor:0.86,chunk:8,note:"Realtime intent and entity parsing.",route:"ghost-voice-v1",wrap:"",best:"Voice input and realtime intent parsing."},
+ "gemini":{name:"Gemini",provider:"Google",factor:0.92,chunk:7,note:"Demo profile: quick, even pacing with a generalist tone.",route:"Gemini",wrap:"// demo route: Gemini (Google), generalist profile\n",best:"General-purpose and multimodal-shaped requests."},
+ "claude":{name:"Claude",provider:"Anthropic",factor:1.12,chunk:5,note:"Demo profile: slower, careful pacing with a reasoning-first tone.",route:"Claude",wrap:"// demo route: Claude (Anthropic), reasoning-first profile\n",best:"Long documents and careful reasoning tasks."},
+ "gpt":{name:"GPT",provider:"OpenAI",factor:1.04,chunk:6,note:"Demo profile: balanced pacing with a neutral generalist tone.",route:"GPT",wrap:"// demo route: GPT (OpenAI), balanced profile\n",best:"All-round generation and tool-driven workflows."},
+ "llama":{name:"Llama",provider:"Meta",factor:0.78,chunk:9,note:"Demo profile: brisk pacing on the open-weight route.",route:"Llama",wrap:"// demo route: Llama (Meta), open-weight profile\n",best:"Open-weight routes and custom fine-tune setups."},
+ "grok":{name:"Grok",provider:"xAI",factor:0.84,chunk:8,note:"Demo profile: brisk pacing with a direct tone.",route:"Grok",wrap:"// demo route: Grok (xAI), direct profile\n",best:"Direct answers and realtime-flavored requests."},
+ "mistral":{name:"Mistral",provider:"Mistral AI",factor:0.72,chunk:10,note:"Demo profile: lean, fast pacing with terse output.",route:"Mistral",wrap:"// demo route: Mistral (Mistral AI), lean profile\n",best:"Lean, high-volume request streams."}
+};
+var MODEL_IDS=Object.keys(MODELS);
+var pgDefaultModel=null;
+function pgSpeed(){return 1;}
+function pgStreamOn(){return true;}
+var presetList=$("#presetList"), pgTimers=[], pgInterval=null, currentPreset=0, runCount=0;
+var currentModel=pgDefaultModel||PRESETS[0].model;
 presetList.innerHTML=PRESETS.map(function(p,i){
  return '<button class="preset" role="tab" id="preset-'+p.id+'" aria-selected="'+(i===0)+'" data-idx="'+i+'" type="button">'+p.label+'</button>';
 }).join("");
-function clearTimers(){pgTimers.forEach(function(t){clearTimeout(t)});pgTimers=[];}
+var modelList=$("#modelList"), modelNote=$("#modelNote");
+function renderModels(){
+ if(!modelList)return;
+ $$(".model-btn",modelList).forEach(function(b){b.setAttribute("aria-pressed", b.dataset.model===currentModel?"true":"false");});
+ if(modelNote)modelNote.textContent=MODELS[currentModel].name+" · "+MODELS[currentModel].provider+" · "+MODELS[currentModel].note;
+}
+if(modelList){
+ modelList.innerHTML=MODEL_IDS.map(function(id){return '<button class="model-btn" type="button" data-model="'+id+'" aria-pressed="'+(id===currentModel?"true":"false")+'">'+MODELS[id].name+'</button>';}).join("");
+ $$(".model-btn",modelList).forEach(function(b){b.addEventListener("click",function(){currentModel=b.dataset.model;renderModels();runPreset(currentPreset);});});
+ renderModels();
+}
+function clearTimers(){pgTimers.forEach(function(t){clearTimeout(t)});pgTimers=[];if(pgInterval){clearInterval(pgInterval);pgInterval=null;}}
+function setMeta(status,latency,tokens){
+ $("#pgMeta").innerHTML='<span class="tag">'+(MODELS[currentModel]?MODELS[currentModel].name:currentModel)+'</span><span class="tag status'+(status==="running"?" running":"")+'">'+status+'</span><span class="tag latency">'+latency.replace(/ ms$/," ms · sim")+'</span><span class="tag">'+tokens+'</span>';
+}
 function runPreset(idx){
- currentPreset=idx; clearTimers();
- $$(".preset",presetList).forEach(function(b,i){b.setAttribute("aria-selected", i===idx?"true":"false");});
+ currentPreset=idx; clearTimers(); runCount++;
+ $$(".preset",presetList).forEach(function(b,i){b.setAttribute("aria-selected", i===idx?"true":"false");b.tabIndex=i===idx?0:-1;});
  var p=PRESETS[idx];
  $("#pgInput").textContent=p.input;
  var trace=$("#pgTrace"); trace.innerHTML="";
  var wrap=$("#pgOutputWrap"); wrap.classList.remove("show");
+ var out=$("#pgOutput"); out.textContent=""; out.classList.remove("streaming");
  var runId=idx+"-"+Date.now();
  trace.dataset.run=runId;
+ var model=MODELS[currentModel]||MODELS[p.model];
+ var jitter=((idx*7)+(MODEL_IDS.indexOf(currentModel)*13)+(runCount*5))%11-5;
+ var targetLatency=Math.max(24,Math.round(p.latency*model.factor)+jitter);
+ var full=(model.wrap||"")+JSON.stringify(p.output,null,2);
+ var inTok=Math.max(1,Math.round(p.input.length/4));
+ var outTok=Math.max(1,Math.round(full.length/4));
+ setMeta("running","0 ms","0 tok");
+ function finish(){
+   if(trace.dataset.run!==runId) return;
+   out.textContent=full; out.classList.remove("streaming");
+   setMeta("complete",targetLatency+" ms",(inTok+outTok)+" tok");
+   wrap.classList.add("show");
+ }
+ function startStream(){
+   if(trace.dataset.run!==runId) return;
+   wrap.classList.add("show");
+   if(reduced||!pgStreamOn()){finish();return;}
+   out.classList.add("streaming");
+   var totalTicks=Math.max(1,Math.ceil(full.length/model.chunk));
+   var tickMs=Math.round(Math.min(40,Math.max(12,(targetLatency*2.2)/totalTicks))*pgSpeed());
+   var pos=0;
+   pgInterval=setInterval(function(){
+     if(trace.dataset.run!==runId){clearInterval(pgInterval);pgInterval=null;return;}
+     pos=Math.min(full.length,pos+model.chunk);
+     out.textContent=full.slice(0,pos);
+     var prog=full.length?pos/full.length:1;
+     setMeta("running",Math.round(targetLatency*prog)+" ms",(inTok+Math.round(outTok*prog))+" tok");
+     if(pos>=full.length){clearInterval(pgInterval);pgInterval=null;finish();}
+   },tickMs);
+ }
  var stepDelay = reduced ? 0 : 320;
  p.trace.forEach(function(line,i){
    var t=setTimeout(function(){
      if(trace.dataset.run!==runId) return;
-     var d=document.createElement("div"); d.className="line"; d.textContent=line; trace.appendChild(d);
+     var d=document.createElement("div"); d.className="line"; d.textContent=line.replace(/ghost-[a-z]+-v[0-9]/,model.route||currentModel); trace.appendChild(d);
      if(i===p.trace.length-1){
-       var t2=setTimeout(function(){
-         if(trace.dataset.run!==runId) return;
-         $("#pgOutput").textContent=JSON.stringify(p.output,null,2);
-         $("#pgMeta").innerHTML='<span class="tag">'+p.model+'</span><span class="tag latency">'+p.latency+'ms</span>';
-         wrap.classList.add("show");
-       }, reduced?0:260); pgTimers.push(t2);
+       var t2=setTimeout(startStream, reduced?0:260); pgTimers.push(t2);
      }
    }, stepDelay*(i+1)); pgTimers.push(t);
  });
 }
 $$(".preset",presetList).forEach(function(b){b.addEventListener("click",function(){runPreset(parseInt(b.dataset.idx,10));});});
+presetList.addEventListener("keydown",function(e){
+if(e.key!=="ArrowRight"&&e.key!=="ArrowLeft")return; e.preventDefault();
+var n=(currentPreset+(e.key==="ArrowRight"?1:PRESETS.length-1))%PRESETS.length;
+runPreset(n); $$(".preset",presetList)[n].focus();
+});
 $("#pgCopy").addEventListener("click",function(){copyText($("#pgOutput").textContent,this);});
 runPreset(0);
+/* Model routes strip (GT84): the router plus the real named models, rendered from the same MODELS table. */
+var stripEl=$("#modelStrip");
+if(stripEl){
+ stripEl.innerHTML=["ghost-router-v2","gemini","claude","gpt","llama","grok","mistral"].map(function(id){
+  var m=MODELS[id];
+  var note=m.note.indexOf("Demo profile:")===0?m.note:"Demo profile: "+m.note.charAt(0).toLowerCase()+m.note.slice(1);
+  return '<div class="card route-card"><p class="prov">'+m.provider+'</p><h3>'+m.name+'</h3><p>'+note+'</p><p class="best"><strong>Best for (demo):</strong> '+m.best+'</p></div>';
+ }).join("");
+}
 /* Use case tabs */
 var ucTabs=$("#ucTabs"), ucPanels=$("#ucPanels");
 ucTabs.innerHTML=USECASES.map(function(u,i){
@@ -586,14 +833,23 @@ $$(".tab",ucTabs).forEach(function(t){
 $$("[data-copy-code]").forEach(function(b){b.addEventListener("click",function(){copyText(USECASES[parseInt(b.dataset.copyCode,10)].code,this);});});
 /* FAQ */
 $("#faqList").innerHTML=FAQS.map(function(f,i){
- return '<div class="faq-item"><button class="faq-q" type="button" aria-expanded="false" aria-controls="faq-a-'+i+'" id="faq-q-'+i+'"><span>'+f.q+'</span><svg class="chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button><div class="faq-a" id="faq-a-'+i+'" role="region" aria-labelledby="faq-q-'+i+'">'+f.a+'</div></div>';
+ return '<div class="faq-item"><button class="faq-q" type="button" aria-expanded="false" aria-controls="faq-a-'+i+'" id="faq-q-'+i+'"><span>'+f.q+'</span><svg class="chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button><div class="faq-a" id="faq-a-'+i+'" role="region" aria-labelledby="faq-q-'+i+'"><div class="faq-a-in"><div class="faq-a-pad">'+f.a+'</div></div></div></div>';
 }).join("");
-$$(".faq-q").forEach(function(btn){
+var faqBtns=$$(".faq-q");
+faqBtns.forEach(function(btn,idx){
  btn.addEventListener("click",function(){
    var open=btn.getAttribute("aria-expanded")==="true";
-   $$(".faq-q").forEach(function(b){b.setAttribute("aria-expanded","false");});
+   faqBtns.forEach(function(b){b.setAttribute("aria-expanded","false");});
    $$(".faq-a").forEach(function(a){a.classList.remove("open");});
    if(!open){btn.setAttribute("aria-expanded","true");document.getElementById(btn.getAttribute("aria-controls")).classList.add("open");}
+ });
+ btn.addEventListener("keydown",function(e){
+   var n=null;
+   if(e.key==="ArrowDown")n=(idx+1)%faqBtns.length;
+   else if(e.key==="ArrowUp")n=(idx+faqBtns.length-1)%faqBtns.length;
+   else if(e.key==="Home")n=0;
+   else if(e.key==="End")n=faqBtns.length-1;
+   if(n!==null){e.preventDefault();faqBtns[n].focus();}
  });
 });
 /* Pricing toggle */
@@ -639,6 +895,7 @@ $("#generateKey").addEventListener("click",function(){
 });
 $("#keyCopy").addEventListener("click",function(){copyText($("#keyValue").textContent,this);});
 /* Demo form */
+if(FORM_ENDPOINT){var dn=$("#demoNote");if(dn)dn.hidden=true;}
 var demoChecks=[
  {id:"fName",ok:function(v){return v.trim().length>1;}},
  {id:"fEmail",ok:function(v){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());}},
@@ -664,7 +921,14 @@ $("#demoForm").addEventListener("submit",function(e){
   var bad=validateField(c); if(bad&&!firstBad)firstBad=bad;
  });
  if(firstBad){firstBad.focus();return;}
- $("#formSuccess").classList.add("show");
+ var ok=$("#formSuccess"), sb=$("#demoForm button[type=submit]");
+ if(!FORM_ENDPOINT){ok.classList.add("show");return;}
+ sb.disabled=true; sb.textContent="Sending...";
+ var data={}; demoChecks.forEach(function(c){var el=document.getElementById(c.id);data[el.name]=el.value.trim();});
+ fetch(FORM_ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json"},body:JSON.stringify(data)})
+ .then(function(r){if(!r.ok)throw new Error("bad status");ok.textContent="Request received. We will reply to your work email shortly.";ok.classList.add("show");$("#demoForm").reset();})
+ .catch(function(){ok.textContent="The request did not send. Check your connection and try again.";ok.classList.add("show");})
+ .then(function(){sb.disabled=false;sb.textContent="Request demo";});
 });
 /* Info modal */
 var infoBackdrop=$("#infoBackdrop");
@@ -684,6 +948,75 @@ infoBackdrop.addEventListener("click",function(e){if(e.target===infoBackdrop)clo
 document.addEventListener("keydown",function(e){
  if(e.key==="Escape"){closeDrawer(); if(ctaBackdrop.classList.contains("open"))closeModal(); if(infoBackdrop.classList.contains("open"))closeInfo();}
 });
+/* GT80: stats count-up on first view. The markup text is the final value, so JS-off and
+   reduced-motion renders show the frozen spec numbers unchanged. */
+(function(){
+ var nums=$$(".stat-num[data-count]");
+ if(!nums.length||reduced||!("IntersectionObserver" in window))return;
+ function animate(el){
+   var target=parseFloat(el.dataset.count), dec=parseInt(el.dataset.decimals||"0",10);
+   var prefix=el.dataset.prefix||"", suffix=el.dataset.suffix||"", t0=null, dur=900;
+   function frame(ts){
+     if(!t0)t0=ts;
+     var p=Math.min(1,(ts-t0)/dur), e=1-Math.pow(1-p,3);
+     el.textContent=prefix+(target*e).toFixed(dec)+suffix;
+     if(p<1)requestAnimationFrame(frame);
+   }
+   requestAnimationFrame(frame);
+ }
+ var io=new IntersectionObserver(function(entries){
+   entries.forEach(function(en){if(en.isIntersecting){animate(en.target);io.unobserve(en.target);}});
+ },{threshold:0.4});
+ nums.forEach(function(el){io.observe(el);});
+})();
+/* GT83: workflow stepper. The visitor can advance the three steps with the prev and next
+   buttons or the dots; when the section first scrolls into view the steps light in
+   sequence on their own, because the order is the information. Reduced motion, or no
+   IntersectionObserver, lights every step at once. */
+(function(){
+ var rail=$("#how .rail"), stepper=$("#howStepper");
+ if(!rail||!stepper)return;
+ var cards=$$(".card",rail), dots=$$(".step-dot",stepper);
+ var prev=$("#stepPrev"), next=$("#stepNext");
+ if(!cards.length||!dots.length||!prev||!next)return;
+ var step=0, interacted=false;
+ function paint(){
+   cards.forEach(function(c,i){c.classList.toggle("lit",i<=step);});
+   dots.forEach(function(d,i){
+     if(i===step)d.setAttribute("aria-current","step"); else d.removeAttribute("aria-current");
+   });
+   prev.setAttribute("aria-disabled",step===0?"true":"false");
+   next.setAttribute("aria-disabled",step===cards.length-1?"true":"false");
+ }
+ function setStep(n,user){
+   step=Math.max(0,Math.min(cards.length-1,n));
+   if(user)interacted=true;
+   paint();
+ }
+ prev.addEventListener("click",function(){setStep(step-1,true);});
+ next.addEventListener("click",function(){setStep(step+1,true);});
+ dots.forEach(function(d){d.addEventListener("click",function(){setStep(parseInt(d.dataset.step,10)-1,true);});});
+ stepper.addEventListener("keydown",function(e){
+   if(e.key==="ArrowRight"){e.preventDefault();setStep(step+1,true);}
+   if(e.key==="ArrowLeft"){e.preventDefault();setStep(step-1,true);}
+ });
+ rail.classList.add("stepper-on");
+ if(reduced||!("IntersectionObserver" in window)){step=cards.length-1;paint();return;}
+ paint();
+ var io=new IntersectionObserver(function(entries){
+   entries.forEach(function(en){
+     if(!en.isIntersecting)return;
+     io.disconnect();
+     var i=0;
+     (function adv(){
+       if(interacted)return;
+       setStep(i,false); i++;
+       if(i<cards.length)setTimeout(adv,480);
+     })();
+   });
+ },{threshold:0.3});
+ io.observe(rail);
+})();
 /* Edge status */
 var statuses=["Edge status: operational","Edge status: operational, all regions"];
 var si=0; setInterval(function(){si=(si+1)%statuses.length;var el=$("#edgeStatus"); if(el)el.textContent=statuses[si];},8000);
