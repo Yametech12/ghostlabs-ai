@@ -1,492 +1,1025 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GhostLabs: Invoice and Receipt Checker That Runs in Your Browser</title>
-<meta name="description" content="A free bench that extracts fields from pasted invoice or receipt text and re-adds the document against itself, in your browser. Nothing is uploaded.">
-<link rel="canonical" href="https://ghostlabs-ai.vercel.app/">
+<title>GhostLabs AI - Autonomous AI Infrastructure That Ships Itself</title>
+<meta name="description" content="GhostLabs routes, verifies, and deploys your AI workflows across the edge in under 180ms, no glue code, no lock-in.">
+<meta name="theme-color" content="#090A0F">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%2322d3ee'/%3E%3Cpath d='M16 7a7 7 0 0 0-7 7v9l2.5-2 2.5 2 2-2 2 2 2.5-2 .5.4V14a7 7 0 0 0-5-7Z' fill='%23090A0F'/%3E%3C/svg%3E">
 <meta property="og:type" content="website">
-<meta property="og:title" content="GhostLabs: Invoice and Receipt Checker">
-<meta property="og:description" content="Paste invoice or receipt text, extract the fields, and watch the arithmetic checks run. Runs in your browser, nothing is uploaded.">
-<meta property="og:url" content="https://ghostlabs-ai.vercel.app/">
+<meta property="og:title" content="GhostLabs AI - Autonomous AI Infrastructure That Ships Itself">
+<meta property="og:description" content="GhostLabs routes, verifies, and deploys your AI workflows across the edge in under 180ms, no glue code, no lock-in.">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="GhostLabs: Invoice and Receipt Checker">
-<meta name="twitter:description" content="A free in-browser bench that extracts document fields and checks the maths, showing its working.">
-<meta name="theme-color" media="(prefers-color-scheme: light)" content="#B5D6C2">
-<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#202A25">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='4' fill='%23B63F16'/%3E%3Cpath d='M9 8h14M9 14h14M9 20h8M20 20h3M9 25h14' stroke='%23FFFEF9' stroke-width='2.4'/%3E%3C/svg%3E">
-<script>
-(function(){try{var q=new URLSearchParams(window.location.search).get("theme");var t=(q==="light"||q==="dark")?q:(localStorage.getItem("gl_theme")||(window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"));document.documentElement.setAttribute("data-theme",t);if(q==="light"||q==="dark"){localStorage.setItem("gl_theme",t);}}catch(e){document.documentElement.setAttribute("data-theme","light");}})();
-</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@600&family=Public+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --field:#B5D6C2; --paper:#FFFEF9; --ink:#1C2321; --ink-2:#454F4A;
-  --action:#B63F16; --action-text:#FFFFFF; --action-hover:#A53713; --action-edge:#8F2F0E;
-  --proof:#1F7A4D; --proof-wash:#E2F0E6; --fault:#A92B20; --fault-wash:#F9E8E4;
-  --disabled:#C9CFCB;
-  --input:#FFFFFF; --placeholder:#454F4A; --tally:#1C2321;
-  --space-1:4px; --space-2:8px; --space-3:16px; --space-4:24px; --space-5:32px; --space-6:48px; --space-7:64px; --space-8:96px;
-  --ease-tally:cubic-bezier(0.16,1,0.3,1); --ease-press:cubic-bezier(0.34,1.2,0.64,1); --ease-row:cubic-bezier(0.25,1,0.5,1);
-}
-html[data-theme="dark"]{
-  --field:#202A25; --paper:#35443C; --input:#4A5E53; --placeholder:#EDE8DA; --tally:#0B0F0D; --ink:#F3F1E8; --ink-2:#D8D2C4;
-  --action:#E97A4A; --action-text:#201512; --action-hover:#F08A5C; --action-edge:#9A4520;
-  --proof:#5FBF8F; --proof-wash:#22362B; --fault:#F08A7E; --fault-wash:#3A2723;
-  --disabled:#3E4742;
+  --bg:#090A0F; --surface:#11131B; --surface-2:#151824; --border:rgba(255,255,255,0.08);
+  --cyan:#22d3ee; --violet:#8b5cf6;
+  --text:#F8FAFC; --text-2:#94A3B8; --muted:#71809A;
+  --cta-bg:#FFFFFF; --cta-text:#090A0F;
+  --radius:14px; --header-h:68px;
+  --ease:cubic-bezier(0.22,1,0.36,1);
 }
 *{box-sizing:border-box;margin:0;padding:0}
-[hidden]{display:none !important}
-html{scroll-behavior:smooth}
-body{background:var(--field);color:var(--ink);font-family:'Public Sans',system-ui,-apple-system,'Segoe UI',sans-serif;font-size:16px;line-height:1.6}
-h1,h2{font-family:'Zilla Slab',Georgia,'Times New Roman',serif;font-weight:600}
-.data,.mono,td.num,th.num{font-family:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;font-variant-numeric:tabular-nums}
-a{color:var(--ink);text-underline-offset:4px;text-decoration-thickness:1px}
-a:hover{text-decoration-thickness:2px}
-:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
-.skip{position:absolute;left:-999px;top:0;background:var(--paper);color:var(--ink);padding:var(--space-3);z-index:50}
-.skip:focus{left:var(--space-3);top:var(--space-3)}
-header{border-bottom:1px solid var(--ink)}
-.nav{max-width:1200px;margin:0 auto;height:56px;display:flex;align-items:center;gap:var(--space-3);padding:0 var(--space-3);flex-wrap:nowrap}
-.wordmark{font-family:'Zilla Slab',Georgia,serif;font-weight:600;font-size:20px;text-decoration:none;margin-right:auto;white-space:nowrap}
-.nav a.navlink{font-weight:600;font-size:15px;white-space:nowrap}
-@media(max-width:640px){
-  .nav{height:52px;gap:var(--space-2);padding:0 var(--space-2)}
-  .wordmark{font-size:17px}
-  .nav a.navlink{font-size:13px}
-  .theme-btn{min-height:40px;padding:0 var(--space-2);font-size:13px}
+html{scroll-padding-top:calc(var(--header-h) + 20px);scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:'Plus Jakarta Sans','Inter',sans-serif;letter-spacing:-0.025em;line-height:1.12;color:var(--text)}
+h2{font-size:clamp(1.8rem,4vw,2.6rem);font-weight:700}
+h3{font-size:1.15rem;font-weight:700}
+a{color:inherit}
+button{font-family:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--cyan);outline-offset:3px;border-radius:4px}
+.container{max-width:80rem;margin:0 auto;padding-left:1rem;padding-right:1rem}
+@media(min-width:640px){.container{padding-left:1.5rem;padding-right:1.5rem}}
+@media(min-width:1024px){.container{padding-left:2rem;padding-right:2rem}}
+section{padding:3.5rem 0}
+@media(min-width:1024px){section{padding:6.25rem 0}}
+.section-head{max-width:none;margin:0 0 2.5rem;text-align:left;border-top:1px solid var(--border);padding-top:1.1rem}
+.section-head::before{content:attr(data-num);display:block;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--cyan);letter-spacing:.08em;margin-bottom:.6rem}
+.section-head p{color:var(--text-2);margin-top:.7rem;max-width:640px}
+.mono{font-family:'JetBrains Mono',monospace}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;border-radius:10px;padding:.8rem 1.5rem;font-size:.95rem;font-weight:600;border:1px solid transparent;transition:opacity .2s var(--ease),background .2s var(--ease),border-color .2s var(--ease);text-decoration:none;min-height:48px}
+.btn-primary{background:var(--cta-bg);color:var(--cta-text)}
+.btn-primary:hover{opacity:.88}
+.btn-ghost{background:transparent;color:var(--text);border-color:var(--border)}
+.btn-ghost:hover{border-color:rgba(255,255,255,.25);background:rgba(255,255,255,.04)}
+.btn-sm{padding:.55rem 1.1rem;min-height:42px;font-size:.9rem}
+/* Header */
+header{position:sticky;top:0;z-index:60;height:var(--header-h);background:rgba(9,10,15,.82);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+.nav{display:flex;align-items:center;justify-content:space-between;height:var(--header-h)}
+.logo{display:flex;align-items:center;gap:.6rem;font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:1.1rem;letter-spacing:-0.025em;text-decoration:none}
+.logo-mark{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--cyan),var(--violet));display:grid;place-items:center;flex:none}
+.nav-links{display:none;gap:2rem;list-style:none}
+.nav-links a{color:var(--text-2);text-decoration:none;font-size:.95rem;font-weight:500}
+.nav-links a:hover{color:var(--text)}
+.nav-actions{display:flex;align-items:center;gap:.75rem}
+.menu-btn{display:inline-grid;place-items:center;width:44px;height:44px;background:transparent;border:1px solid var(--border);border-radius:10px;color:var(--text)}
+@media(min-width:900px){.nav-links{display:flex}.menu-btn{display:none}}
+.drawer{display:none;border-top:1px solid var(--border);background:rgba(9,10,15,.97);padding:1rem}
+.drawer.open{display:block}
+.drawer a{display:block;padding:.85rem .5rem;color:var(--text-2);text-decoration:none;font-weight:500;border-bottom:1px solid var(--border)}
+.drawer a:last-of-type{border-bottom:none}
+/* Hero */
+.hero{padding-top:3.5rem;text-align:center;position:relative;overflow:hidden}
+@media(min-width:1024px){.hero{padding-top:2.75rem;text-align:left}
+.hero .container{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:2.5rem;align-items:start}
+.hero h1{margin-left:0;margin-right:0}
+.hero .sub{margin-left:0;margin-right:0}
+.hero .hero-ctas{justify-content:flex-start}
+.hero .playground{margin-top:0;max-width:none}}
+.hero::before{content:"";position:absolute;inset:0;background:radial-gradient(600px 300px at 50% -50px,rgba(34,211,238,.14),transparent 70%),radial-gradient(500px 260px at 75% 0,rgba(139,92,246,.12),transparent 70%);pointer-events:none}
+.badge{display:inline-flex;align-items:center;gap:.5rem;border:1px solid var(--border);background:var(--surface);border-radius:999px;padding:.4rem .9rem;font-size:.82rem;color:var(--text-2);font-weight:500;position:relative}
+.badge .dot{width:8px;height:8px;border-radius:50%;background:var(--cyan);flex:none}
+.hero h1{font-size:clamp(2.4rem,6vw,4.2rem);font-weight:800;max-width:820px;margin:1.5rem auto 0;position:relative}
+.hero .sub{color:var(--text-2);font-size:clamp(1.02rem,2vw,1.2rem);max-width:640px;margin:1.4rem auto 0;position:relative}
+.hero-ctas{display:flex;gap:.9rem;justify-content:center;flex-wrap:wrap;margin-top:2.2rem;position:relative}
+/* Playground */
+.playground{max-width:920px;margin:3.5rem auto 0;text-align:left;background:var(--surface);border:1px solid var(--border);border-radius:18px;overflow:hidden;position:relative}
+.pg-head{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1rem 1.25rem;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.pg-title{font-family:'JetBrains Mono',monospace;font-size:.85rem;color:var(--text-2)}
+.presets{display:flex;gap:.5rem;flex-wrap:wrap;padding:1rem 1.25rem 0}
+.preset{border:1px solid var(--border);background:transparent;color:var(--text-2);border-radius:999px;padding:.5rem 1rem;font-size:.85rem;font-weight:500;min-height:40px}
+.preset[aria-selected="true"]{background:#fff;color:var(--cta-text);border-color:#fff}
+.pg-body{padding:1.25rem;display:grid;gap:1rem;grid-template-columns:minmax(0,1fr)}
+.pg-output-wrap{min-width:0}
+.pg-label{font-size:.78rem;font-weight:600;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;margin-bottom:.4rem}
+.pg-input{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.9rem 1rem;color:var(--text);font-size:.95rem}
+.pg-trace{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.9rem 1rem;font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--text-2);min-height:96px}
+.pg-trace .line{padding:.15rem 0}
+.pg-trace .line::before{content:"> ";color:var(--cyan)}
+.pg-output-wrap{display:none}
+.pg-output-wrap.show{display:block}
+.pg-meta{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.5rem}
+.tag{font-family:'JetBrains Mono',monospace;font-size:.75rem;border:1px solid var(--border);border-radius:999px;padding:.25rem .7rem;color:var(--cyan);background:rgba(34,211,238,.07)}
+.tag.latency{color:#a5b4fc;background:rgba(139,92,246,.12)}
+pre.code{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:1rem;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:.85rem;line-height:1.55;color:#e2e8f0;white-space:pre;word-break:normal}
+.copy-btn{border:1px solid var(--border);background:var(--surface-2);color:var(--text);border-radius:8px;padding:.45rem .9rem;font-size:.82rem;font-weight:500;min-height:38px}
+.copy-btn:hover{border-color:rgba(255,255,255,.25)}
+.code-head{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:.5rem}
+/* GT80 playground engine: model selector, run-state tags, streaming caret */
+.models{display:flex;gap:.45rem;flex-wrap:wrap}
+.model-btn{font-family:'JetBrains Mono',monospace;font-size:.74rem;border:1px solid var(--border);background:transparent;color:var(--text-2);border-radius:8px;padding:.42rem .7rem;min-height:36px}
+.model-btn:hover{border-color:rgba(255,255,255,.25);color:var(--text)}
+.model-btn[aria-pressed="true"]{background:var(--surface-2);color:var(--cyan);border-color:rgba(34,211,238,.45)}
+.pg-model-note{font-size:.72rem;color:var(--muted);margin-top:.45rem}
+.tag.status{color:#6ee7b7;background:rgba(52,211,153,.08);border-color:rgba(52,211,153,.3)}
+.tag.status.running{color:#fcd34d;background:rgba(252,211,77,.08);border-color:rgba(252,211,77,.3)}
+pre.code.streaming::after{content:"\258C";color:var(--cyan);animation:pgblink 1s steps(1) infinite}
+@keyframes pgblink{50%{opacity:0}}
+/* GT84 model routes strip */
+.route-card .prov{font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--cyan);margin:0 0 .5rem}
+.route-card .best{margin-top:.7rem;color:var(--text-2)}
+.route-card .best strong{color:var(--text);font-weight:600}
+/* Logo cloud */
+.logocloud{padding:2.5rem 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.logocloud p{text-align:left;color:var(--muted);font-size:.85rem;margin-bottom:1.5rem;font-family:'JetBrains Mono',monospace}
+.logo-row{display:grid;grid-template-columns:repeat(2,1fr);border-top:1px solid var(--border);border-left:1px solid var(--border)}
+.wordmark{font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:.98rem;color:rgba(248,250,252,.58);letter-spacing:-0.02em;text-align:center;padding:1rem .5rem;border-right:1px solid var(--border);border-bottom:1px solid var(--border);display:grid;place-items:center;min-height:56px}
+.logo-row .wordmark:last-child{grid-column:span 2}
+@media(min-width:1024px){.logo-row{grid-template-columns:repeat(7,1fr)}.logo-row .wordmark:last-child{grid-column:auto}.wordmark{font-size:.88rem;padding:1rem .35rem}}
+/* Features */
+.grid-3{display:grid;gap:1.25rem}
+@media(min-width:760px){.grid-3{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:1024px){.grid-3{grid-template-columns:repeat(3,1fr)}}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.75rem}
+.card p{color:var(--text-2);font-size:.95rem;margin-top:.6rem}
+.icon{width:44px;height:44px;border-radius:11px;background:rgba(34,211,238,.09);display:grid;place-items:center;margin-bottom:1.1rem;color:var(--cyan)}
+.card:nth-child(even) .icon{background:rgba(139,92,246,.11);color:#a78bfa}
+/* Steps */
+.step-num{font-family:'JetBrains Mono',monospace;font-size:.85rem;color:var(--cyan);border:1px solid var(--border);border-radius:999px;width:40px;height:40px;display:grid;place-items:center;margin-bottom:1.1rem;background:var(--bg)}
+/* Tabs */
+.tabs{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:flex-start;margin-bottom:2rem}
+.tab{border:1px solid var(--border);background:transparent;color:var(--text-2);border-radius:999px;padding:.65rem 1.3rem;font-size:.92rem;font-weight:600;min-height:44px}
+.tab[aria-selected="true"]{background:#fff;color:var(--cta-text);border-color:#fff}
+.tab-panel{display:none}
+.tab-panel.active{display:grid;gap:2rem}
+@media(min-width:900px){.tab-panel.active{grid-template-columns:1fr 1fr;align-items:start}}
+.tab-panel ul{list-style:none;margin-top:1.2rem;display:grid;gap:.8rem}
+.tab-panel li{color:var(--text-2);padding-left:1.6rem;position:relative}
+.tab-panel li::before{content:"";position:absolute;left:0;top:.45em;width:9px;height:9px;border-radius:50%;background:var(--cyan)}
+/* Stats */
+.stats{background:transparent;border-top:none;border-bottom:none;padding:2rem 0}
+.stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:0;text-align:left;border-top:1px solid var(--border);border-left:1px solid var(--border);background:var(--surface)}
+.stats-grid>div{padding:1.1rem 1.25rem;border-right:1px solid var(--border);border-bottom:1px solid var(--border)}
+@media(min-width:760px){.stats-grid{grid-template-columns:repeat(4,1fr)}}
+.stat-num{font-family:'JetBrains Mono',monospace;font-size:clamp(1.55rem,3.4vw,2.3rem);font-weight:600;letter-spacing:-0.02em}
+.stat-label{color:var(--text-2);font-size:.88rem;margin-top:.25rem}
+/* Pricing */
+.toggle-wrap{display:flex;align-items:center;justify-content:flex-start;gap:1rem;margin-bottom:2.5rem}
+.toggle{width:60px;height:32px;border-radius:999px;background:var(--surface-2);border:1px solid var(--border);position:relative;flex:none}
+.toggle::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:transform .25s var(--ease)}
+.toggle[aria-checked="true"]::after{transform:translateX(28px)}
+.toggle-label{font-weight:600;color:var(--text-2)}
+.toggle-label.on{color:var(--text)}
+.save{font-size:.78rem;color:var(--cyan);font-weight:600}
+.price-card{display:flex;flex-direction:column}
+.price-card.featured{border-color:rgba(34,211,238,.5);box-shadow:0 0 0 1px rgba(34,211,238,.35)}
+.pop{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--cyan);border:1px solid rgba(34,211,238,.4);border-radius:999px;padding:.2rem .65rem;display:inline-block;margin-bottom:1rem}
+.price{font-family:'Plus Jakarta Sans',sans-serif;font-size:2.6rem;font-weight:800;letter-spacing:-0.025em;margin:.8rem 0 .2rem}
+.price small{font-size:1rem;color:var(--muted);font-weight:500;font-family:'Inter',sans-serif;letter-spacing:0}
+.price-card ul{list-style:none;margin:1.4rem 0 2rem;display:grid;gap:.7rem}
+.price-card .btn{margin-top:auto}
+.price-card li{color:var(--text-2);font-size:.94rem;padding-left:1.5rem;position:relative}
+.price-card li::before{content:"";position:absolute;left:0;top:.5em;width:8px;height:8px;border-radius:50%;background:var(--violet)}
+.price-card .btn{width:100%}
+/* FAQ */
+.faq-list{max-width:none;margin:0;display:grid;gap:0;border-bottom:1px solid var(--border);counter-reset:faq}
+.faq-item{background:transparent;border:none;border-top:1px solid var(--border);border-radius:0;overflow:hidden}
+.faq-q{width:100%;display:flex;justify-content:space-between;align-items:center;gap:1rem;background:none;border:none;color:var(--text);text-align:left;padding:1.15rem .25rem;font-size:1rem;font-weight:600;min-height:56px}
+.faq-q>span:first-child::before{counter-increment:faq;content:counter(faq,decimal-leading-zero) "  ";font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--cyan);font-weight:500}
+.faq-q .chev{color:var(--muted);flex:none;transition:transform .25s var(--ease)}
+.faq-q[aria-expanded="true"] .chev{transform:rotate(180deg)}
+.faq-a{display:grid;grid-template-rows:0fr;visibility:hidden;color:var(--text-2);transition:grid-template-rows .34s var(--ease),visibility 0s linear .34s}
+.faq-a-in{overflow:hidden;min-height:0}
+.faq-a-pad{padding:0 .25rem 1.3rem 2.1rem}
+.faq-a.open{grid-template-rows:1fr;visibility:visible;transition:grid-template-rows .34s var(--ease),visibility 0s}
+/* CTA banner */
+.banner{background:linear-gradient(135deg,rgba(34,211,238,.13),rgba(139,92,246,.15));border:1px solid var(--border);border-radius:20px;padding:3rem 2rem;text-align:center}
+.banner p{color:var(--text-2);max-width:560px;margin:1rem auto 0}
+.banner .hero-ctas{margin:2rem auto 0;display:grid;grid-template-columns:1fr;gap:.75rem;max-width:340px}
+.banner .hero-ctas .btn{width:100%}
+@media(min-width:760px){.banner .hero-ctas{grid-template-columns:repeat(3,1fr);max-width:820px}}
+/* Footer */
+footer{border-top:1px solid var(--border);padding:3.5rem 0 2.5rem}
+.foot-grid{display:grid;gap:2.5rem}
+@media(min-width:860px){.foot-grid{grid-template-columns:2fr 1fr 1fr 1fr}}
+.foot-grid h4{font-size:.92rem;margin-bottom:1rem}
+.foot-grid ul{list-style:none;display:grid;gap:.65rem}
+.foot-grid a,.foot-link-btn{color:var(--text-2);text-decoration:none;font-size:.93rem;background:none;border:none;padding:0;text-align:left}
+.foot-grid a:hover,.foot-link-btn:hover{color:var(--text)}
+.foot-bottom{display:flex;flex-wrap:wrap;gap:1rem;justify-content:space-between;align-items:center;border-top:1px solid var(--border);margin-top:2.5rem;padding-top:1.5rem;color:var(--muted);font-size:.88rem}
+.status{display:inline-flex;align-items:center;gap:.5rem;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--text-2)}
+.status .dot{width:9px;height:9px;border-radius:50%;background:#34d399}
+
+/* GT69 structural system: console framing, hairline rules, mono numerals */
+#featureGrid{counter-reset:feat}
+#featureGrid .card{position:relative}
+#featureGrid .card::before{counter-increment:feat;content:counter(feat,decimal-leading-zero);position:absolute;top:1rem;right:1.1rem;font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--muted)}
+#featureGrid .card:first-child::after{content:"> Routing request to ghost-router-v2";display:block;margin-top:1.1rem;padding:.65rem .75rem;background:var(--bg);border:1px solid var(--border);border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--text-2);white-space:nowrap;overflow:hidden}
+@media(min-width:1024px){
+ #featureGrid{grid-template-columns:repeat(4,1fr)}
+ #featureGrid .card:nth-child(1){grid-column:span 2}
+ #featureGrid .card:nth-child(6){grid-column:span 2}
 }
-.theme-btn,.btn-secondary{min-height:44px;padding:0 var(--space-3);background:var(--paper);color:var(--ink);border:1px solid var(--ink);border-radius:8px;font:inherit;font-weight:600;font-size:15px;cursor:pointer;box-shadow:0 2px 0 rgba(28,35,33,.3);transition:transform 140ms var(--ease-press),background 140ms var(--ease-press)}
-.theme-btn:active,.btn-secondary:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(28,35,33,.3)}
-.btn-primary{min-height:48px;padding:0 var(--space-4);background:var(--action);color:var(--action-text);border:none;border-radius:8px;font:inherit;font-weight:600;font-size:16px;cursor:pointer;box-shadow:0 3px 0 var(--action-edge);transition:transform 140ms var(--ease-press),background 140ms var(--ease-press),box-shadow 140ms var(--ease-press);text-decoration:none;display:inline-flex;align-items:center;justify-content:center}
-.btn-primary:hover{background:var(--action-hover);box-shadow:0 4px 0 var(--action-edge)}
-.btn-primary:active{transform:translateY(2px);box-shadow:0 1px 0 var(--action-edge)}
-.btn-primary:disabled{background:var(--action);color:var(--action-text);box-shadow:0 3px 0 var(--action-edge);opacity:.75;cursor:wait}
-.extract-row{display:flex;align-items:center;gap:var(--space-3);margin-top:var(--space-2);flex-wrap:wrap}
-.extract-row .btn-primary{flex:0 1 auto;width:auto}
-.extract-msg{font-size:14px;font-weight:600;color:var(--fault)}
-main{display:block}
-.hero{max-width:1200px;margin:0 auto;padding:var(--space-4) var(--space-3) 0}
-@media(max-width:899px){
-  .hero{padding-top:var(--space-2)}
-  .subline{margin-top:var(--space-2);font-size:16px}
-  .bench{margin-top:var(--space-2)}
-  .bench-shell{padding:var(--space-1) var(--space-2) var(--space-2);gap:var(--space-3)}
-  .pane-source{padding:var(--space-2)}
-  .seg{margin-bottom:var(--space-2)}
-  textarea{min-height:80px}
-  .file-row{margin:var(--space-1) 0}
+.rail{display:grid;gap:1.25rem;position:relative}
+.rail .card{position:relative}
+@media(min-width:1024px){
+ .rail{grid-template-columns:repeat(3,1fr)}
+ .rail::before{content:"";position:absolute;top:20px;left:6%;right:6%;border-top:1px solid var(--border)}
 }
-h1{font-size:clamp(60px,16vw,76px);line-height:1.02;letter-spacing:-0.02em;text-wrap:balance;max-width:14ch}
-@media(max-width:899px){h1{font-size:52px;line-height:1}}
-.subline{margin-top:var(--space-3);font-size:17px;max-width:68ch}
-.bench{margin-top:var(--space-4)}
-.bench-shell{background:var(--paper);border-top:1px solid var(--ink);border-bottom:1px solid var(--ink);border-radius:0;padding:var(--space-3);display:grid;gap:var(--space-4)}
-@media(min-width:900px){.bench{max-width:1200px;margin-left:auto;margin-right:auto}.bench-shell{border:1px solid var(--ink);border-radius:12px;padding:var(--space-4);grid-template-columns:5fr 7fr}}
-.pane-source{background:var(--paper);border:1px solid var(--ink);border-radius:4px;box-shadow:0 16px 32px rgba(28,35,33,0.22);padding:var(--space-3);margin-top:-16px}
-@media(min-width:900px){.pane-source{margin-top:0}}
-.seg{display:flex;flex-wrap:wrap;gap:var(--space-2);margin-bottom:var(--space-3)}
-.seg button{flex:1 1 132px;min-height:44px;padding:var(--space-2);background:var(--paper);color:var(--ink);border:1px solid var(--ink);border-radius:8px;font:inherit;font-weight:600;font-size:14px;line-height:1.3;cursor:pointer;transition:background 140ms var(--ease-press)}
-.seg button[aria-pressed="true"]{background:var(--action);color:var(--action-text);box-shadow:inset 0 -3px 0 var(--action-edge)}
-label{display:block;font-size:13px;font-weight:600;margin-bottom:var(--space-1)}
-textarea{width:100%;min-height:180px;background:var(--input);color:var(--ink);border:1px solid var(--ink);border-radius:4px;padding:var(--space-2);font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace;font-size:14px;line-height:1.5;resize:none}
-textarea::placeholder{color:var(--placeholder);opacity:1}
-textarea:focus{border-width:2px;outline:none}
-.file-row{display:flex;align-items:center;gap:var(--space-3);margin:var(--space-3) 0;flex-wrap:wrap}
-.file-name{font-size:14px}
-#extractBtn{min-width:200px}
-.helper{margin-top:var(--space-2);font-size:14px;color:var(--ink-2)}
-.limits-line{margin-top:var(--space-2);font-size:14px;font-weight:600}
-.bench-foot{margin-top:var(--space-3);font-size:14px;color:var(--ink-2);border-top:1px solid var(--ink);padding-top:var(--space-2)}
-.pane-results h2{font-size:20px;font-family:'Public Sans',system-ui,sans-serif;font-weight:600;line-height:1.25}
-.verdict{font-family:'Zilla Slab',Georgia,serif;font-weight:600;font-size:20px;line-height:1.25;margin-top:var(--space-2)}
-.fields{margin-top:var(--space-3);border-top:1px solid var(--ink)}
-.empty-ledger{margin-top:var(--space-3);border-top:1px solid var(--ink)}
-.empty-ledger .rule{height:29px;border-bottom:1px solid var(--ink);opacity:.45}
-.field-row{display:flex;justify-content:space-between;gap:var(--space-3);padding:var(--space-1) 0;border-bottom:1px solid var(--ink)}
-.field-row dt{font-size:13px;font-weight:600}
-.field-row dd{font-size:14px;text-align:right}
-table{width:100%;border-collapse:collapse;margin-top:var(--space-3);font-size:14px}
-caption{text-align:left;font-size:13px;font-weight:600;padding-bottom:var(--space-1)}
-th,td{padding:var(--space-1) var(--space-2);border-bottom:1px solid var(--ink);text-align:left;vertical-align:top}
-td.num,th.num{text-align:right}
-.checks{list-style:none;margin-top:var(--space-3);display:grid;gap:var(--space-2)}
-.check{padding:var(--space-2);border-radius:4px;font-size:14px}
-.check .status{font-weight:600}
-.check.pass{background:var(--proof-wash);color:var(--ink)}
-.check.pass .status{color:var(--proof)}
-.check.fail{background:var(--fault-wash);color:var(--ink)}
-.check.fail .status{color:var(--fault)}
-.check.skip{background:var(--paper);border:1px dashed var(--ink-2)}
-.check .detail{display:block;margin-top:var(--space-1)}
-details.raw{margin-top:var(--space-3)}
-details.raw summary{min-height:44px;display:flex;align-items:center;font-weight:600;cursor:pointer}
-pre.raw-json{font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace;font-size:13px;line-height:1.5;white-space:pre-wrap;word-break:break-word;border:1px solid var(--ink);border-radius:4px;padding:var(--space-2);max-height:320px;overflow:auto}
-.result-actions{display:flex;gap:var(--space-3);margin-top:var(--space-3);flex-wrap:wrap}
-.reveal-rule{height:2px;background:var(--ink);margin-top:var(--space-3);transform-origin:left}
-.reveal .reveal-rule{animation:rule 560ms var(--ease-tally)}
-@keyframes rule{from{transform:scaleX(0)}to{transform:scaleX(1)}}
-section.block{max-width:1200px;margin:0 auto;padding:var(--space-7) var(--space-3)}
-section.block h2{font-size:32px;line-height:1.1;letter-spacing:-0.015em;margin-bottom:var(--space-3)}
-@media(min-width:900px){section.block h2{font-size:40px}}
-.checks-band{max-width:1200px;margin:0 auto;padding:var(--space-7) var(--space-3) 0}
-.checks-band h2{font-size:32px;line-height:1.1;letter-spacing:-0.015em;margin-bottom:var(--space-4)}
-@media(min-width:900px){.checks-band h2{font-size:40px}}
-.check-tiles{display:grid;gap:var(--space-3)}
-@media(min-width:700px){.check-tiles{grid-template-columns:1fr 1fr}}
-.check-tile{background:var(--paper);border-radius:4px;box-shadow:0 16px 32px rgba(28,35,33,0.22);padding:var(--space-3)}
-.check-tile .no{font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace;font-size:13px;font-weight:500;color:var(--ink-2)}
-.check-tile p{font-weight:600;font-size:17px;line-height:1.4;margin-top:var(--space-1)}
-.check-tile .how{font-weight:400;font-size:14px;color:var(--ink-2);margin-top:var(--space-1)}
-.cols{display:grid;gap:var(--space-4);align-items:start}
-@media(min-width:900px){.cols{grid-template-columns:1fr 1fr}}
-.example-run{background:var(--paper);border:1px solid var(--ink);border-radius:4px;box-shadow:0 16px 32px rgba(28,35,33,0.22);padding:var(--space-3)}
-.example-run h3{font-family:'Public Sans',system-ui,sans-serif;font-size:16px;font-weight:600}
-.example-run .fields{margin-top:var(--space-2)}
-.example-run .note{font-size:14px;color:var(--ink-2);margin-top:var(--space-3)}
-pre.doc{font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace;font-size:14px;line-height:1.5;background:var(--paper);border:1px solid var(--ink);border-radius:4px;box-shadow:0 16px 32px rgba(28,35,33,0.22);padding:var(--space-3);white-space:pre-wrap;word-break:break-word}
-.spec{display:grid;gap:var(--space-3) var(--space-4);max-width:860px}
-@media(min-width:700px){.spec{grid-template-columns:1fr 1fr}}
-.spec dt{font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace;font-size:13px;font-weight:500;text-transform:uppercase;letter-spacing:.06em}
-.spec dd{font-size:15px;margin-top:var(--space-1)}
-details.faq{margin-bottom:var(--space-5)}
-details.faq summary{min-height:44px;display:flex;align-items:center;font-weight:600;cursor:pointer;font-size:17px}
-details.faq p{margin-top:var(--space-2);max-width:68ch}
-.closing{background:var(--tally);color:#F3F1E8;margin-top:var(--space-7);padding:var(--space-6) var(--space-3)}
-.closing .inner{max-width:1200px;margin:0 auto;display:flex;gap:var(--space-4);align-items:center;flex-wrap:wrap}
-.closing p{font-family:'Zilla Slab',Georgia,serif;font-weight:600;font-size:24px;line-height:1.25;max-width:26ch}
-footer{border-top:1px solid var(--ink)}
-.foot{max-width:1200px;margin:0 auto;padding:var(--space-4) var(--space-3);display:grid;gap:var(--space-3);font-size:14px}
-@media(min-width:900px){.foot{grid-template-columns:1fr 1fr}}
-.foot ul{list-style:none}
-.credit{font-weight:600}
+@media(max-width:1023px){
+ .rail::before{content:"";position:absolute;top:6%;bottom:6%;left:20px;border-left:1px solid var(--border)}
+}
+.price-grid{align-items:stretch}
+@media(min-width:1024px){
+ .price-grid{grid-template-columns:1fr 1.18fr 1fr}
+ .price-card.featured{background:var(--surface-2);box-shadow:inset 0 3px 0 var(--cyan),0 0 0 1px rgba(34,211,238,.35);transform:translateY(-10px)}
+}
+/* Phone hero compression: engine in the first screen */
+@media(max-width:639px){
+ :root{--header-h:56px}
+ .logo{font-size:1rem}
+ .hero{padding-top:.75rem;padding-bottom:1.4rem}
+ .badge{font-size:.7rem;padding:.28rem .65rem}
+ .hero h1{font-size:1.58rem;line-height:1.08;margin-top:.55rem}
+ .hero .sub{font-size:.87rem;line-height:1.42;margin-top:.5rem}
+ .hero-ctas{margin-top:.65rem;gap:.5rem;flex-wrap:nowrap}
+ .hero-ctas .btn{padding:.5rem .8rem;min-height:38px;font-size:.85rem;white-space:nowrap}
+ .playground{margin-top:.7rem;border-radius:12px}
+ .pg-head{padding:.45rem .65rem;gap:.5rem}
+ .pg-title{font-size:.68rem}
+ .presets{flex-wrap:nowrap;overflow-x:auto;padding:.5rem .65rem 0;gap:.4rem;scrollbar-width:none}
+ .presets::-webkit-scrollbar{display:none}
+ .preset{flex:none;white-space:nowrap;padding:.3rem .6rem;font-size:.72rem;min-height:30px}
+ .pg-body{padding:.55rem .65rem .65rem;gap:.5rem}
+ .pg-label{font-size:.64rem;margin-bottom:.22rem}
+ .pg-input{padding:.42rem .55rem;font-size:.8rem;line-height:1.35}
+ .pg-trace{padding:.45rem .55rem;font-size:.68rem;line-height:1.4;min-height:0;overflow-x:auto}
+ .pg-trace .line{white-space:nowrap;padding:.08rem 0}
+ .pg-meta{gap:.4rem;margin-bottom:0}
+ .tag{font-size:.64rem;padding:.14rem .5rem}
+ .model-btn{font-size:.62rem;padding:.26rem .5rem;min-height:28px}
+ .models{display:grid;grid-template-columns:1fr 1fr;gap:.4rem;overflow:visible;-webkit-mask-image:none;mask-image:none}
+ .model-btn{white-space:nowrap;text-align:center}
+ .copy-btn{padding:.3rem .65rem;font-size:.72rem;min-height:30px}
+ .code-head{margin-bottom:.35rem}
+ pre.code{padding:.5rem .55rem;font-size:.68rem;line-height:1.4}
+ section{padding:2.6rem 0}
+}
+/* GT69 S6 fix round: D1 to D4, CSS only, no copy change */
+.stat-num{white-space:nowrap}
+@media(max-width:759px){
+ /* D1: break the uniform phone feature stack with two extra treatments */
+ #featureGrid .card:nth-child(3){background:transparent;border:none;border-top:1px solid var(--border);border-bottom:1px solid var(--border);border-radius:0;padding-left:.25rem;padding-right:.25rem}
+ #featureGrid .card:nth-child(6){background:var(--surface-2);box-shadow:inset 0 3px 0 var(--cyan)}
+ /* D3: SOC2 cell numeral sized to stay on one line in the 2x2 band */
+ .stats-grid>div:last-child .stat-num{font-size:1.02rem;letter-spacing:-0.03em}
+}
+/* D2: CTA banner reframed in the console language */
+.banner{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:inset 0 3px 0 var(--cyan);text-align:left;position:relative}
+.banner::before{content:"06";display:block;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--cyan);letter-spacing:.08em;margin-bottom:.6rem}
+.banner p{margin:1rem 0 0}
+.banner .hero-ctas{margin:2rem 0 0}
+@media(max-width:639px){
+ /* D4: right-edge fade mask on the scrolling preset row */
+ .presets{-webkit-mask-image:linear-gradient(to right,#000 0,#000 calc(100% - 28px),transparent 100%);mask-image:linear-gradient(to right,#000 0,#000 calc(100% - 28px),transparent 100%)}
+}
+/* GT80 design pass: hierarchy tick, headline gradient word, badge pulse, card hover lift */
+.section-head{position:relative}
+.section-head::after{content:"";position:absolute;top:-1px;left:0;width:44px;height:2px;background:linear-gradient(90deg,var(--cyan),var(--violet))}
+.grad{background:linear-gradient(92deg,var(--cyan),var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent;white-space:nowrap}
+.badge .dot{animation:pgpulse 2.4s ease-in-out infinite}
+@keyframes pgpulse{0%,100%{opacity:1}50%{opacity:.35}}
+.card{transition:transform .25s var(--ease),border-color .25s var(--ease)}
+.card:hover{transform:translateY(-3px);border-color:rgba(255,255,255,.16)}
+.price-card.featured:hover{transform:translateY(-3px)}
+@media(min-width:1024px){.price-card.featured:hover{transform:translateY(-13px)}}
+/* Modal */
+.modal-backdrop{display:none;position:fixed;inset:0;background:rgba(3,4,8,.75);backdrop-filter:blur(6px);z-index:100;align-items:center;justify-content:center;padding:1rem}
+.modal-backdrop.open{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:18px;max-width:520px;width:100%;max-height:90vh;overflow-y:auto;padding:2rem;position:relative}
+.modal h3{font-size:1.4rem;padding-right:2.5rem}
+.modal .sub{color:var(--text-2);margin-top:.6rem;font-size:.95rem}
+.modal-close{position:absolute;top:1rem;right:1rem;width:40px;height:40px;border-radius:10px;border:1px solid var(--border);background:transparent;color:var(--text);display:grid;place-items:center}
+.field{margin-top:1.1rem}
+.field label{display:block;font-size:.88rem;font-weight:600;margin-bottom:.4rem}
+.field input,.field textarea{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.75rem .9rem;color:var(--text);font-family:inherit;font-size:.95rem}
+.field .err{display:none;color:#f87171;font-size:.82rem;margin-top:.35rem}
+.field.invalid input,.field.invalid textarea{border-color:#f87171}
+.field.invalid .err{display:block}
+.key-box{display:none;margin-top:1.2rem}
+.key-box.show{display:block}
+.key-value{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.9rem 1rem;font-family:'JetBrains Mono',monospace;font-size:.85rem;word-break:break-all;color:var(--cyan)}
+.note{font-size:.82rem;color:var(--muted);margin-top:1rem;line-height:1.55}
+.success{display:none;margin-top:1.2rem;background:rgba(52,211,153,.09);border:1px solid rgba(52,211,153,.35);border-radius:10px;padding:1rem;color:#a7f3d0;font-size:.93rem}
+.success.show{display:block}
+.modal .btn{margin-top:1.4rem}
+.w-full{width:100%}
+/* GT83: workflow stepper and scroll-triggered sequential lighting. The dim state exists
+   only under .stepper-on, a class JS adds, so JS-off renders the steps at full strength. */
+.rail .card{transition:transform .25s var(--ease),border-color .4s var(--ease),opacity .45s var(--ease)}
+.rail.stepper-on .card{opacity:.42}
+.rail.stepper-on .card.lit{opacity:1;border-color:rgba(34,211,238,.45)}
+.rail.stepper-on .card.lit .step-num{background:var(--cyan);color:#090A0F;border-color:var(--cyan)}
+.stepper{display:flex;align-items:center;gap:.9rem;margin-top:1.6rem}
+.step-btn{width:42px;height:42px;flex:none;display:grid;place-items:center;border:1px solid var(--border);border-radius:50%;background:var(--surface);color:var(--text-2)}
+.step-btn:hover{border-color:rgba(255,255,255,.25);color:var(--text)}
+.step-btn[aria-disabled="true"]{opacity:.38}
+.step-dots{display:flex;gap:.55rem}
+.step-dot{width:34px;height:34px;border-radius:50%;border:1px solid var(--border);background:transparent;display:grid;place-items:center;color:var(--muted)}
+.step-dot:hover{border-color:rgba(255,255,255,.25)}
+.step-dot .pip{width:8px;height:8px;border-radius:50%;background:currentColor}
+.step-dot[aria-current="step"]{border-color:rgba(34,211,238,.55);color:var(--cyan)}
+/* GT83 (post Fresh-Eye): the preset tab row had the same phone clip defect as the model
+   row; wrap it on phone and drop the fade mask. */
+@media(max-width:639px){
+ .presets{flex-wrap:wrap;overflow:visible;-webkit-mask-image:none;mask-image:none}
+}
 @media(prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
   *,*::before,*::after{animation-duration:.01ms !important;transition-duration:.01ms !important}
-  .reveal .reveal-rule{animation:none}
 }
 </style>
 </head>
 <body>
-<a class="skip" href="#bench">Skip to the bench</a>
+<noscript><p style="padding:1rem;text-align:center;color:#94A3B8">Features, use cases and the FAQ need JavaScript to display.</p></noscript>
 <header>
-  <div class="nav">
-    <a class="wordmark" href="index.html">GhostLabs</a>
-    <a class="navlink" href="#limits">Limits</a>
-    <a class="navlink" href="#questions">Questions</a>
-    <a class="navlink" href="login.html">Sign in</a>
-    <button class="theme-btn" type="button" id="themeToggle" aria-pressed="false" aria-label="Switch to dark mode">Dark</button>
+  <div class="container nav">
+    <a class="logo" href="#top" aria-label="GhostLabs AI home">
+      <span class="logo-mark" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 3a7 7 0 0 0-7 7v9l2.5-2 2.5 2 2-2 2 2 2.5-2L19 19v-9a7 7 0 0 0-7-7Z" fill="#090A0F"/><circle cx="9.5" cy="11" r="1.4" fill="#22d3ee"/><circle cx="14.5" cy="11" r="1.4" fill="#22d3ee"/></svg></span>
+      GhostLabs AI
+    </a>
+    <nav aria-label="Primary">
+      <ul class="nav-links">
+        <li><a href="#features">Features</a></li>
+        <li><a href="#how">How it works</a></li>
+        <li><a href="#usecases">Use cases</a></li>
+        <li><a href="#pricing">Pricing</a></li>
+        <li><a href="#faq">FAQ</a></li>
+        <li><a href="login.html">Login</a></li>
+      </ul>
+    </nav>
+    <div class="nav-actions">
+      <button class="btn btn-primary btn-sm" data-open-modal="key" type="button">Get API</button>
+      <button class="menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="drawer" aria-label="Open menu">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="drawer" id="drawer">
+    <a href="#features">Features</a>
+    <a href="#how">How it works</a>
+    <a href="#usecases">Use cases</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#faq">FAQ</a>
+    <a href="login.html">Login</a>
   </div>
 </header>
-<main>
-  <div class="hero">
-    <h1>Paste an invoice. Watch it check itself.</h1>
-    <p class="subline">Runs in your browser. No model is called and nothing is uploaded.</p>
-  </div>
-
-  <section class="bench" id="bench" aria-label="Document extraction and checking bench">
-    <noscript><p style="padding:16px;font-weight:600">The bench needs JavaScript to run, because the extraction happens in your browser. The rest of this page, including the limits and questions below, works without it.</p></noscript>
-    <div class="bench-shell">
-      <div class="pane-source">
-        <div class="seg" role="group" aria-label="Sample documents">
-          <button type="button" data-sample="clean" aria-pressed="false">Sample invoice</button>
-          <button type="button" data-sample="error" aria-pressed="false">Sample invoice with error</button>
-          <button type="button" data-sample="messy" aria-pressed="false">Sample receipt</button>
-        </div>
-        <label for="docText">Invoice or receipt text</label>
-        <textarea id="docText" spellcheck="false" placeholder="Paste invoice text, for example: INVOICE 1042, Acme Corp..."></textarea>
-        <div class="file-row">
-          <label class="btn-secondary" for="docFile" style="display:inline-flex;align-items:center;margin:0">Use a text file</label>
-          <input type="file" id="docFile" accept=".txt,.csv,text/plain,text/csv" hidden>
-          <span class="file-name" id="fileName">Select a file to load its text</span>
-        </div>
-        <div class="extract-row">
-          <button class="btn-primary" type="button" id="extractBtn">Extract and check</button>
-          <span class="extract-msg" id="extractMsg" role="alert" hidden></span>
-        </div>
-        <p class="helper" id="benchHelper">Pick a sample or paste your own text to start.</p>
-        <p class="limits-line">Works on pasted text. Photos and handwriting are not read.</p>
-        <p class="bench-foot">Method: patterns and rules look for labelled fields and amount columns. If a field is not found, the bench says so instead of guessing. Plain text only: no OCR and no PDF reading. No model is called and nothing is uploaded.</p>
-      </div>
-      <div class="pane-results">
-        <h2 id="resultsHeading">Extracted ledger</h2>
-        <p class="verdict" id="verdict" tabindex="-1">Waiting for a document.</p>
-        <p id="liveRegion" aria-live="polite" style="position:absolute;left:-9999px"></p>
-        <div class="empty-ledger" id="emptyLedger" aria-hidden="true">
-          <div class="rule"></div><div class="rule"></div><div class="rule"></div><div class="rule"></div><div class="rule"></div>
-        </div>
-        <dl class="fields" id="fieldsList" hidden></dl>
-        <div id="itemsWrap" hidden>
-          <table>
-            <caption>Line items</caption>
-            <thead><tr><th scope="col">Description</th><th scope="col" class="num">Qty</th><th scope="col" class="num">Unit price</th><th scope="col" class="num">Amount</th></tr></thead>
-            <tbody id="itemsBody"></tbody>
-          </table>
-        </div>
-        <div class="reveal-rule" aria-hidden="true"></div>
-        <ul class="checks" id="checksList">
-          <li class="check skip"><span class="status">Not run yet</span><span class="detail">Line items sum vs subtotal</span></li>
-          <li class="check skip"><span class="status">Not run yet</span><span class="detail">Subtotal + tax + shipping vs total</span></li>
-          <li class="check skip"><span class="status">Not run yet</span><span class="detail">Each line qty x unit price vs amount</span></li>
-          <li class="check skip"><span class="status">Not run yet</span><span class="detail">Tax amount vs rate x subtotal</span></li>
-        </ul>
-        <p id="noFields" hidden>No invoice fields were found in this text. Check that the text includes a vendor, an invoice number, or amounts, then run it again.</p>
-        <div class="result-actions">
-          <button class="btn-secondary" type="button" id="copyBtn" hidden>Copy results</button>
-          <button class="btn-secondary" type="button" id="editBtn" hidden>Edit the text and check again</button>
-        </div>
-        <details class="raw" id="rawWrap" hidden>
-          <summary>Raw JSON result</summary>
-          <pre class="raw-json" id="rawJson" tabindex="0"></pre>
-        </details>
-      </div>
+<main id="top">
+<!-- 2. Hero + Playground -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-intro">
+    <span class="badge"><span class="dot" aria-hidden="true"></span>v2.4 Now Live, Sub-180ms Edge Routing</span>
+    <h1>Autonomous AI Infrastructure That <span class="grad">Ships Itself</span></h1>
+    <p class="sub">GhostLabs routes, verifies, and deploys your AI workflows across the edge in under 180ms, no glue code, no lock-in.</p>
+    <div class="hero-ctas">
+      <button class="btn btn-primary" data-open-modal="key" type="button">Get API key</button>
+      <a class="btn btn-ghost" href="#playground">View live demo</a>
     </div>
-  </section>
-
-  <section class="checks-band" aria-label="The checks the bench performs">
-    <h2>What the bench checks</h2>
-    <div class="check-tiles">
-      <div class="check-tile"><span class="no">CHECK 1</span><p>Line items add to the subtotal</p><p class="how">Every line amount in the document is added up and compared with the subtotal the document states.</p></div>
-      <div class="check-tile"><span class="no">CHECK 2</span><p>Subtotal plus tax and shipping equals the total</p><p class="how">The stated subtotal, tax, and shipping are added and compared with the stated total.</p></div>
-      <div class="check-tile"><span class="no">CHECK 3</span><p>Each line: quantity x unit price equals its amount</p><p class="how">Every line is multiplied out on its own, so one wrong line is named on its own.</p></div>
-      <div class="check-tile"><span class="no">CHECK 4</span><p>Tax amount matches the stated rate x subtotal</p><p class="how">Where the document states a tax rate, the tax amount is checked against that rate.</p></div>
     </div>
-  </section>
-
-  <section class="block" id="example">
-    <h2>A worked example, in full</h2>
-    <div class="cols">
-      <div>
-        <pre class="doc">Northwind Traders
-456 Commerce Road
-Invoice No: INV-2026-002
-Invoice Date: Nov 23, 2026
-Due Date: Dec 7, 2026
-
-Item Alpha 2 x 30.00 60.00
-Item Beta 1 x 40.00 40.00
-
-Subtotal: $120.00
-VAT (10%): $12.00
-Total: $132.00
-Amount Due: $132.00</pre>
+    <div class="playground" id="playground">
+      <div class="pg-head">
+        <span class="pg-title">GhostLabs Playground</span>
+        <span class="pg-title">Simulated run, client-side only</span>
       </div>
-      <div class="example-run" aria-label="The bench result for the document on the left">
-        <h3>Bench result</h3>
-        <p class="verdict">3 checks passed, 1 does not match.</p>
-        <dl class="fields">
-          <div class="field-row"><dt>Vendor</dt><dd>Northwind Traders</dd></div>
-          <div class="field-row"><dt>Invoice number</dt><dd class="data">INV-2026-002</dd></div>
-          <div class="field-row"><dt>Subtotal</dt><dd class="data">120.00</dd></div>
-          <div class="field-row"><dt>Tax</dt><dd class="data">12.00 (10%) VAT</dd></div>
-          <div class="field-row"><dt>Total</dt><dd class="data">132.00</dd></div>
-        </dl>
-        <ul class="checks">
-          <li class="check fail"><span class="status">Does not match</span><span class="detail data">Line items sum vs subtotal: Line items sum 100.00 does not match subtotal 120.00 (difference -20.00)</span></li>
-          <li class="check pass"><span class="status">Passed</span><span class="detail data">Subtotal + tax + shipping vs total: subtotal 120.00 + tax 12.00 = 132.00 matches total 132.00</span></li>
-          <li class="check pass"><span class="status">Passed</span><span class="detail data">Each line qty x unit price vs amount: All lines with qty and unit price match their amount</span></li>
-          <li class="check pass"><span class="status">Passed</span><span class="detail data">Tax amount vs rate x subtotal: Tax 12.00 matches 10% of subtotal 120.00</span></li>
-        </ul>
-        <p class="note">This is the sample invoice with error from the bench above. Load it there and the bench returns this same result.</p>
+      <div class="presets" role="tablist" aria-label="Playground presets" id="presetList"></div>
+      <div class="pg-body">
+        <div class="pg-model-block">
+          <div class="pg-label">Model</div>
+          <div class="models" id="modelList" role="group" aria-label="Model selector"></div>
+          <p class="pg-model-note mono" id="modelNote"></p>
+        </div>
+        <div>
+          <div class="pg-label">Input</div>
+          <div class="pg-input" id="pgInput"></div>
+        </div>
+        <div>
+          <div class="pg-label">Trace</div>
+          <div class="pg-trace" id="pgTrace" aria-live="polite"></div>
+        </div>
+        <div class="pg-output-wrap" id="pgOutputWrap">
+          <div class="code-head">
+            <div class="pg-meta" id="pgMeta"></div>
+            <button class="copy-btn" id="pgCopy" type="button">Copy</button>
+          </div>
+          <pre class="code" id="pgOutput" tabindex="0" aria-label="Playground output, JSON"></pre>
+        </div>
       </div>
-    </div>
-  </section>
-
-  <section class="block" id="limits">
-    <h2>What it cannot do</h2>
-    <dl class="spec">
-      <div><dt>Input</dt><dd>Pasted text and plain text files (.txt and .csv) only. Photos, scans, handwriting, and PDFs are not read.</dd></div>
-      <div><dt>Processing</dt><dd>Runs in your browser. No model is called and nothing is uploaded, so the document never leaves this device.</dd></div>
-      <div><dt>Parser</dt><dd>Heuristic. Patterns and rules look for labelled fields and amount columns. Fields without labels may be missed, and unusual layouts can be misread. The bench shows its working so you can spot that.</dd></div>
-      <div><dt>Formats</dt><dd>Best effort on unfamiliar formats. Documents that mix number conventions, such as commas used both as thousands separators and as decimal points, can be parsed wrongly.</dd></div>
-      <div><dt>Tax</dt><dd>One tax line. A document with several different tax lines is not fully modelled.</dd></div>
-      <div><dt>Output</dt><dd>The extracted fields, the four checks with their figures, and the raw JSON. A check that cannot be computed is marked skipped, with the reason.</dd></div>
-    </dl>
-  </section>
-
-  <section class="block" id="questions">
-    <h2>Questions</h2>
-    <details class="faq">
-      <summary>What can I run through it?</summary>
-      <p>Invoice or receipt text that you paste in, or a plain text file (.txt or .csv). The full list of what is not read is in the limits above.</p>
-    </details>
-    <details class="faq">
-      <summary>What does a failed check mean?</summary>
-      <p>It means the figures in the document do not agree with each other, and the bench shows both figures and the exact difference. It does not fix the document and it does not say which figure is the right one. That judgement stays with you.</p>
-    </details>
-    <details class="faq">
-      <summary>What happens when a field is missing?</summary>
-      <p>The bench writes "Not found in this text" for that field. It never guesses a value, and a check that cannot be computed is marked as skipped, with the reason.</p>
-    </details>
-    <details class="faq">
-      <summary>Does it cost anything?</summary>
-      <p>No. The bench is free to use in your browser. There are no pricing tiers, no trial, and no subscription attached to it.</p>
-    </details>
-    <details class="faq">
-      <summary>Why sign in at all?</summary>
-      <p>It opens the demo workspace: the same bench plus a run history kept on this device. The sign in page states the demo terms before you continue.</p>
-    </details>
-  </section>
-
-  <div class="closing">
-    <div class="inner">
-      <p>Bring a document that does not add up. The bench will say so.</p>
-      <a class="btn-primary" href="#bench">Back to the bench</a>
     </div>
   </div>
+</section>
+<!-- 3. LogoCloud -->
+<div class="logocloud">
+  <div class="container">
+    <p>Works with the models and platforms you already use</p>
+    <div class="logo-row" aria-label="Ecosystem">
+      <span class="wordmark">OpenAI</span>
+      <span class="wordmark">Anthropic</span>
+      <span class="wordmark">Gemini</span>
+      <span class="wordmark">Vertex</span>
+      <span class="wordmark">Cloudflare Workers</span>
+      <span class="wordmark">Postgres</span>
+      <span class="wordmark">Webhooks</span>
+    </div>
+    <p style="margin:1.25rem 0 0;font-size:.75rem">Names shown for compatibility only. All trademarks belong to their owners.</p>
+  </div>
+</div>
+<!-- 3b. Model routes (GT84) -->
+<section id="models">
+  <div class="container">
+    <div class="section-head">
+      <h2>One router, the models you already know</h2>
+      <p>Demo routing profiles for the playground above. Pacing and latency inside the playground are simulated demo data, not measurements of the real models.</p>
+    </div>
+    <div class="grid-3" id="modelStrip"></div>
+  </div>
+</section>
+<!-- 4. FeatureGrid -->
+<section id="features">
+  <div class="container">
+    <div class="section-head" data-num="01">
+      <h2>Everything you need to ship AI in production</h2>
+      <p>Six concrete pillars, from edge routing to schema guardrails, in one infrastructure layer.</p>
+    </div>
+    <div class="grid-3" id="featureGrid"></div>
+  </div>
+</section>
+<!-- 5. HowItWorks -->
+<section id="how">
+  <div class="container">
+    <div class="section-head" data-num="02">
+      <h2>From prompt to production in three steps</h2>
+      <p>Connect your sources, orchestrate with guardrails, and deploy to the edge.</p>
+    </div>
+    <div class="rail">
+      <div class="card"><div class="step-num">01</div><h3>Connect Sources</h3><p>Plug in your APIs, databases, and tools in minutes.</p></div>
+      <div class="card"><div class="step-num">02</div><h3>Orchestrate &amp; Verify</h3><p>Build multi-step agents with guardrails and human review.</p></div>
+      <div class="card"><div class="step-num">03</div><h3>Ship to Production</h3><p>Deploy to the edge with one click and monitor every run.</p></div>
+    </div>
+    <div class="stepper" id="howStepper">
+      <button class="step-btn" id="stepPrev" type="button" aria-label="Previous step"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+      <div class="step-dots" role="group" aria-label="Workflow steps">
+        <button class="step-dot" type="button" data-step="1" aria-label="Step 1: Connect Sources" aria-current="step"><span class="pip" aria-hidden="true"></span></button>
+        <button class="step-dot" type="button" data-step="2" aria-label="Step 2: Orchestrate and Verify"><span class="pip" aria-hidden="true"></span></button>
+        <button class="step-dot" type="button" data-step="3" aria-label="Step 3: Ship to Production"><span class="pip" aria-hidden="true"></span></button>
+      </div>
+      <button class="step-btn" id="stepNext" type="button" aria-label="Next step"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+    </div>
+  </div>
+</section>
+<!-- 6. UseCaseTabs -->
+<section id="usecases">
+  <div class="container">
+    <div class="section-head" data-num="03">
+      <h2>One platform, four ways teams use it</h2>
+      <p>Pick a use case to see the workflow and the code that runs it.</p>
+    </div>
+    <div class="tabs" role="tablist" aria-label="Use cases" id="ucTabs"></div>
+    <div id="ucPanels"></div>
+  </div>
+</section>
+<!-- 7. StatsBand -->
+<section class="stats" aria-label="Platform stats">
+  <div class="container">
+    <div class="stats-grid">
+      <div><div class="stat-num" data-count="99.98" data-decimals="2" data-suffix="%">99.98%</div><div class="stat-label">Uptime</div></div>
+      <div><div class="stat-num" data-count="180" data-decimals="0" data-prefix="&lt;" data-suffix="ms">&lt;180ms</div><div class="stat-label">p95 Latency</div></div>
+      <div><div class="stat-num" data-count="4.2" data-decimals="1" data-suffix="x">4.2x</div><div class="stat-label">Throughput</div></div>
+      <div><div class="stat-num">SOC2 Type II</div><div class="stat-label">Compliance</div></div>
+    </div>
+  </div>
+</section>
+<!-- 8. Pricing -->
+<section id="pricing">
+  <div class="container">
+    <div class="section-head" data-num="04">
+      <h2>Pricing that scales with your requests</h2>
+      <p>Start small, move to Pro as you ship, and talk to us when compliance needs grow.</p>
+    </div>
+    <div class="toggle-wrap">
+      <span class="toggle-label on" id="lblMonthly">Monthly</span>
+      <button class="toggle" id="billingToggle" type="button" role="switch" aria-checked="false" aria-label="Toggle annual billing"></button>
+      <span class="toggle-label" id="lblAnnual">Annual</span>
+    </div>
+    <div class="grid-3 price-grid" style="align-items:stretch">
+      <div class="card price-card">
+        <h3>Starter</h3>
+        <p>For indie hackers and side projects</p>
+        <div class="price"><span data-price data-monthly="$29" data-annual="$290">$29</span><small data-period data-monthly="/mo" data-annual="/yr">/mo</small></div>
+        <ul><li>100k requests/mo</li><li>1 project</li><li>Community support</li><li>Basic analytics</li></ul>
+        <button class="btn btn-ghost" data-open-modal="key" type="button">Get started</button>
+      </div>
+      <div class="card price-card featured">
+        <div><span class="pop">MOST POPULAR</span></div>
+        <h3>Pro</h3>
+        <p>For growing teams shipping AI features</p>
+        <div class="price"><span data-price data-monthly="$79" data-annual="$790">$79</span><small data-period data-monthly="/mo" data-annual="/yr">/mo</small></div>
+        <ul><li>1M requests/mo</li><li>Unlimited projects</li><li>Priority support</li><li>Advanced analytics</li><li>Custom guardrails</li></ul>
+        <button class="btn btn-primary" data-open-modal="key" type="button">Start free trial</button>
+      </div>
+      <div class="card price-card">
+        <h3>Enterprise</h3>
+        <p>For companies with compliance needs</p>
+        <div class="price">Custom</div>
+        <ul><li>Unlimited requests</li><li>SSO &amp; SAML</li><li>Dedicated support</li><li>Custom SLAs</li><li>On-prem deployment</li></ul>
+        <button class="btn btn-ghost" data-open-modal="form" type="button">Contact us</button>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- 9. FAQ -->
+<section id="faq">
+  <div class="container">
+    <div class="section-head" data-num="05">
+      <h2>Frequently asked questions</h2>
+      <p>Speed, models, fallback, security, trials, and cancellation, answered plainly.</p>
+    </div>
+    <div class="faq-list" id="faqList"></div>
+  </div>
+</section>
+<!-- 10. CTA banner + Footer -->
+<section>
+  <div class="container">
+    <div class="banner">
+      <h2>Ship your first AI workflow today</h2>
+      <p>Generate a sandbox key and run the playground presets, or book an architecture demo with the team.</p>
+      <div class="hero-ctas">
+        <button class="btn btn-primary" data-open-modal="key" type="button">Start building free</button>
+        <button class="btn btn-ghost" data-open-modal="form" type="button">Book a demo</button>
+        <button class="btn btn-ghost" data-open-modal="form" type="button">Talk to engineering</button>
+      </div>
+    </div>
+  </div>
+</section>
 </main>
 <footer>
-  <div class="foot">
-    <div>
-      <p class="credit">GhostLabs</p>
-      <ul>
-        <li><a href="#bench">The bench</a></li>
-        <li><a href="#example">Worked example</a></li>
-        <li><a href="login.html">Sign in</a></li>
-        <li><a href="dashboard.html">Dashboard</a></li>
-      </ul>
+  <div class="container">
+    <div class="foot-grid">
+      <div>
+        <a class="logo" href="#top" aria-label="GhostLabs AI home">
+          <span class="logo-mark" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 3a7 7 0 0 0-7 7v9l2.5-2 2.5 2 2-2 2 2 2.5-2L19 19v-9a7 7 0 0 0-7-7Z" fill="#090A0F"/><circle cx="9.5" cy="11" r="1.4" fill="#22d3ee"/><circle cx="14.5" cy="11" r="1.4" fill="#22d3ee"/></svg></span>
+          GhostLabs AI
+        </a>
+        <p style="color:var(--text-2);font-size:.93rem;margin-top:1rem;max-width:320px">Autonomous AI infrastructure that routes, verifies, and deploys your workflows across the edge.</p>
+        <p style="margin-top:1.2rem"><span class="status"><span class="dot" aria-hidden="true"></span><span id="edgeStatus">Edge status: operational</span></span></p>
+      </div>
+      <div>
+        <h4>Product</h4>
+        <ul>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#how">How it works</a></li>
+          <li><a href="#usecases">Use cases</a></li>
+          <li><a href="#pricing">Pricing</a></li>
+          <li><a href="#faq">FAQ</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Resources</h4>
+        <ul>
+          <li><button class="foot-link-btn" data-info="changelog" type="button">Changelog</button></li>
+          <li><button class="foot-link-btn" data-info="api" type="button">API reference</button></li>
+          <li><a href="#playground">Playground</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Company</h4>
+        <ul>
+          <li><button class="foot-link-btn" data-info="about" type="button">About</button></li>
+          <li><button class="foot-link-btn" data-info="privacy" type="button">Privacy</button></li>
+          <li><button class="foot-link-btn" data-info="terms" type="button">Terms</button></li>
+        </ul>
+      </div>
     </div>
-    <div>
-      <p class="credit">Honesty</p>
-      <ul>
-        <li><a href="#limits">Method and limits</a></li>
-        <li><a href="#questions">Questions, including privacy</a></li>
-      </ul>
-      <p style="margin-top:8px">Terms are governed by the laws of Delaware, USA.</p>
+    <div class="foot-bottom">
+      <span>Copyright 2026 GhostLabs AI. All rights reserved.</span>
     </div>
-    <p class="credit">Made by Mohammad Sidique Ibrahim</p>
   </div>
 </footer>
-<script type="module" src="engine/extract.js"></script>
-<script type="module" src="engine/samples.js"></script>
+<!-- CTA Modal -->
+<div class="modal-backdrop" id="ctaBackdrop" role="dialog" aria-modal="true" aria-labelledby="ctaTitle" hidden>
+  <div class="modal">
+    <button class="modal-close" data-close-modal type="button" aria-label="Close dialog"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    <div id="keyMode">
+      <h3 id="ctaTitle">Get your sandbox API key</h3>
+      <p class="sub">Generate a sandbox key and try the playground presets. No account needed for this demo.</p>
+      <button class="btn btn-primary w-full" id="generateKey" type="button">Generate sandbox key</button>
+      <div class="key-box" id="keyBox">
+        <div class="pg-label">Your sandbox key</div>
+        <div class="key-value" id="keyValue"></div>
+        <button class="copy-btn" id="keyCopy" type="button" style="margin-top:.7rem">Copy key</button>
+      </div>
+      <p class="note">This is a sandbox key generated locally in your browser for demo purposes. It is not a live production key and no data leaves this page.</p>
+      <p class="note">Need a guided walkthrough instead? <button class="foot-link-btn" id="switchToForm" type="button" style="color:var(--cyan);font-size:.82rem">Request an architecture demo</button></p>
+    </div>
+    <div id="formMode" hidden>
+      <h3>Request an architecture demo</h3>
+      <p class="sub">Tell us what you are building and the team will walk through routing, guardrails, and deployment for your stack.</p>
+      <form id="demoForm" novalidate>
+        <div class="field" data-field="name"><label for="fName">Full name</label><input id="fName" name="name" type="text" autocomplete="name" placeholder="e.g. Alex Rivera…"><span class="err">Please enter your name.</span></div>
+        <div class="field" data-field="email"><label for="fEmail">Work email</label><input id="fEmail" name="email" type="email" autocomplete="email" spellcheck="false" placeholder="e.g. alex@company.com…"><span class="err">Please enter a valid work email.</span></div>
+        <div class="field" data-field="company"><label for="fCompany">Company</label><input id="fCompany" name="company" type="text" autocomplete="organization" placeholder="e.g. Acme Corp…"><span class="err">Please enter your company.</span></div>
+        <div class="field" data-field="message"><label for="fMessage">What are you building?</label><textarea id="fMessage" name="message" rows="4" placeholder="e.g. A support agent that reads invoices…"></textarea><span class="err">Please add a short message.</span></div>
+        <button class="btn btn-primary w-full" type="submit">Request demo</button>
+        <div class="success" id="formSuccess" role="status">Request received. This demo build records the request in this browser session only, and the team flow continues once an endpoint is connected.</div>
+        <p class="note" id="demoNote">Footnote: this demo build sends nothing until a form endpoint or webhook is connected. Submitting shows the received state locally only.</p>
+      </form>
+      <p class="note">Want to try it yourself first? <button class="foot-link-btn" id="switchToKey" type="button" style="color:var(--cyan);font-size:.82rem">Generate a sandbox key</button></p>
+    </div>
+  </div>
+</div>
+<!-- Info Modal -->
+<div class="modal-backdrop" id="infoBackdrop" role="dialog" aria-modal="true" aria-labelledby="infoTitle" hidden>
+  <div class="modal">
+    <button class="modal-close" data-close-info type="button" aria-label="Close dialog"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    <h3 id="infoTitle"></h3>
+    <div class="sub" id="infoBody" style="display:grid;gap:.8rem"></div>
+  </div>
+</div>
 <script>
 (function(){
 "use strict";
-function $(s){return document.querySelector(s);}
-function $$(s){return Array.prototype.slice.call(document.querySelectorAll(s));}
-/* Theme toggle */
-var toggle=$("#themeToggle");
-function syncToggle(){var dark=document.documentElement.getAttribute("data-theme")==="dark";toggle.setAttribute("aria-pressed",dark?"true":"false");toggle.textContent=dark?"Light":"Dark";toggle.setAttribute("aria-label",dark?"Switch to light mode":"Switch to dark mode");}
-syncToggle();
-toggle.addEventListener("click",function(){var next=document.documentElement.getAttribute("data-theme")==="dark"?"light":"dark";document.documentElement.setAttribute("data-theme",next);try{localStorage.setItem("gl_theme",next);}catch(e){}syncToggle();});
-/* Bench */
-var ta=$("#docText"), btn=$("#extractBtn"), helper=$("#benchHelper"), fileInput=$("#docFile"), fileName=$("#fileName");
-var verdict=$("#verdict"), fieldsList=$("#fieldsList"), itemsWrap=$("#itemsWrap"), itemsBody=$("#itemsBody");
-var checksList=$("#checksList"), rawWrap=$("#rawWrap"), rawJson=$("#rawJson"), copyBtn=$("#copyBtn"), editBtn=$("#editBtn"), noFields=$("#noFields"), live=$("#liveRegion");
-var lastResult=null, lastText="";
-var extractMsg=$("#extractMsg"), emptyLedger=$("#emptyLedger");
-function fmt(n){if(n===null||n===undefined)return null;return Number(n).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});}
-function syncBtn(){var has=ta.value.trim().length>0;if(has){extractMsg.hidden=true;extractMsg.textContent="";}helper.textContent=has?"Ready. Extract and check runs the document below.":"Pick a sample or paste your own text to start.";}
-ta.addEventListener("input",syncBtn);
-$$("[data-sample]").forEach(function(b){
-  b.addEventListener("click",function(){
-    $$("[data-sample]").forEach(function(x){x.setAttribute("aria-pressed","false");});
-    b.setAttribute("aria-pressed","true");
-    var samples=(window.GhostLabsSamples&&window.GhostLabsSamples.SAMPLES)||[];
-    var s=samples.filter(function(x){return x.id===b.getAttribute("data-sample");})[0];
-    if(s){ta.value=s.text;fileName.textContent="Sample: "+s.label;syncBtn();ta.focus();}
-  });
-});
-fileInput.addEventListener("change",function(){
-  var f=fileInput.files&&fileInput.files[0]; if(!f)return;
-  fileName.textContent=f.name;
-  f.text().then(function(t){
-    if(!t||!t.trim()){verdict.textContent="That file had no readable text.";live.textContent="That file had no readable text.";return;}
-    ta.value=t;syncBtn();
-  }).catch(function(){verdict.textContent="That file could not be read as text.";});
-});
-function fieldRow(label,value,isData){
-  var row=document.createElement("div");row.className="field-row";
-  var dt=document.createElement("dt");dt.textContent=label;
-  var dd=document.createElement("dd");if(isData)dd.className="data";dd.textContent=value;
-  row.appendChild(dt);row.appendChild(dd);return row;
+var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+var FORM_ENDPOINT=""; /* paste a Formspree, Basin or webhook URL to receive demo requests */
+function $(s,c){return (c||document).querySelector(s)}
+function $$(s,c){return Array.prototype.slice.call((c||document).querySelectorAll(s))}
+/* Data from spec */
+var ICONS = {
+ bolt:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z"/></svg>',
+ shield:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6l7-3Z"/><path d="M9 12l2 2 4-4"/></svg>',
+ rocket:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 15c5-4 7-9 7-13-4 0-9 2-13 7l-3 6 6-3Z"/><circle cx="14" cy="10" r="1.8"/><path d="M6 13c-1 3-1 5-1 6 1 0 3 0 6-1"/></svg>',
+ eye:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Z"/><circle cx="12" cy="12" r="3"/></svg>',
+ lock:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>',
+ swap:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 8h13l-3-3M20 16H7l3 3"/></svg>'
+};
+var FEATURES=[
+ {icon:"bolt",title:"Sub-180ms Edge Routing",copy:"Global edge routing with automatic model selection and fallback for every request."},
+ {icon:"shield",title:"Schema Guardrails",copy:"Every output is validated against your schema before it ships. No hallucinations in production."},
+ {icon:"rocket",title:"One-Click Deploy",copy:"Ship your agent from prompt to production in minutes with zero infra setup."},
+ {icon:"eye",title:"Observable by Default",copy:"Full traces, latency, and cost per request. Debug any run in seconds."},
+ {icon:"lock",title:"Enterprise-Grade Security",copy:"SOC 2 Type II, SSO, and granular API key scopes out of the box."},
+ {icon:"swap",title:"Model Agnostic",copy:"Swap models without rewriting code. Use OpenAI, Anthropic, Gemini, or your own fine-tune."}
+];
+$("#featureGrid").innerHTML = FEATURES.map(function(f){
+ return '<div class="card"><div class="icon" aria-hidden="true">'+ICONS[f.icon]+'</div><h3>'+f.title+'</h3><p>'+f.copy+'</p></div>';
+}).join("");
+var PRESETS=[
+ {id:"extract",label:"Structured extraction",input:"Invoice #1042, Acme Corp, $4,820.00 due Aug 12",latency:142,model:"ghost-router-v2",
+  trace:["Routing request to ghost-router-v2","Parsing document fields","Validating against invoice schema","Structured output ready"],
+  output:{vendor:"Acme Corp",total:4820,currency:"USD",due_date:"2026-08-12"}},
+ {id:"guardrail",label:"Guardrail check",input:"Delete all customer records from 2023.",latency:96,model:"ghost-guard-v1",
+  trace:["Routing request to ghost-guard-v1","Checking action against guardrail policy","Destructive action detected","Blocked with human approval suggestion"],
+  output:{status:"blocked",reason:"destructive_action",suggestion:"Request human approval first."}},
+ {id:"agent",label:"Multi-step agent",input:"Summarize Q2 sales and draft a follow-up email to the top 3 accounts.",latency:178,model:"ghost-agent-v2",
+  trace:["Routing request to ghost-agent-v2","Step 1: fetch_crm","Step 2: summarize","Step 3: draft_email","Plan ready for review"],
+  output:{steps:["fetch_crm","summarize","draft_email"],status:"ready_for_review"}},
+ {id:"voice",label:"Voice & realtime",input:"Voice: 'Book a demo for Thursday at 2pm.'",latency:121,model:"ghost-voice-v1",
+  trace:["Routing request to ghost-voice-v1","Transcribing voice input","Extracting intent, date, and time","Demo confirmed"],
+  output:{intent:"schedule_demo",date:"2026-11-27",time:"14:00",status:"confirmed"}}
+];
+var USECASES=[
+ {id:"agents",label:"Agents",title:"Autonomous Agents, Verified",bullets:["Multi-step reasoning with human-in-the-loop","Automatic fallback and retry logic","Full audit trail for every decision"],code:'const agent = await ghostlabs.agent({\n  model: "ghost-agent-v2",\n  tools: ["crm", "email", "calendar"],\n  guardrails: true\n});'},
+ {id:"pipelines",label:"Data Pipelines",title:"Structured Data, Zero Glue Code",bullets:["Extract, transform, and validate in one pass","Schema-aware routing for every record","Real-time error handling and retries"],code:'const result = await ghostlabs.extract({\n  source: "invoice.pdf",\n  schema: invoiceSchema\n});'},
+ {id:"voice",label:"Voice & Realtime",title:"Voice Agents That Actually Work",bullets:["Sub-200ms voice-to-voice latency","Natural interruption handling","Works over phone, web, and WhatsApp"],code:'const call = await ghostlabs.voice({\n  model: "ghost-voice-v1",\n  realtime: true\n});'},
+ {id:"tools",label:"Internal Tools",title:"Internal Tools in Minutes",bullets:["Turn prompts into dashboards and workflows","Role-based access built in","Deploy behind your SSO"],code:'const tool = await ghostlabs.build({\n  prompt: "Sales dashboard for Q3",\n  deploy: true\n});'}
+];
+var FAQS=[
+ {q:"How fast is GhostLabs really?",a:"GhostLabs runs at p95 under 180ms globally, using edge routing and automatic model selection for every request."},
+ {q:"Can I use my own models?",a:"Yes. Use OpenAI, Anthropic, Gemini, or your own fine-tuned models, and swap between them without rewriting code."},
+ {q:"What happens if a model fails?",a:"GhostLabs applies automatic fallback to another model, with zero downtime for the request in progress."},
+ {q:"Is my data secure?",a:"Yes. GhostLabs is SOC 2 Type II, with encryption at rest and in transit."},
+ {q:"Do you offer a free trial?",a:"Yes. Pro includes 14 days free, with no credit card required."},
+ {q:"Can I cancel anytime?",a:"Yes. Cancel in one click, with no lock-in."}
+];
+var INFO={
+ changelog:{title:"Changelog",body:["v2.4: Sub-180ms edge routing is now live, with automatic model selection and fallback for every request.","v2.3: Schema guardrails added, validating every output against your schema before it ships.","This page is a demo build, so this changelog summarises the release notes named in the product spec."]},
+ api:{title:"API reference",body:["Core calls: ghostlabs.agent for multi-step agents, ghostlabs.extract for structured extraction, ghostlabs.voice for realtime voice, and ghostlabs.build for internal tools.","Every call returns structured output with a trace, latency, and cost per request.","Use the playground on this page to preview each call shape, then generate a sandbox key to start."]},
+ about:{title:"About GhostLabs AI",body:["GhostLabs AI builds autonomous AI infrastructure that routes, verifies, and deploys workflows across the edge.","The platform is model agnostic: OpenAI, Anthropic, Gemini, or your own fine-tune, with guardrails and observability by default."]},
+ privacy:{title:"Privacy",body:["This demo page collects nothing on its own. The demo request form sends nothing until a form endpoint or webhook is connected.","Sandbox keys are generated locally in your browser for demo purposes and are never transmitted.","A production privacy policy for the live service is an owner decision item before launch."]},
+ terms:{title:"Terms",body:["This demo page is provided for evaluation. Sandbox keys are for demo purposes only and are not live production keys.","A production terms document for the live service is an owner decision item before launch."]}
+};
+/* Copy helper */
+function copyText(text,btn){
+ var done=function(){var old=btn.textContent;btn.textContent="Copied!";setTimeout(function(){btn.textContent=old;},1600);};
+ if(navigator.clipboard && navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(done).catch(function(){fallback();});}
+ else{fallback();}
+ function fallback(){var ta=document.createElement("textarea");ta.value=text;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");}catch(e){}document.body.removeChild(ta);done();}
 }
-function render(result,text){
-  lastResult=result; lastText=text;
-  var f=result.fields;
-  if(emptyLedger)emptyLedger.hidden=true;
-  fieldsList.hidden=false;
-  fieldsList.innerHTML="";
-  function add(label,value,isData){fieldsList.appendChild(fieldRow(label,(value===null||value===undefined||value==="")?"Not found in this text":value,isData));}
-  add("Vendor",f.vendor,false);
-  add("Invoice number",f.invoiceNumber,true);
-  add("Invoice date",f.invoiceDate,true);
-  add("Due date",f.dueDate,true);
-  add("Currency",f.currency,false);
-  add("Subtotal",fmt(f.subtotal),true);
-  var taxText=null;
-  if(f.taxAmount!==null){taxText=fmt(f.taxAmount)+(f.taxRate!==null?" ("+f.taxRate+"%)":"")+(f.taxLabel?" "+f.taxLabel:"");}
-  add("Tax",taxText,true);
-  add("Shipping",fmt(f.shipping),true);
-  add("Total",fmt(f.total),true);
-  add("Amount due",fmt(f.amountDue),true);
-  itemsBody.innerHTML="";
-  if(f.lineItems.length){
-    itemsWrap.hidden=false;
-    f.lineItems.forEach(function(it){
-      var tr=document.createElement("tr");
-      [it.description,it.qty===null?"Not found":String(it.qty),fmt(it.unitPrice),fmt(it.amount)].forEach(function(v,i){
-        var td=document.createElement("td");if(i>0)td.className="num";td.textContent=v;tr.appendChild(td);
-      });
-      itemsBody.appendChild(tr);
-    });
-  } else { itemsWrap.hidden=true; }
-  checksList.innerHTML="";
-  var passed=0,failed=0,skipped=0;
-  result.checks.forEach(function(c){
-    if(c.status==="pass")passed++; else if(c.status==="fail")failed++; else skipped++;
-    var li=document.createElement("li");li.className="check "+(c.status==="pass"?"pass":c.status==="fail"?"fail":"skip");
-    var st=document.createElement("span");st.className="status";
-    st.textContent=c.status==="pass"?"Passed":c.status==="fail"?"Does not match":"Skipped";
-    var dt=document.createElement("span");dt.className="detail data";dt.textContent=c.label+": "+c.detail;
-    li.appendChild(st);li.appendChild(dt);checksList.appendChild(li);
-  });
-  if(result.meta.fieldsFound===0){
-    verdict.textContent="Nothing could be extracted from that text.";
-    noFields.hidden=false;
-  } else if(failed===0&&passed>0){
-    verdict.textContent="This document adds up.";
-    noFields.hidden=true;
-  } else if(failed>0){
-    verdict.textContent=passed+" checks passed, "+failed+(failed===1?" does not match.":" do not match.");
-    noFields.hidden=true;
-  } else {
-    verdict.textContent="Extraction finished. Every check was skipped, see the reasons below.";
-    noFields.hidden=true;
-  }
-  rawJson.textContent=JSON.stringify(result,null,2);
-  rawWrap.hidden=false; copyBtn.hidden=false; editBtn.hidden=false; copyBtn.textContent="Copy results";
-  var shell=document.querySelector(".bench-shell");
-  shell.classList.remove("reveal"); void shell.offsetWidth; shell.classList.add("reveal");
-  live.textContent="Checking complete. "+verdict.textContent;
-  verdict.focus();
-  document.dispatchEvent(new CustomEvent("gl-run",{detail:{result:result,text:text}}));
+/* Playground engine (GT80, extended GT84): simulated streaming run, live latency and token
+   counters, model selector. All client-side simulation, as labeled in the playground header.
+   Preset inputs, traces, outputs, and base latencies are the frozen spec data; the selector
+   re-routes the same preset through another demo model, which restates the routing line and
+   re-derives latency and pacing. GT84 adds real named models alongside the GhostLabs demo
+   routes: each carries a demo profile (latency factor, streaming chunk, wrapper line) defined
+   here on this page. The profiles describe this demo's behavior, not the real models. */
+var MODELS={
+ "ghost-router-v2":{name:"Ghost Router",provider:"GhostLabs",factor:1,chunk:6,note:"Balanced routing and structured extraction.",route:"ghost-router-v2",wrap:"",best:"Mixed workloads: the router picks the route per request."},
+ "ghost-guard-v1":{name:"Ghost Guard",provider:"GhostLabs",factor:0.68,chunk:10,note:"Policy checks on the fastest path.",route:"ghost-guard-v1",wrap:"",best:"Policy checks that must clear before anything ships."},
+ "ghost-agent-v2":{name:"Ghost Agent",provider:"GhostLabs",factor:1.28,chunk:4,note:"Multi-step plans with deeper traces.",route:"ghost-agent-v2",wrap:"",best:"Multi-step plans that need a full trace."},
+ "ghost-voice-v1":{name:"Ghost Voice",provider:"GhostLabs",factor:0.86,chunk:8,note:"Realtime intent and entity parsing.",route:"ghost-voice-v1",wrap:"",best:"Voice input and realtime intent parsing."},
+ "gemini":{name:"Gemini",provider:"Google",factor:0.92,chunk:7,note:"Demo profile: quick, even pacing with a generalist tone.",route:"Gemini",wrap:"// demo route: Gemini (Google), generalist profile\n",best:"General-purpose and multimodal-shaped requests."},
+ "claude":{name:"Claude",provider:"Anthropic",factor:1.12,chunk:5,note:"Demo profile: slower, careful pacing with a reasoning-first tone.",route:"Claude",wrap:"// demo route: Claude (Anthropic), reasoning-first profile\n",best:"Long documents and careful reasoning tasks."},
+ "gpt":{name:"GPT",provider:"OpenAI",factor:1.04,chunk:6,note:"Demo profile: balanced pacing with a neutral generalist tone.",route:"GPT",wrap:"// demo route: GPT (OpenAI), balanced profile\n",best:"All-round generation and tool-driven workflows."},
+ "llama":{name:"Llama",provider:"Meta",factor:0.78,chunk:9,note:"Demo profile: brisk pacing on the open-weight route.",route:"Llama",wrap:"// demo route: Llama (Meta), open-weight profile\n",best:"Open-weight routes and custom fine-tune setups."},
+ "grok":{name:"Grok",provider:"xAI",factor:0.84,chunk:8,note:"Demo profile: brisk pacing with a direct tone.",route:"Grok",wrap:"// demo route: Grok (xAI), direct profile\n",best:"Direct answers and realtime-flavored requests."},
+ "mistral":{name:"Mistral",provider:"Mistral AI",factor:0.72,chunk:10,note:"Demo profile: lean, fast pacing with terse output.",route:"Mistral",wrap:"// demo route: Mistral (Mistral AI), lean profile\n",best:"Lean, high-volume request streams."}
+};
+var MODEL_IDS=Object.keys(MODELS);
+var pgDefaultModel=null;
+function pgSpeed(){return 1;}
+function pgStreamOn(){return true;}
+var presetList=$("#presetList"), pgTimers=[], pgInterval=null, currentPreset=0, runCount=0;
+var currentModel=pgDefaultModel||PRESETS[0].model;
+presetList.innerHTML=PRESETS.map(function(p,i){
+ return '<button class="preset" role="tab" id="preset-'+p.id+'" aria-selected="'+(i===0)+'" data-idx="'+i+'" type="button">'+p.label+'</button>';
+}).join("");
+var modelList=$("#modelList"), modelNote=$("#modelNote");
+function renderModels(){
+ if(!modelList)return;
+ $$(".model-btn",modelList).forEach(function(b){b.setAttribute("aria-pressed", b.dataset.model===currentModel?"true":"false");});
+ if(modelNote)modelNote.textContent=MODELS[currentModel].name+" · "+MODELS[currentModel].provider+" · "+MODELS[currentModel].note;
 }
-btn.addEventListener("click",function(){
-  var text=ta.value;
-  if(!text.trim()){extractMsg.textContent="Paste a document or pick a sample first";extractMsg.hidden=false;ta.focus();return;}
-  if(!window.GhostLabsExtract){verdict.textContent="The extraction engine did not load. Reload the page and try again.";return;}
-  btn.disabled=true; btn.textContent="Checking...";
-  live.textContent="Checking your document";
-  var start=Date.now();
-  var result=window.GhostLabsExtract.extractDocument(text);
-  var wait=Math.max(0,300-(Date.now()-start));
-  setTimeout(function(){
-    render(result,text);
-    btn.disabled=false; btn.textContent="Extract and check";
-  },wait);
+if(modelList){
+ modelList.innerHTML=MODEL_IDS.map(function(id){return '<button class="model-btn" type="button" data-model="'+id+'" aria-pressed="'+(id===currentModel?"true":"false")+'">'+MODELS[id].name+'</button>';}).join("");
+ $$(".model-btn",modelList).forEach(function(b){b.addEventListener("click",function(){currentModel=b.dataset.model;renderModels();runPreset(currentPreset);});});
+ renderModels();
+}
+function clearTimers(){pgTimers.forEach(function(t){clearTimeout(t)});pgTimers=[];if(pgInterval){clearInterval(pgInterval);pgInterval=null;}}
+function setMeta(status,latency,tokens){
+ $("#pgMeta").innerHTML='<span class="tag">'+(MODELS[currentModel]?MODELS[currentModel].name:currentModel)+'</span><span class="tag status'+(status==="running"?" running":"")+'">'+status+'</span><span class="tag latency">'+latency.replace(/ ms$/," ms · sim")+'</span><span class="tag">'+tokens+'</span>';
+}
+function runPreset(idx){
+ currentPreset=idx; clearTimers(); runCount++;
+ $$(".preset",presetList).forEach(function(b,i){b.setAttribute("aria-selected", i===idx?"true":"false");b.tabIndex=i===idx?0:-1;});
+ var p=PRESETS[idx];
+ $("#pgInput").textContent=p.input;
+ var trace=$("#pgTrace"); trace.innerHTML="";
+ var wrap=$("#pgOutputWrap"); wrap.classList.remove("show");
+ var out=$("#pgOutput"); out.textContent=""; out.classList.remove("streaming");
+ var runId=idx+"-"+Date.now();
+ trace.dataset.run=runId;
+ var model=MODELS[currentModel]||MODELS[p.model];
+ var jitter=((idx*7)+(MODEL_IDS.indexOf(currentModel)*13)+(runCount*5))%11-5;
+ var targetLatency=Math.max(24,Math.round(p.latency*model.factor)+jitter);
+ var full=(model.wrap||"")+JSON.stringify(p.output,null,2);
+ var inTok=Math.max(1,Math.round(p.input.length/4));
+ var outTok=Math.max(1,Math.round(full.length/4));
+ setMeta("running","0 ms","0 tok");
+ function finish(){
+   if(trace.dataset.run!==runId) return;
+   out.textContent=full; out.classList.remove("streaming");
+   setMeta("complete",targetLatency+" ms",(inTok+outTok)+" tok");
+   wrap.classList.add("show");
+ }
+ function startStream(){
+   if(trace.dataset.run!==runId) return;
+   wrap.classList.add("show");
+   if(reduced||!pgStreamOn()){finish();return;}
+   out.classList.add("streaming");
+   var totalTicks=Math.max(1,Math.ceil(full.length/model.chunk));
+   var tickMs=Math.round(Math.min(40,Math.max(12,(targetLatency*2.2)/totalTicks))*pgSpeed());
+   var pos=0;
+   pgInterval=setInterval(function(){
+     if(trace.dataset.run!==runId){clearInterval(pgInterval);pgInterval=null;return;}
+     pos=Math.min(full.length,pos+model.chunk);
+     out.textContent=full.slice(0,pos);
+     var prog=full.length?pos/full.length:1;
+     setMeta("running",Math.round(targetLatency*prog)+" ms",(inTok+Math.round(outTok*prog))+" tok");
+     if(pos>=full.length){clearInterval(pgInterval);pgInterval=null;finish();}
+   },tickMs);
+ }
+ var stepDelay = reduced ? 0 : 320;
+ p.trace.forEach(function(line,i){
+   var t=setTimeout(function(){
+     if(trace.dataset.run!==runId) return;
+     var d=document.createElement("div"); d.className="line"; d.textContent=line.replace(/ghost-[a-z]+-v[0-9]/,model.route||currentModel); trace.appendChild(d);
+     if(i===p.trace.length-1){
+       var t2=setTimeout(startStream, reduced?0:260); pgTimers.push(t2);
+     }
+   }, stepDelay*(i+1)); pgTimers.push(t);
+ });
+}
+$$(".preset",presetList).forEach(function(b){b.addEventListener("click",function(){runPreset(parseInt(b.dataset.idx,10));});});
+presetList.addEventListener("keydown",function(e){
+if(e.key!=="ArrowRight"&&e.key!=="ArrowLeft")return; e.preventDefault();
+var n=(currentPreset+(e.key==="ArrowRight"?1:PRESETS.length-1))%PRESETS.length;
+runPreset(n); $$(".preset",presetList)[n].focus();
 });
-copyBtn.addEventListener("click",function(){
-  if(!lastResult)return;
-  var plain=JSON.stringify(lastResult,null,2);
-  function done(){copyBtn.textContent="Copied";}
-  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(plain).then(done,done);}else{done();}
+$("#pgCopy").addEventListener("click",function(){copyText($("#pgOutput").textContent,this);});
+runPreset(0);
+/* Model routes strip (GT84): the router plus the real named models, rendered from the same MODELS table. */
+var stripEl=$("#modelStrip");
+if(stripEl){
+ stripEl.innerHTML=["ghost-router-v2","gemini","claude","gpt","llama","grok","mistral"].map(function(id){
+  var m=MODELS[id];
+  var note=m.note.indexOf("Demo profile:")===0?m.note:"Demo profile: "+m.note.charAt(0).toLowerCase()+m.note.slice(1);
+  return '<div class="card route-card"><p class="prov">'+m.provider+'</p><h3>'+m.name+'</h3><p>'+note+'</p><p class="best"><strong>Best for (demo):</strong> '+m.best+'</p></div>';
+ }).join("");
+}
+/* Use case tabs */
+var ucTabs=$("#ucTabs"), ucPanels=$("#ucPanels");
+ucTabs.innerHTML=USECASES.map(function(u,i){
+ return '<button class="tab" role="tab" id="tab-'+u.id+'" aria-selected="'+(i===0)+'" aria-controls="panel-'+u.id+'" data-idx="'+i+'" type="button" tabindex="'+(i===0?"0":"-1")+'">'+u.label+'</button>';
+}).join("");
+ucPanels.innerHTML=USECASES.map(function(u,i){
+ var bullets=u.bullets.map(function(b){return "<li>"+b+"</li>";}).join("");
+ return '<div class="tab-panel'+(i===0?" active":"")+'" role="tabpanel" id="panel-'+u.id+'" aria-labelledby="tab-'+u.id+'"><div><h3>'+u.title+'</h3><ul>'+bullets+'</ul></div><div><div class="code-head"><span class="pg-label" style="margin:0">Code</span><button class="copy-btn" data-copy-code="'+i+'" type="button">Copy</button></div><pre class="code">'+u.code.replace(/&/g,"&amp;").replace(/</g,"&lt;")+'</pre></div></div>';
+}).join("");
+function selectTab(idx,focus){
+ $$(".tab",ucTabs).forEach(function(t,i){t.setAttribute("aria-selected",i===idx?"true":"false");t.tabIndex=i===idx?0:-1;if(focus&&i===idx)t.focus();});
+ $$(".tab-panel",ucPanels).forEach(function(p,i){p.classList.toggle("active",i===idx);});
+}
+$$(".tab",ucTabs).forEach(function(t){
+ t.addEventListener("click",function(){selectTab(parseInt(t.dataset.idx,10),false);});
+ t.addEventListener("keydown",function(e){
+   var idx=parseInt(t.dataset.idx,10);
+   if(e.key==="ArrowRight"){e.preventDefault();selectTab((idx+1)%USECASES.length,true);}
+   if(e.key==="ArrowLeft"){e.preventDefault();selectTab((idx-1+USECASES.length)%USECASES.length,true);}
+ });
 });
-editBtn.addEventListener("click",function(){ta.focus();ta.setSelectionRange(0,0);});
-syncBtn();
+$$("[data-copy-code]").forEach(function(b){b.addEventListener("click",function(){copyText(USECASES[parseInt(b.dataset.copyCode,10)].code,this);});});
+/* FAQ */
+$("#faqList").innerHTML=FAQS.map(function(f,i){
+ return '<div class="faq-item"><button class="faq-q" type="button" aria-expanded="false" aria-controls="faq-a-'+i+'" id="faq-q-'+i+'"><span>'+f.q+'</span><svg class="chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button><div class="faq-a" id="faq-a-'+i+'" role="region" aria-labelledby="faq-q-'+i+'"><div class="faq-a-in"><div class="faq-a-pad">'+f.a+'</div></div></div></div>';
+}).join("");
+var faqBtns=$$(".faq-q");
+faqBtns.forEach(function(btn,idx){
+ btn.addEventListener("click",function(){
+   var open=btn.getAttribute("aria-expanded")==="true";
+   faqBtns.forEach(function(b){b.setAttribute("aria-expanded","false");});
+   $$(".faq-a").forEach(function(a){a.classList.remove("open");});
+   if(!open){btn.setAttribute("aria-expanded","true");document.getElementById(btn.getAttribute("aria-controls")).classList.add("open");}
+ });
+ btn.addEventListener("keydown",function(e){
+   var n=null;
+   if(e.key==="ArrowDown")n=(idx+1)%faqBtns.length;
+   else if(e.key==="ArrowUp")n=(idx+faqBtns.length-1)%faqBtns.length;
+   else if(e.key==="Home")n=0;
+   else if(e.key==="End")n=faqBtns.length-1;
+   if(n!==null){e.preventDefault();faqBtns[n].focus();}
+ });
+});
+/* Pricing toggle */
+var toggle=$("#billingToggle"), annual=false;
+toggle.addEventListener("click",function(){
+ annual=!annual;
+ toggle.setAttribute("aria-checked", annual?"true":"false");
+ $("#lblMonthly").classList.toggle("on",!annual);
+ $("#lblAnnual").classList.toggle("on",annual);
+ $$("[data-price]").forEach(function(el){el.textContent=annual?el.dataset.annual:el.dataset.monthly;});
+ $$("[data-period]").forEach(function(el){el.textContent=annual?el.dataset.annual:el.dataset.monthly;});
+});
+/* Drawer */
+var menuBtn=$("#menuBtn"), drawer=$("#drawer");
+function closeDrawer(){drawer.classList.remove("open");menuBtn.setAttribute("aria-expanded","false");}
+menuBtn.addEventListener("click",function(){
+ var open=drawer.classList.toggle("open");
+ menuBtn.setAttribute("aria-expanded", open?"true":"false");
+});
+$$("a",drawer).forEach(function(a){a.addEventListener("click",closeDrawer);});
+/* CTA modal */
+var ctaBackdrop=$("#ctaBackdrop"), lastFocus=null;
+function setMode(mode){
+ $("#keyMode").hidden = mode!=="key";
+ $("#formMode").hidden = mode!=="form";
+}
+function openModal(mode){
+ lastFocus=document.activeElement; setMode(mode||"key");
+ ctaBackdrop.hidden=false; ctaBackdrop.classList.add("open");
+ var target = mode==="form" ? $("#fName") : $("#generateKey"); if(target) target.focus();
+}
+function closeModal(){ctaBackdrop.classList.remove("open");ctaBackdrop.hidden=true;if(lastFocus&&lastFocus.focus)lastFocus.focus();}
+$$("[data-open-modal]").forEach(function(b){b.addEventListener("click",function(){openModal(b.dataset.openModal);});});
+$$("[data-close-modal]").forEach(function(b){b.addEventListener("click",closeModal);});
+ctaBackdrop.addEventListener("click",function(e){if(e.target===ctaBackdrop)closeModal();});
+$("#switchToForm").addEventListener("click",function(){setMode("form");$("#fName").focus();});
+$("#switchToKey").addEventListener("click",function(){setMode("key");$("#generateKey").focus();});
+/* Key generator */
+function randomChars(n){var chars="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";var out="";var arr=new Uint32Array(n);if(window.crypto&&window.crypto.getRandomValues){window.crypto.getRandomValues(arr);for(var i=0;i<n;i++)out+=chars[arr[i]%chars.length];}else{for(var j=0;j<n;j++)out+=chars[Math.floor(Math.random()*chars.length)];}return out;}
+$("#generateKey").addEventListener("click",function(){
+ $("#keyValue").textContent="gl_sandbox_"+randomChars(24);
+ $("#keyBox").classList.add("show");
+});
+$("#keyCopy").addEventListener("click",function(){copyText($("#keyValue").textContent,this);});
+/* Demo form */
+if(FORM_ENDPOINT){var dn=$("#demoNote");if(dn)dn.hidden=true;}
+var demoChecks=[
+ {id:"fName",ok:function(v){return v.trim().length>1;}},
+ {id:"fEmail",ok:function(v){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());}},
+ {id:"fCompany",ok:function(v){return v.trim().length>1;}},
+ {id:"fMessage",ok:function(v){return v.trim().length>3;}}
+];
+function validateField(c){
+ var input=document.getElementById(c.id); var field=input.closest(".field"); var valid=c.ok(input.value);
+ field.classList.toggle("invalid",!valid);
+ if(valid){input.removeAttribute("aria-invalid");}else{input.setAttribute("aria-invalid","true");}
+ return valid?null:input;
+}
+demoChecks.forEach(function(c){
+ document.getElementById(c.id).addEventListener("input",function(){
+  var field=this.closest(".field");
+  if(field.classList.contains("invalid"))validateField(c);
+ });
+});
+$("#demoForm").addEventListener("submit",function(e){
+ e.preventDefault();
+ var firstBad=null;
+ demoChecks.forEach(function(c){
+  var bad=validateField(c); if(bad&&!firstBad)firstBad=bad;
+ });
+ if(firstBad){firstBad.focus();return;}
+ var ok=$("#formSuccess"), sb=$("#demoForm button[type=submit]");
+ if(!FORM_ENDPOINT){ok.classList.add("show");return;}
+ sb.disabled=true; sb.textContent="Sending...";
+ var data={}; demoChecks.forEach(function(c){var el=document.getElementById(c.id);data[el.name]=el.value.trim();});
+ fetch(FORM_ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json"},body:JSON.stringify(data)})
+ .then(function(r){if(!r.ok)throw new Error("bad status");ok.textContent="Request received. We will reply to your work email shortly.";ok.classList.add("show");$("#demoForm").reset();})
+ .catch(function(){ok.textContent="The request did not send. Check your connection and try again.";ok.classList.add("show");})
+ .then(function(){sb.disabled=false;sb.textContent="Request demo";});
+});
+/* Info modal */
+var infoBackdrop=$("#infoBackdrop");
+function openInfo(key){
+ var info=INFO[key]; if(!info)return;
+ lastFocus=document.activeElement;
+ $("#infoTitle").textContent=info.title;
+ $("#infoBody").innerHTML=info.body.map(function(p){return "<p>"+p+"</p>";}).join("");
+ infoBackdrop.hidden=false; infoBackdrop.classList.add("open");
+ var c=$("[data-close-info]"); if(c)c.focus();
+}
+function closeInfo(){infoBackdrop.classList.remove("open");infoBackdrop.hidden=true;if(lastFocus&&lastFocus.focus)lastFocus.focus();}
+$$("[data-info]").forEach(function(b){b.addEventListener("click",function(){openInfo(b.dataset.info);});});
+$$("[data-close-info]").forEach(function(b){b.addEventListener("click",closeInfo);});
+infoBackdrop.addEventListener("click",function(e){if(e.target===infoBackdrop)closeInfo();});
+/* Escape */
+document.addEventListener("keydown",function(e){
+ if(e.key==="Escape"){closeDrawer(); if(ctaBackdrop.classList.contains("open"))closeModal(); if(infoBackdrop.classList.contains("open"))closeInfo();}
+});
+/* GT80: stats count-up on first view. The markup text is the final value, so JS-off and
+   reduced-motion renders show the frozen spec numbers unchanged. */
+(function(){
+ var nums=$$(".stat-num[data-count]");
+ if(!nums.length||reduced||!("IntersectionObserver" in window))return;
+ function animate(el){
+   var target=parseFloat(el.dataset.count), dec=parseInt(el.dataset.decimals||"0",10);
+   var prefix=el.dataset.prefix||"", suffix=el.dataset.suffix||"", t0=null, dur=900;
+   function frame(ts){
+     if(!t0)t0=ts;
+     var p=Math.min(1,(ts-t0)/dur), e=1-Math.pow(1-p,3);
+     el.textContent=prefix+(target*e).toFixed(dec)+suffix;
+     if(p<1)requestAnimationFrame(frame);
+   }
+   requestAnimationFrame(frame);
+ }
+ var io=new IntersectionObserver(function(entries){
+   entries.forEach(function(en){if(en.isIntersecting){animate(en.target);io.unobserve(en.target);}});
+ },{threshold:0.4});
+ nums.forEach(function(el){io.observe(el);});
+})();
+/* GT83: workflow stepper. The visitor can advance the three steps with the prev and next
+   buttons or the dots; when the section first scrolls into view the steps light in
+   sequence on their own, because the order is the information. Reduced motion, or no
+   IntersectionObserver, lights every step at once. */
+(function(){
+ var rail=$("#how .rail"), stepper=$("#howStepper");
+ if(!rail||!stepper)return;
+ var cards=$$(".card",rail), dots=$$(".step-dot",stepper);
+ var prev=$("#stepPrev"), next=$("#stepNext");
+ if(!cards.length||!dots.length||!prev||!next)return;
+ var step=0, interacted=false;
+ function paint(){
+   cards.forEach(function(c,i){c.classList.toggle("lit",i<=step);});
+   dots.forEach(function(d,i){
+     if(i===step)d.setAttribute("aria-current","step"); else d.removeAttribute("aria-current");
+   });
+   prev.setAttribute("aria-disabled",step===0?"true":"false");
+   next.setAttribute("aria-disabled",step===cards.length-1?"true":"false");
+ }
+ function setStep(n,user){
+   step=Math.max(0,Math.min(cards.length-1,n));
+   if(user)interacted=true;
+   paint();
+ }
+ prev.addEventListener("click",function(){setStep(step-1,true);});
+ next.addEventListener("click",function(){setStep(step+1,true);});
+ dots.forEach(function(d){d.addEventListener("click",function(){setStep(parseInt(d.dataset.step,10)-1,true);});});
+ stepper.addEventListener("keydown",function(e){
+   if(e.key==="ArrowRight"){e.preventDefault();setStep(step+1,true);}
+   if(e.key==="ArrowLeft"){e.preventDefault();setStep(step-1,true);}
+ });
+ rail.classList.add("stepper-on");
+ if(reduced||!("IntersectionObserver" in window)){step=cards.length-1;paint();return;}
+ paint();
+ var io=new IntersectionObserver(function(entries){
+   entries.forEach(function(en){
+     if(!en.isIntersecting)return;
+     io.disconnect();
+     var i=0;
+     (function adv(){
+       if(interacted)return;
+       setStep(i,false); i++;
+       if(i<cards.length)setTimeout(adv,480);
+     })();
+   });
+ },{threshold:0.3});
+ io.observe(rail);
+})();
+/* Edge status */
+var statuses=["Edge status: operational","Edge status: operational, all regions"];
+var si=0; setInterval(function(){si=(si+1)%statuses.length;var el=$("#edgeStatus"); if(el)el.textContent=statuses[si];},8000);
 })();
 </script>
 </body>

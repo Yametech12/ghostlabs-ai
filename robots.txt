@@ -1,4 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://ghostlabs-ai.vercel.app/sitemap.xml

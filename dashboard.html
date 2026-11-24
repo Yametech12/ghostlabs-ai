@@ -1,435 +1,680 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard - GhostLabs</title>
-<meta name="description" content="Your local GhostLabs workspace: the document checking bench plus a run history stored on this device only.">
-<link rel="canonical" href="https://ghostlabs-ai.vercel.app/dashboard.html">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Dashboard - GhostLabs">
-<meta property="og:description" content="The document checking bench and a run history stored in this browser only.">
-<meta property="og:url" content="https://ghostlabs-ai.vercel.app/dashboard.html">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Dashboard - GhostLabs">
-<meta name="twitter:description" content="The document checking bench and a run history stored in this browser only.">
-<meta name="theme-color" media="(prefers-color-scheme: light)" content="#B5D6C2">
-<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#202A25">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='4' fill='%23B63F16'/%3E%3Cpath d='M9 8h14M9 14h14M9 20h8M20 20h3M9 25h14' stroke='%23FFFEF9' stroke-width='2.4'/%3E%3C/svg%3E">
-<script>
-(function(){try{var raw=localStorage.getItem("gl_session");var s=raw?JSON.parse(raw):null;if(!s||!s.email){window.location.replace("login.html");}}catch(e){window.location.replace("login.html");}})();
-(function(){try{var q=new URLSearchParams(window.location.search).get("theme");var t=(q==="light"||q==="dark")?q:(localStorage.getItem("gl_theme")||(window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"));document.documentElement.setAttribute("data-theme",t);if(q==="light"||q==="dark"){localStorage.setItem("gl_theme",t);}}catch(e){document.documentElement.setAttribute("data-theme","light");}})();
-</script>
+<title>Dashboard - GhostLabs AI</title>
+<meta name="description" content="GhostLabs AI demo console.">
+<meta name="theme-color" content="#090A0F">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%2322d3ee'/%3E%3Cpath d='M16 7a7 7 0 0 0-7 7v9l2.5-2 2.5 2 2-2 2 2 2.5-2 .5.4V14a7 7 0 0 0-5-7Z' fill='%23090A0F'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@600&family=Public+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--field:#B5D6C2;--paper:#FFFEF9;--ink:#1C2321;--ink-2:#454F4A;--action:#B63F16;--action-text:#FFFFFF;--action-hover:#A53713;--action-edge:#8F2F0E;--proof:#1F7A4D;--proof-wash:#E2F0E6;--fault:#A92B20;--fault-wash:#F9E8E4;--disabled:#C9CFCB;--input:#FFFFFF;--placeholder:#454F4A;--tally:#1C2321;--space-1:4px;--space-2:8px;--space-3:16px;--space-4:24px;--space-5:32px;--space-6:48px;--space-7:64px;--ease-tally:cubic-bezier(0.16,1,0.3,1);--ease-press:cubic-bezier(0.34,1.2,0.64,1);--ease-row:cubic-bezier(0.25,1,0.5,1)}
-html[data-theme="dark"]{--field:#202A25;--paper:#35443C;--input:#4A5E53;--placeholder:#EDE8DA;--tally:#0B0F0D;--ink:#F3F1E8;--ink-2:#D8D2C4;--action:#E97A4A;--action-text:#201512;--action-hover:#F08A5C;--action-edge:#9A4520;--proof:#5FBF8F;--proof-wash:#22362B;--fault:#F08A7E;--fault-wash:#3A2723;--disabled:#3E4742}
+:root{--bg:#090A0F;--surface:#11131B;--surface-2:#151824;--border:rgba(255,255,255,0.08);--cyan:#22d3ee;--violet:#8b5cf6;--text:#F8FAFC;--text-2:#94A3B8;--muted:#71809A;--cta-bg:#FFFFFF;--cta-text:#090A0F;--radius:14px;--header-h:68px;--ease:cubic-bezier(0.22,1,0.36,1)}
 *{box-sizing:border-box;margin:0;padding:0}
 [hidden]{display:none !important}
-html{scroll-behavior:smooth}
-body{background:var(--field);color:var(--ink);font-family:'Public Sans',system-ui,-apple-system,'Segoe UI',sans-serif;font-size:16px;line-height:1.6}
-h1,h2{font-family:'Zilla Slab',Georgia,serif;font-weight:600}
-.data,td.num,th.num{font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace;font-variant-numeric:tabular-nums}
-a{color:var(--ink);text-underline-offset:4px}
-a:hover{text-decoration-thickness:2px}
-:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
-.skip{position:absolute;left:-999px;top:0;background:var(--paper);padding:var(--space-3);z-index:50}
-.skip:focus{left:var(--space-3);top:var(--space-3)}
-header{border-bottom:1px solid var(--ink)}
-.nav{max-width:1200px;margin:0 auto;height:56px;display:flex;align-items:center;gap:var(--space-3);padding:0 var(--space-3);flex-wrap:nowrap}
-@media(max-width:640px){
-  .nav{height:52px;gap:var(--space-2);padding:0 var(--space-2)}
-  .wordmark{font-size:17px}
-  .session-email{display:none}
-  .nav .btn-secondary{min-height:40px;padding:0 var(--space-2);font-size:13px}
+body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:'Plus Jakarta Sans','Inter',sans-serif;letter-spacing:-0.025em;line-height:1.12;color:var(--text)}
+a{color:inherit}
+button{font-family:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--cyan);outline-offset:3px;border-radius:4px}
+.container{max-width:80rem;margin:0 auto;padding-left:1rem;padding-right:1rem}
+header{position:sticky;top:0;z-index:60;height:var(--header-h);background:rgba(9,10,15,.82);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+.nav{display:flex;align-items:center;justify-content:space-between;height:var(--header-h)}
+.logo{display:flex;align-items:center;gap:.6rem;font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:1.1rem;letter-spacing:-0.025em;text-decoration:none}
+.logo-mark{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--cyan),var(--violet));display:grid;place-items:center;flex:none}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;border-radius:10px;padding:.8rem 1.5rem;font-size:.95rem;font-weight:600;border:1px solid transparent;transition:opacity .2s var(--ease),background .2s var(--ease),border-color .2s var(--ease);text-decoration:none;min-height:48px}
+.btn-primary{background:var(--cta-bg);color:var(--cta-text)}
+.btn-primary:hover{opacity:.88}
+.btn-ghost{background:transparent;color:var(--text);border-color:var(--border)}
+.btn-ghost:hover{border-color:rgba(255,255,255,.25);background:rgba(255,255,255,.04)}
+.btn-sm{padding:.55rem 1.1rem;min-height:42px;font-size:.9rem}
+.w-full{width:100%}
+.mono{font-family:'JetBrains Mono',monospace}
+.field{margin-top:1.1rem;text-align:left}
+.field label{display:block;font-size:.88rem;font-weight:600;margin-bottom:.4rem}
+.field input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.75rem .9rem;color:var(--text);font-family:inherit;font-size:.95rem}
+.field .err{display:none;color:#f87171;font-size:.82rem;margin-top:.35rem}
+.field.invalid input{border-color:#f87171}
+.field.invalid .err{display:block}
+.note{font-size:.82rem;color:var(--muted);margin-top:1rem;line-height:1.55}
+.demo-chip{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.06em;color:var(--cyan);border:1px solid rgba(34,211,238,.35);background:rgba(34,211,238,.07);border-radius:999px;padding:.2rem .6rem}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms !important;transition-duration:.01ms !important}}
+.auth-wrap{max-width:440px;margin:0 auto;padding:3rem 1rem 4rem}
+.auth-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:2rem;box-shadow:inset 0 3px 0 var(--cyan)}
+.auth-card h1{font-size:1.6rem;margin-top:.8rem}
+.auth-card .sub{color:var(--text-2);margin-top:.6rem;font-size:.95rem}
+.demo-note{margin-top:1.2rem;border:1px solid rgba(139,92,246,.35);background:rgba(139,92,246,.09);border-radius:10px;padding:.9rem 1rem;font-size:.88rem;color:#ddd6fe;line-height:1.55}
+.mode-row{display:flex;gap:.5rem;margin-top:1.4rem}
+.mode-btn{flex:1;border:1px solid var(--border);background:transparent;color:var(--text-2);border-radius:10px;padding:.6rem;font-size:.9rem;font-weight:600;min-height:44px}
+.mode-btn[aria-pressed="true"]{background:#fff;color:var(--cta-text);border-color:#fff}
+.success{display:none;margin-top:1.2rem;background:rgba(52,211,153,.09);border:1px solid rgba(52,211,153,.35);border-radius:10px;padding:1rem;color:#a7f3d0;font-size:.93rem}
+.success.show{display:block}
+.session-box{margin-top:1.4rem;display:grid;gap:.8rem}
+.session-email{font-family:'JetBrains Mono',monospace;font-size:.9rem;color:var(--cyan);word-break:break-all}
+.back-link{display:inline-block;margin-top:1.4rem;color:var(--text-2);font-size:.9rem}
+
+.console{display:grid;grid-template-columns:220px 1fr;min-height:calc(100vh - var(--header-h))}
+.side{border-right:1px solid var(--border);padding:1.2rem .9rem;display:flex;flex-direction:column;gap:.3rem}
+.side .ws{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--muted);letter-spacing:.06em;padding:.2rem .6rem 1rem;word-break:break-word}
+.sec-btn{display:flex;align-items:center;gap:.6rem;width:100%;text-align:left;background:transparent;border:1px solid transparent;color:var(--text-2);border-radius:10px;padding:.65rem .7rem;font-size:.92rem;font-weight:600;min-height:44px}
+.sec-btn .num{font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--muted)}
+.sec-btn[aria-selected="true"]{background:var(--surface);border-color:var(--border);color:var(--text)}
+.sec-btn[aria-selected="true"] .num{color:var(--cyan)}
+.main{padding:1.6rem;min-width:0}
+.panel-sec{display:none}
+.panel-sec.active{display:block}
+.sec-head{display:flex;align-items:baseline;gap:.8rem;flex-wrap:wrap;border-bottom:1px solid var(--border);padding-bottom:.9rem;margin-bottom:1.2rem}
+.sec-head .num{font-family:'JetBrains Mono',monospace;color:var(--cyan);font-size:.85rem}
+.sec-head h2{font-size:1.5rem}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem}
+.stat:nth-child(2){box-shadow:inset 0 3px 0 var(--cyan)}
+.stat:nth-child(4){box-shadow:inset 0 3px 0 var(--violet)}
+.stat .k{font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.07em;color:var(--muted);text-transform:uppercase}
+.stat .v{font-family:'JetBrains Mono',monospace;font-size:1.7rem;color:var(--text);margin-top:.4rem}
+.stat .d{font-size:.75rem;color:var(--muted);margin-top:.2rem}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.2rem;margin-top:1rem}
+.card h3{font-size:1.05rem;margin-bottom:.4rem}
+table{width:100%;border-collapse:collapse;font-size:.88rem}
+th,td{text-align:left;padding:.6rem .5rem;border-bottom:1px solid var(--border)}
+th{font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.06em;color:var(--muted);text-transform:uppercase}
+td.mono{font-size:.8rem}
+.pill{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:.68rem;border-radius:999px;padding:.15rem .55rem;border:1px solid var(--border)}
+.pill.ok{color:#6ee7b7;border-color:rgba(52,211,153,.4)}
+.pill.err{color:#fca5a5;border-color:rgba(248,113,113,.4)}
+.pill.rev{color:#fca5a5;border-color:rgba(248,113,113,.4)}
+.pill.act{color:#6ee7b7;border-color:rgba(52,211,153,.4)}
+.key-row{display:flex;align-items:center;gap:.8rem;flex-wrap:wrap;padding:.8rem 0;border-bottom:1px solid var(--border)}
+.key-row .grow{flex:1;min-width:180px}
+.small-btn{border:1px solid var(--border);background:var(--surface-2);color:var(--text);border-radius:8px;padding:.45rem .9rem;font-size:.82rem;font-weight:500;min-height:38px}
+.small-btn:hover{border-color:rgba(255,255,255,.25)}
+.filter-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.8rem}
+.filter-btn{border:1px solid var(--border);background:transparent;color:var(--text-2);border-radius:999px;padding:.45rem 1rem;font-size:.85rem;font-weight:500;min-height:40px}
+.filter-btn[aria-pressed="true"]{background:#fff;color:var(--cta-text);border-color:#fff}
+.playground{max-width:920px;margin:0;text-align:left;background:var(--surface);border:1px solid var(--border);border-radius:18px;overflow:hidden;position:relative}
+.pg-head{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1rem 1.25rem;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.pg-title{font-family:'JetBrains Mono',monospace;font-size:.85rem;color:var(--text-2)}
+.presets{display:flex;gap:.5rem;flex-wrap:wrap;padding:1rem 1.25rem 0}
+.preset{border:1px solid var(--border);background:transparent;color:var(--text-2);border-radius:999px;padding:.5rem 1rem;font-size:.85rem;font-weight:500;min-height:40px}
+.preset[aria-selected="true"]{background:#fff;color:var(--cta-text);border-color:#fff}
+.pg-body{padding:1.25rem;display:grid;gap:1rem;grid-template-columns:minmax(0,1fr)}
+.pg-output-wrap{min-width:0}
+.pg-label{font-size:.78rem;font-weight:600;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;margin-bottom:.4rem}
+.pg-input{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.9rem 1rem;color:var(--text);font-size:.95rem}
+.pg-trace{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.9rem 1rem;font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--text-2);min-height:96px}
+.pg-trace .line{padding:.15rem 0}
+.pg-trace .line::before{content:"> ";color:var(--cyan)}
+.pg-output-wrap{display:none}
+.pg-output-wrap.show{display:block}
+.pg-meta{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.5rem}
+.tag{font-family:'JetBrains Mono',monospace;font-size:.75rem;border:1px solid var(--border);border-radius:999px;padding:.25rem .7rem;color:var(--cyan);background:rgba(34,211,238,.07)}
+.tag.latency{color:#a5b4fc;background:rgba(139,92,246,.12)}
+pre.code{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:1rem;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:.85rem;line-height:1.55;color:#e2e8f0;white-space:pre;word-break:normal}
+.copy-btn{border:1px solid var(--border);background:var(--surface-2);color:var(--text);border-radius:8px;padding:.45rem .9rem;font-size:.82rem;font-weight:500;min-height:38px}
+.code-head{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:.5rem}
+.table-wrap{overflow-x:auto}
+.newkey{background:var(--bg);border:1px solid rgba(34,211,238,.4);border-radius:10px;padding:.9rem 1rem;font-family:'JetBrains Mono',monospace;font-size:.85rem;word-break:break-all;color:var(--cyan)}
+/* GT80 playground engine: model selector, run-state tags, streaming caret */
+.models{display:flex;gap:.45rem;flex-wrap:wrap}
+.model-btn{font-family:'JetBrains Mono',monospace;font-size:.74rem;border:1px solid var(--border);background:transparent;color:var(--text-2);border-radius:8px;padding:.42rem .7rem;min-height:36px}
+.model-btn:hover{border-color:rgba(255,255,255,.25);color:var(--text)}
+.model-btn[aria-pressed="true"]{background:var(--surface-2);color:var(--cyan);border-color:rgba(34,211,238,.45)}
+.pg-model-note{font-size:.72rem;color:var(--muted);margin-top:.45rem}
+.tag.status{color:#6ee7b7;background:rgba(52,211,153,.08);border-color:rgba(52,211,153,.3)}
+.tag.status.running{color:#fcd34d;background:rgba(252,211,77,.08);border-color:rgba(252,211,77,.3)}
+pre.code.streaming::after{content:"\258C";color:var(--cyan);animation:pgblink 1s steps(1) infinite}
+@keyframes pgblink{50%{opacity:0}}
+/* GT80 Settings substance: profile, API preferences, session, danger zone */
+.set-grid{display:grid;gap:1rem}
+@media(min-width:1000px){.set-grid{grid-template-columns:1fr 1fr}}
+.set-card{margin-top:0}
+.set-card h3{margin-bottom:.6rem}
+.field select{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.75rem .9rem;color:var(--text);font-family:inherit;font-size:.95rem}
+.check-row{display:flex;gap:.6rem;align-items:center;margin-top:1.1rem;font-size:.92rem;color:var(--text-2)}
+.check-row input{width:18px;height:18px;accent-color:var(--cyan);flex:none}
+.card.danger{border-color:rgba(248,113,113,.35)}
+.danger-row{display:flex;justify-content:space-between;gap:1rem;align-items:center;padding:.9rem 0;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.danger-row:last-of-type{border-bottom:none}
+.dz-t{font-weight:600}
+.danger-btn{border-color:rgba(248,113,113,.45);color:#fca5a5;background:transparent}
+.danger-btn.armed{background:#f87171;color:#090A0F;border-color:#f87171}
+/* GT83: usage totals strip, per-key usage detail */
+#usageTotals{grid-template-columns:repeat(3,1fr);margin-bottom:1rem}
+#usageTotals .stat{margin-top:0}
+.key-meta{font-size:.75rem;color:var(--muted);margin-top:.25rem}
+.key-spark{display:block;margin-top:.4rem}
+@media(max-width:759px){
+ #usageTotals .stat{padding:.8rem}
+ #usageTotals .v{font-size:1.15rem}
 }
-.wordmark{font-family:'Zilla Slab',Georgia,serif;font-weight:600;font-size:20px;text-decoration:none;margin-right:auto}
-.session-email{font-size:14px;word-break:break-all}
-.btn-primary{min-height:48px;padding:0 var(--space-4);background:var(--action);color:var(--action-text);border:none;border-radius:8px;font:inherit;font-weight:600;font-size:16px;cursor:pointer;box-shadow:0 3px 0 var(--action-edge);transition:transform 140ms var(--ease-press),background 140ms var(--ease-press),box-shadow 140ms var(--ease-press);text-decoration:none;display:inline-flex;align-items:center;justify-content:center}
-.btn-primary:hover{background:var(--action-hover);box-shadow:0 4px 0 var(--action-edge)}
-.btn-primary:active{transform:translateY(2px);box-shadow:0 1px 0 var(--action-edge)}
-.btn-primary:disabled{background:var(--action);color:var(--action-text);box-shadow:0 3px 0 var(--action-edge);opacity:.75;cursor:wait}
-.extract-row{display:flex;align-items:center;gap:var(--space-3);margin-top:var(--space-2);flex-wrap:wrap}
-.extract-msg{font-size:14px;font-weight:600;color:var(--fault)}
-.btn-secondary{min-height:44px;padding:0 var(--space-3);background:var(--paper);color:var(--ink);border:1px solid var(--ink);border-radius:8px;font:inherit;font-weight:600;font-size:15px;cursor:pointer;box-shadow:0 2px 0 rgba(28,35,33,.3);transition:transform 140ms var(--ease-press)}
-.btn-secondary:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(28,35,33,.3)}
-main{max-width:1200px;margin:0 auto;padding:var(--space-4) var(--space-3) var(--space-6)}
-h1{font-size:40px;line-height:1.1;letter-spacing:-0.015em}
-.ws-line{margin-top:var(--space-1);color:var(--ink-2)}
-.sections{display:flex;border:1px solid var(--ink);border-radius:8px;overflow:hidden;margin:var(--space-4) 0;background:var(--paper)}
-.sections a{flex:1;min-height:44px;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:15px;text-decoration:none;border-right:1px solid var(--ink);padding:var(--space-2)}
-.sections a:last-child{border-right:none}
-@media(min-width:900px){.layout{display:grid;grid-template-columns:220px 1fr;gap:var(--space-4);align-items:start}.sections{flex-direction:column}.sections a{justify-content:flex-start;border-right:none;border-bottom:1px solid var(--ink)}.sections a:last-child{border-bottom:none}}
-.bench-shell{background:var(--paper);border:1px solid var(--ink);border-radius:12px;padding:var(--space-3);display:grid;gap:var(--space-4)}
-@media(min-width:900px){.bench-shell{padding:var(--space-4);grid-template-columns:5fr 7fr}}
-.pane-source{padding:0}
-.seg{display:flex;flex-wrap:wrap;gap:var(--space-2);margin-bottom:var(--space-3)}
-.seg button{flex:1 1 132px;min-height:44px;padding:var(--space-2);background:var(--paper);color:var(--ink);border:1px solid var(--ink);border-radius:8px;font:inherit;font-weight:600;font-size:14px;line-height:1.3;cursor:pointer}
-.seg button[aria-pressed="true"]{background:var(--action);color:var(--action-text);box-shadow:inset 0 -3px 0 var(--action-edge)}
-label{display:block;font-size:13px;font-weight:600;margin-bottom:var(--space-1)}
-textarea{width:100%;min-height:180px;background:var(--input);color:var(--ink);border:1px solid var(--ink);border-radius:4px;padding:var(--space-2);font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace;font-size:14px;line-height:1.5;resize:none}
-textarea::placeholder{color:var(--placeholder);opacity:1}
-@media(max-width:899px){textarea{min-height:120px}}
-textarea:focus{border-width:2px;outline:none}
-input[type="text"]{width:100%;min-height:48px;background:var(--input);color:var(--ink);border:1px solid var(--ink);border-radius:8px;padding:0 var(--space-2);font:inherit;font-size:16px}
-input[type="text"]:focus{border-width:2px;outline:none}
-.file-row{display:flex;align-items:center;gap:var(--space-3);margin:var(--space-3) 0;flex-wrap:wrap}
-.file-name{font-size:14px}
-#extractBtn{min-width:200px}
-.helper{margin-top:var(--space-2);font-size:14px;color:var(--ink-2)}
-.limits-line{margin-top:var(--space-2);font-size:14px;font-weight:600}
-.bench-foot{margin-top:var(--space-3);font-size:14px;color:var(--ink-2);border-top:1px solid var(--ink);padding-top:var(--space-2)}
-.pane-results h2{font-size:20px;font-family:'Public Sans',system-ui,sans-serif;font-weight:600;line-height:1.25}
-.verdict{font-family:'Zilla Slab',Georgia,serif;font-weight:600;font-size:20px;line-height:1.25;margin-top:var(--space-2)}
-.fields{margin-top:var(--space-3);border-top:1px solid var(--ink)}
-.empty-ledger{margin-top:var(--space-3);border-top:1px solid var(--ink)}
-.empty-ledger .rule{height:29px;border-bottom:1px solid var(--ink);opacity:.45}
-.field-row{display:flex;justify-content:space-between;gap:var(--space-3);padding:var(--space-1) 0;border-bottom:1px solid var(--ink)}
-.field-row dt{font-size:13px;font-weight:600}
-.field-row dd{font-size:14px;text-align:right}
-table{width:100%;border-collapse:collapse;margin-top:var(--space-3);font-size:14px}
-caption{text-align:left;font-size:13px;font-weight:600;padding-bottom:var(--space-1)}
-th,td{padding:var(--space-1) var(--space-2);border-bottom:1px solid var(--ink);text-align:left;vertical-align:top}
-td.num,th.num{text-align:right}
-.checks{list-style:none;margin-top:var(--space-3);display:grid;gap:var(--space-2)}
-.check{padding:var(--space-2);border-radius:4px;font-size:14px}
-.check .status{font-weight:600}
-.check.pass{background:var(--proof-wash)}
-.check.pass .status{color:var(--proof)}
-.check.fail{background:var(--fault-wash)}
-.check.fail .status{color:var(--fault)}
-.check.skip{border:1px dashed var(--ink-2)}
-.check .detail{display:block;margin-top:var(--space-1)}
-details.raw{margin-top:var(--space-3)}
-details.raw summary{min-height:44px;display:flex;align-items:center;font-weight:600;cursor:pointer}
-pre.raw-json{font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace;font-size:13px;line-height:1.5;white-space:pre-wrap;word-break:break-word;border:1px solid var(--ink);border-radius:4px;padding:var(--space-2);max-height:320px;overflow:auto}
-.result-actions{display:flex;gap:var(--space-3);margin-top:var(--space-3);flex-wrap:wrap}
-.reveal-rule{height:2px;background:var(--ink);margin-top:var(--space-3);transform-origin:left}
-.reveal .reveal-rule{animation:rule 560ms var(--ease-tally)}
-@keyframes rule{from{transform:scaleX(0)}to{transform:scaleX(1)}}
-section.block{margin-top:var(--space-6)}
-section.block h2{font-size:32px;line-height:1.1;letter-spacing:-0.015em;margin-bottom:var(--space-2)}
-.note{color:var(--ink-2);font-size:14px;max-width:68ch}
-.settings-grid{display:grid;gap:var(--space-4);max-width:560px}
-.danger{border-top:1px solid var(--ink);padding-top:var(--space-3)}
-footer{border-top:1px solid var(--ink)}
-.foot{max-width:1200px;margin:0 auto;padding:var(--space-4) var(--space-3);font-size:14px;display:flex;gap:var(--space-4);flex-wrap:wrap}
-.credit{font-weight:600}
-@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms !important;transition-duration:.01ms !important}.reveal .reveal-rule{animation:none}}
+@media(max-width:900px){.stats{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:759px){
+ .console{grid-template-columns:1fr}
+ .side{flex-direction:row;flex-wrap:wrap;align-items:flex-start;align-content:flex-start;border-right:none;border-bottom:1px solid var(--border);padding:.8rem}
+ .side .ws{width:100%;padding-bottom:.4rem}
+ .sec-btn{width:auto}
+ .main{padding:1rem}
+ .presets{flex-wrap:nowrap;overflow-x:auto;padding:.5rem .65rem 0;gap:.4rem;scrollbar-width:none}
+ .presets::-webkit-scrollbar{display:none}
+ .preset{flex:none;white-space:nowrap;padding:.3rem .6rem;font-size:.72rem;min-height:30px}
+ .pg-body{padding:.55rem .65rem .65rem;gap:.5rem}
+ .pg-input{padding:.42rem .55rem;font-size:.8rem;line-height:1.35}
+ .pg-meta{gap:.4rem;margin-bottom:0}
+ .tag{font-size:.64rem;padding:.14rem .5rem}
+ .copy-btn{padding:.3rem .65rem;font-size:.72rem;min-height:30px}
+ pre.code{font-size:.68rem;line-height:1.4;padding:.5rem .55rem}
+ .pg-trace{font-size:.68rem;min-height:0}
+ .model-btn{font-size:.62rem;padding:.26rem .5rem;min-height:28px;white-space:nowrap;text-align:center}
+ .models{display:grid;grid-template-columns:1fr 1fr;gap:.4rem;overflow:visible;-webkit-mask-image:none;mask-image:none}
+ #sec-usage .card{padding:.9rem .8rem}
+ #sec-usage table{font-size:.78rem}
+ #sec-usage th,#sec-usage td{padding:.5rem .25rem}
+ #sec-usage th{font-size:.6rem;letter-spacing:.04em}
+ #sec-usage td.mono{font-size:.68rem}
+ #sec-usage .pill{white-space:nowrap;font-size:.6rem;padding:.12rem .38rem}
+ .presets{-webkit-mask-image:linear-gradient(to right,#000 0,#000 calc(100% - 28px),transparent 100%);mask-image:linear-gradient(to right,#000 0,#000 calc(100% - 28px),transparent 100%)}
+}
+/* GT83 (post Fresh-Eye): the preset tab row had the same phone clip defect as the model
+   row; wrap it on phone and drop the fade mask. */
+@media(max-width:759px){
+ .presets{flex-wrap:wrap;overflow:visible;-webkit-mask-image:none;mask-image:none}
+}
 </style>
 </head>
+
 <body>
-<a class="skip" href="#bench">Skip to the bench</a>
-<noscript><p style="padding:16px;text-align:center;font-weight:600">JavaScript is required for this demo workspace. The bench, history, and settings all run locally in your browser, so nothing works with JavaScript off.</p></noscript>
-<header>
-  <div class="nav">
-    <a class="wordmark" href="index.html">GhostLabs</a>
-    <span class="session-email data" id="sessionEmail"></span>
-    <button class="btn-secondary" type="button" id="themeToggle" aria-pressed="false" aria-label="Switch to dark mode">Dark</button>
-    <button class="btn-secondary" type="button" id="signOutBtn">Sign out</button>
-  </div>
-</header>
-<main>
-  <h1 id="wsTitle">Your workspace</h1>
-  <p class="ws-line">Demo workspace stored in this browser only. History is kept on this device and is never sent anywhere.</p>
-  <div class="layout">
-    <nav class="sections" aria-label="Dashboard sections">
-      <a href="#bench">Bench</a>
-      <a href="#history">History</a>
-      <a href="#settings">Settings</a>
-    </nav>
-    <div>
-      <section class="bench" id="bench" aria-label="Document extraction and checking bench">
-        <div class="bench-shell">
-          <div class="pane-source">
-            <div class="seg" role="group" aria-label="Sample documents">
-              <button type="button" data-sample="clean" aria-pressed="false">Sample invoice</button>
-              <button type="button" data-sample="error" aria-pressed="false">Sample invoice with error</button>
-              <button type="button" data-sample="messy" aria-pressed="false">Sample receipt</button>
-            </div>
-            <label for="docText">Invoice or receipt text</label>
-            <textarea id="docText" spellcheck="false" placeholder="Paste invoice text, for example: INVOICE 1042, Acme Corp..."></textarea>
-            <div class="file-row">
-              <label class="btn-secondary" for="docFile" style="display:inline-flex;align-items:center;margin:0">Use a text file</label>
-              <input type="file" id="docFile" accept=".txt,.csv,text/plain,text/csv" hidden>
-              <span class="file-name" id="fileName">Select a file to load its text</span>
-            </div>
-            <div class="extract-row">
-              <button class="btn-primary" type="button" id="extractBtn">Extract and check</button>
-              <span class="extract-msg" id="extractMsg" role="alert" hidden></span>
-            </div>
-            <p class="helper" id="benchHelper">Pick a sample or paste your own text to start.</p>
-            <p class="limits-line">Works on pasted text. Photos and handwriting are not read.</p>
-            <p class="bench-foot">Runs in your browser. No model is called, nothing is uploaded, and the maths is shown so you can check it yourself. Plain text only: no OCR and no PDF reading.</p>
-          </div>
-          <div class="pane-results">
-            <h2 id="resultsHeading">Extracted ledger</h2>
-            <p class="verdict" id="verdict" tabindex="-1">Waiting for a document.</p>
-            <p id="liveRegion" aria-live="polite" style="position:absolute;left:-9999px"></p>
-            <div class="empty-ledger" id="emptyLedger" aria-hidden="true">
-              <div class="rule"></div><div class="rule"></div><div class="rule"></div><div class="rule"></div><div class="rule"></div>
-            </div>
-            <dl class="fields" id="fieldsList" hidden></dl>
-            <div id="itemsWrap" hidden>
-              <table>
-                <caption>Line items</caption>
-                <thead><tr><th scope="col">Description</th><th scope="col" class="num">Qty</th><th scope="col" class="num">Unit price</th><th scope="col" class="num">Amount</th></tr></thead>
-                <tbody id="itemsBody"></tbody>
-              </table>
-            </div>
-            <div class="reveal-rule" aria-hidden="true"></div>
-            <ul class="checks" id="checksList">
-              <li class="check skip"><span class="status">Not run yet</span><span class="detail">Line items sum vs subtotal</span></li>
-              <li class="check skip"><span class="status">Not run yet</span><span class="detail">Subtotal + tax + shipping vs total</span></li>
-              <li class="check skip"><span class="status">Not run yet</span><span class="detail">Each line qty x unit price vs amount</span></li>
-              <li class="check skip"><span class="status">Not run yet</span><span class="detail">Tax amount vs rate x subtotal</span></li>
-            </ul>
-            <p id="noFields" hidden>No invoice fields were found in this text. Check that the text includes a vendor, an invoice number, or amounts, then run it again.</p>
-            <div class="result-actions">
-              <button class="btn-secondary" type="button" id="copyBtn" hidden>Copy results</button>
-              <button class="btn-secondary" type="button" id="editBtn" hidden>Edit the text and check again</button>
-            </div>
-            <details class="raw" id="rawWrap" hidden>
-              <summary>Raw JSON result</summary>
-              <pre class="raw-json" id="rawJson" tabindex="0"></pre>
-            </details>
+<script>
+(function(){try{var raw=localStorage.getItem("gl_session");var s=raw?JSON.parse(raw):null;if(!s||!s.email){window.location.replace("login.html");}}catch(e){window.location.replace("login.html");}})();
+</script>
+<noscript><p style="padding:1rem;text-align:center;color:#94A3B8">JavaScript is required for this demo. The dashboard runs locally in your browser, so nothing works with JavaScript off and no signed-in state is shown.</p></noscript>
+<header hidden><div class="container nav"><a class="logo" href="index.html" aria-label="GhostLabs AI home"><span class="logo-mark" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 3a7 7 0 0 0-7 7v9l2.5-2 2.5 2 2-2 2 2 2.5-2L19 19v-9a7 7 0 0 0-7-7Z" fill="#090A0F"/><circle cx="9.5" cy="11" r="1.4" fill="#22d3ee"/><circle cx="14.5" cy="11" r="1.4" fill="#22d3ee"/></svg></span>GhostLabs AI</a><div style="display:flex;gap:.6rem;align-items:center"><span class="demo-chip">DEMO DATA</span><button class="btn btn-ghost btn-sm" id="topSignOut" type="button">Sign out</button></div></div></header>
+<div class="console" hidden>
+  <nav class="side" aria-label="Dashboard sections">
+    <p class="ws" id="wsLabel">GHOSTLABS WORKSPACE</p>
+    <button class="sec-btn" type="button" data-sec="overview" role="tab" aria-selected="true" id="tab-overview" aria-controls="sec-overview"><span class="num">01</span>Overview</button>
+    <button class="sec-btn" type="button" data-sec="keys" role="tab" aria-selected="false" id="tab-keys" aria-controls="sec-keys"><span class="num">02</span>API Keys</button>
+    <button class="sec-btn" type="button" data-sec="playground" role="tab" aria-selected="false" id="tab-playground" aria-controls="sec-playground"><span class="num">03</span>Playground</button>
+    <button class="sec-btn" type="button" data-sec="usage" role="tab" aria-selected="false" id="tab-usage" aria-controls="sec-usage"><span class="num">04</span>Usage</button>
+    <button class="sec-btn" type="button" data-sec="settings" role="tab" aria-selected="false" id="tab-settings" aria-controls="sec-settings"><span class="num">05</span>Settings</button>
+  </nav>
+  <main class="main">
+    <section class="panel-sec active" id="sec-overview" role="tabpanel" aria-labelledby="tab-overview">
+      <div class="sec-head"><span class="num">01</span><h2>Overview</h2><span class="demo-chip">DEMO DATA</span></div>
+      <div class="stats">
+        <div class="stat"><p class="k">Requests</p><p class="v" id="statRequests">1,284</p><p class="d" id="statRequestsD">Demo data, last 14 days</p></div>
+        <div class="stat"><p class="k">Avg latency</p><p class="v" id="statLatency">142ms</p><p class="d" id="statLatencyD">Demo data, last 14 days</p></div>
+        <div class="stat"><p class="k">Error rate</p><p class="v" id="statErrors">1.8%</p><p class="d" id="statErrorsD">Demo data, last 14 days</p></div>
+        <div class="stat"><p class="k">Active keys</p><p class="v" id="statActiveKeys">2</p><p class="d">Demo data, from your local key list</p></div>
+      </div>
+      <div class="card"><h3 id="ovChartTitle">Usage, last 14 days</h3><p class="note" style="margin:.2rem 0 1rem">Demo data for interface preview only. The range follows the filter in the Usage section.</p><div id="ovChart"></div></div>
+    </section>
+    <section class="panel-sec" id="sec-keys" role="tabpanel" aria-labelledby="tab-keys" hidden>
+      <div class="sec-head"><span class="num">02</span><h2>API Keys</h2><span class="demo-chip">DEMO DATA</span></div>
+      <p class="note" style="margin-top:0">Demo keys are generated and stored locally in this browser only. They are not live production keys.</p>
+      <form id="keyForm" style="display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1rem">
+        <div class="field" style="margin-top:0;flex:1;min-width:200px"><label for="keyName">Key name</label><input id="keyName" type="text" placeholder="e.g. Local testing"></div>
+        <button class="btn btn-primary" type="submit" style="align-self:flex-end">Create key</button>
+      </form>
+      <div id="newKeyBox" hidden style="margin-top:1rem">
+        <p class="pg-label">Your new demo key, shown once</p>
+        <p class="newkey" id="newKeyValue"></p>
+        <div style="display:flex;gap:.6rem;margin-top:.6rem;flex-wrap:wrap"><button class="small-btn" id="newKeyCopy" type="button">Copy key</button><span class="note" style="margin-top:.4rem">Demo key, labeled demo. Only the masked form is kept after this.</span></div>
+      </div>
+      <div class="card"><h3>Your keys</h3><div id="keyList"></div></div>
+    </section>
+    <section class="panel-sec" id="sec-playground" role="tabpanel" aria-labelledby="tab-playground" hidden>
+      <div class="sec-head"><span class="num">03</span><h2>Playground</h2><span class="demo-chip">DEMO</span></div>
+      <div class="playground">
+        <div class="pg-head"><span class="pg-title">GHOSTLABS / PLAYGROUND</span><span class="demo-chip">LIVE DEMO</span></div>
+        <div class="presets" id="presetList" role="tablist" aria-label="Playground presets"></div>
+        <div class="pg-body">
+          <div class="pg-model-block"><p class="pg-label">Model</p><div class="models" id="modelList" role="group" aria-label="Model selector"></div><p class="pg-model-note mono" id="modelNote"></p></div>
+          <div><p class="pg-label">Input</p><div class="pg-input" id="pgInput"></div></div>
+          <div><p class="pg-label">Trace</p><div class="pg-trace" id="pgTrace" aria-live="polite"></div></div>
+          <div class="pg-output-wrap" id="pgOutputWrap">
+            <div class="code-head"><div class="pg-meta" id="pgMeta"></div><button class="copy-btn" id="pgCopy" type="button">Copy</button></div>
+          <pre class="code" id="pgOutput" tabindex="0" aria-label="Playground output, JSON"></pre>
           </div>
         </div>
-      </section>
-
-      <section class="block" id="history">
-        <h2>History on this device</h2>
-        <p class="note">Each run you make with the bench is listed here, stored in this browser only. Open a run to load its document text back into the bench and check it again. No usage numbers are shown, because the bench counts nothing on any server.</p>
-        <p id="historyEmpty" style="margin-top:16px">Nothing checked yet on this device. <a href="#bench">Go to the bench</a>.</p>
-        <div id="historyWrap" hidden>
-          <table>
-            <caption>Past runs on this device</caption>
-            <thead><tr><th scope="col">Time</th><th scope="col">Vendor</th><th scope="col" class="num">Total</th><th scope="col">Checks</th><th scope="col">Run</th></tr></thead>
-            <tbody id="historyBody"></tbody>
-          </table>
+      </div>
+    </section>
+    <section class="panel-sec" id="sec-usage" role="tabpanel" aria-labelledby="tab-usage" hidden>
+      <div class="sec-head"><span class="num">04</span><h2>Usage</h2><span class="demo-chip">DEMO DATA</span></div>
+      <div class="filter-row" role="group" aria-label="Filter requests by date range">
+        <button class="filter-btn range-btn" type="button" data-range="1" aria-pressed="false">Last 24 hours</button>
+        <button class="filter-btn range-btn" type="button" data-range="7" aria-pressed="false">Last 7 days</button>
+        <button class="filter-btn range-btn" type="button" data-range="14" aria-pressed="true">Last 14 days</button>
+      </div>
+      <div class="filter-row" role="group" aria-label="Filter requests by status">
+        <button class="filter-btn" type="button" data-filter="all" aria-pressed="true">All</button>
+        <button class="filter-btn" type="button" data-filter="success" aria-pressed="false">Success</button>
+        <button class="filter-btn" type="button" data-filter="error" aria-pressed="false">Error</button>
+      </div>
+      <div class="stats" id="usageTotals">
+        <div class="stat"><p class="k">Requests in range</p><p class="v" id="uTotReq">-</p><p class="d">Demo data, recomputed from the stored log</p></div>
+        <div class="stat"><p class="k">Avg latency</p><p class="v" id="uTotLat">-</p><p class="d">Demo data, recomputed from the stored log</p></div>
+        <div class="stat"><p class="k">Error rate</p><p class="v" id="uTotErr">-</p><p class="d">Demo data, recomputed from the stored log</p></div>
+      </div>
+      <div class="card table-wrap"><table><thead><tr><th>Time</th><th>Model / Endpoint</th><th>Status</th><th>Latency</th></tr></thead><tbody id="usageBody"></tbody></table><p class="note" id="usageNote">Demo data.</p></div>
+    </section>
+    <section class="panel-sec" id="sec-settings" role="tabpanel" aria-labelledby="tab-settings" hidden>
+      <div class="sec-head"><span class="num">05</span><h2>Settings</h2><span class="demo-chip">DEMO DATA</span></div>
+      <div class="set-grid">
+        <div class="card set-card">
+          <h3>Workspace profile</h3>
+          <p class="note" style="margin-top:0">Stored locally in this browser only, in the gl_workspace key.</p>
+          <div class="field"><label for="wsName">Workspace name</label><input id="wsName" type="text"></div>
+          <div class="field"><label>Workspace slug</label><p class="mono" id="wsSlug" style="color:var(--text-2);font-size:.9rem"></p></div>
+          <div class="field"><label>Workspace ID</label><p class="mono" id="wsId" style="color:var(--text-2);font-size:.9rem"></p></div>
+          <button class="btn btn-primary" id="wsSave" type="button" style="margin-top:1.1rem">Save workspace name</button>
+          <p class="note" id="wsSaved" role="status"></p>
         </div>
-      </section>
-
-      <section class="block" id="settings">
-        <h2>Settings</h2>
-        <div class="settings-grid">
-          <div>
-            <label for="wsName">Workspace name</label>
-            <input type="text" id="wsName" name="workspace" autocomplete="off" placeholder="GhostLabs workspace">
-            <p class="note" id="wsSaved" style="margin-top:8px">Stored locally in this browser only, in the gl_workspace key.</p>
-            <button class="btn-primary" type="button" id="wsSave" style="margin-top:16px">Save workspace name</button>
-          </div>
-          <div class="danger">
-            <h3 style="font-size:20px;font-weight:600;line-height:1.25">Clear history on this device</h3>
-            <p class="note" style="margin-top:8px">This removes every saved run from this browser. It cannot be undone, and it affects this device only.</p>
-            <button class="btn-secondary" type="button" id="clearHistory" style="margin-top:16px">Clear history</button>
-            <button class="btn-primary" type="button" id="clearHistoryConfirm" hidden style="margin-top:16px">Confirm: clear all history</button>
-            <p class="note" id="clearMsg" style="margin-top:8px"></p>
-          </div>
+        <div class="card set-card">
+          <h3>API preferences</h3>
+          <p class="note" style="margin-top:0">Applied to the Playground section of this console. Stored locally in the gl_prefs key.</p>
+          <div class="field"><label for="prefModel">Default model</label><select id="prefModel"><option value="ghost-router-v2">Ghost Router (GhostLabs)</option><option value="ghost-guard-v1">Ghost Guard (GhostLabs)</option><option value="ghost-agent-v2">Ghost Agent (GhostLabs)</option><option value="ghost-voice-v1">Ghost Voice (GhostLabs)</option><option value="gemini">Gemini (Google)</option><option value="claude">Claude (Anthropic)</option><option value="gpt">GPT (OpenAI)</option><option value="llama">Llama (Meta)</option><option value="grok">Grok (xAI)</option><option value="mistral">Mistral (Mistral AI)</option></select></div>
+          <div class="field"><label for="prefSpeed">Streaming speed</label><select id="prefSpeed"><option value="calm">Calm</option><option value="standard">Standard</option><option value="fast">Fast</option></select></div>
+          <label class="check-row"><input type="checkbox" id="prefStream" checked> Stream playground output instead of showing it at once</label>
+          <p class="note" id="prefSaved" role="status"></p>
         </div>
-      </section>
-    </div>
-  </div>
-</main>
-<footer>
-  <div class="foot">
-    <p class="credit">Made by Mohammad Sidique Ibrahim</p>
-    <p>Terms are governed by the laws of Delaware, USA.</p>
-    <p><a href="index.html">Back to the site</a></p>
-  </div>
-</footer>
-<script type="module" src="engine/extract.js"></script>
-<script type="module" src="engine/samples.js"></script>
+        <div class="card set-card">
+          <h3>Session</h3>
+          <div class="field" style="margin-top:0"><label>Signed-in email</label><p class="mono" id="settingsEmail" style="color:var(--cyan);font-size:.9rem;word-break:break-all"></p></div>
+          <div class="field"><label>Signed in at</label><p class="mono" id="sessionSince" style="color:var(--text-2);font-size:.9rem"></p></div>
+          <button class="btn btn-ghost" id="settingsSignOut" type="button" style="margin-top:1.2rem">Sign out</button>
+        </div>
+        <div class="card set-card danger">
+          <h3>Danger zone</h3>
+          <p class="note" style="margin-top:0">These actions change the demo data stored in this browser. Each one needs a second click to confirm.</p>
+          <div class="danger-row"><div><p class="dz-t">Revoke all API keys</p><p class="note" style="margin-top:.15rem">Every active demo key in the API Keys section becomes revoked.</p></div><button class="small-btn danger-btn" id="dzRevoke" type="button" data-arm="Revoke all keys">Revoke all keys</button></div>
+          <div class="danger-row"><div><p class="dz-t">Reset demo data</p><p class="note" style="margin-top:.15rem">Keys, workspace name, and API preferences return to their defaults.</p></div><button class="small-btn danger-btn" id="dzReset" type="button" data-arm="Reset demo data">Reset demo data</button></div>
+          <div class="danger-row"><div><p class="dz-t">Reset workspace and sign out</p><p class="note" style="margin-top:.15rem">Clears all GhostLabs demo data and the session from this browser.</p></div><button class="small-btn danger-btn" id="dzWipe" type="button" data-arm="Reset and sign out">Reset and sign out</button></div>
+          <p class="note" id="dzStatus" role="status"></p>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
 <script>
 (function(){
 "use strict";
-function $(s){return document.querySelector(s);}
-function $$(s){return Array.prototype.slice.call(document.querySelectorAll(s));}
-var toggle=$("#themeToggle");
-function syncToggle(){var dark=document.documentElement.getAttribute("data-theme")==="dark";toggle.setAttribute("aria-pressed",dark?"true":"false");toggle.textContent=dark?"Light":"Dark";toggle.setAttribute("aria-label",dark?"Switch to light mode":"Switch to dark mode");}
-syncToggle();
-toggle.addEventListener("click",function(){var next=document.documentElement.getAttribute("data-theme")==="dark"?"light":"dark";document.documentElement.setAttribute("data-theme",next);try{localStorage.setItem("gl_theme",next);}catch(e){}syncToggle();});
-/* Session */
+var reduced=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+function $(s,c){return (c||document).querySelector(s)}
+function $$(s,c){return Array.prototype.slice.call((c||document).querySelectorAll(s))}
 var session=null;
 try{session=JSON.parse(localStorage.getItem("gl_session")||"null");}catch(e){session=null;}
-if(session&&session.email){$("#sessionEmail").textContent=session.email;}
-$("#signOutBtn").addEventListener("click",function(){localStorage.removeItem("gl_session");window.location.href="login.html";});
-/* Workspace name (parity with the live dashboard: gl_workspace key) */
-function renderWs(){
-  var name=""; try{name=localStorage.getItem("gl_workspace")||"";}catch(e){}
-  $("#wsTitle").textContent=name?name:"Your workspace";
-  $("#wsName").value=name;
+if(!session||!session.email){window.location.replace("login.html");return;}
+document.querySelector("header").hidden=false;$(".console").hidden=false;
+/* Sections */
+var secBtns=$$(".sec-btn");
+function showSec(id){
+  secBtns.forEach(function(b){var on=b.dataset.sec===id;b.setAttribute("aria-selected",on?"true":"false");});
+  $$(".panel-sec").forEach(function(p){var on=p.id==="sec-"+id;p.classList.toggle("active",on);p.hidden=!on;});
 }
+secBtns.forEach(function(b){b.addEventListener("click",function(){showSec(b.dataset.sec);});});
+/* Workspace */
+function wsName(){return localStorage.getItem("gl_workspace")||"GhostLabs workspace";}
+function wsSlug(){var s=wsName().toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"");return s||"workspace";}
+function wsId(){var s=wsName(),h=0;for(var i=0;i<s.length;i++){h=((h*31)+s.charCodeAt(i))>>>0;}return "ws_"+h.toString(16);}
+function renderWs(){$("#wsLabel").textContent=wsName().toUpperCase();$("#wsName").value=wsName();var sl=$("#wsSlug");if(sl)sl.textContent=wsSlug();var wi=$("#wsId");if(wi)wi.textContent=wsId();}
 renderWs();
 $("#wsSave").addEventListener("click",function(){
-  var v=$("#wsName").value.trim();
-  try{ if(v){localStorage.setItem("gl_workspace",v);}else{localStorage.removeItem("gl_workspace");} }catch(e){}
-  renderWs();
-  $("#wsSaved").textContent="Saved on this device.";
+  var v=$("#wsName").value.trim()||"GhostLabs workspace";
+  localStorage.setItem("gl_workspace",v);renderWs();$("#wsSaved").textContent="Saved on this device.";
 });
-/* History */
-var HKEY="gl_history";
-function loadHistory(){try{var h=JSON.parse(localStorage.getItem(HKEY)||"[]");return Array.isArray(h)?h:[];}catch(e){return[];}}
-function saveHistory(h){try{localStorage.setItem(HKEY,JSON.stringify(h));}catch(e){}}
-function fmt(n){if(n===null||n===undefined)return "Not found";return Number(n).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});}
-function renderHistory(){
-  var h=loadHistory();
-  var empty=$("#historyEmpty"), wrap=$("#historyWrap"), body=$("#historyBody");
-  if(!h.length){empty.hidden=false;wrap.hidden=true;return;}
-  empty.hidden=true;wrap.hidden=false;body.innerHTML="";
-  h.slice().reverse().forEach(function(run){
-    var idx=h.indexOf(run);
+$("#settingsEmail").textContent=session.email;
+$("#sessionSince").textContent=session.ts?new Date(session.ts).toLocaleString("en-GB"):"This browser session";
+/* API preferences (gl_prefs), read by the playground engine below */
+var pgPrefs={};
+try{pgPrefs=JSON.parse(localStorage.getItem("gl_prefs")||"{}")||{};}catch(e){pgPrefs={};}
+function savePrefs(){try{localStorage.setItem("gl_prefs",JSON.stringify(pgPrefs));}catch(e){}}
+function renderPrefs(){
+  $("#prefModel").value=pgPrefs.model||"ghost-router-v2";
+  $("#prefSpeed").value=pgPrefs.speed||"standard";
+  $("#prefStream").checked=pgPrefs.stream!==false;
+}
+renderPrefs();
+$("#prefModel").addEventListener("change",function(){
+  pgPrefs.model=this.value;savePrefs();
+  currentModel=this.value;renderModels();runPreset(currentPreset);
+  $("#prefSaved").textContent="Saved on this device. The Playground now runs "+((typeof MODELS!=="undefined"&&MODELS[this.value])?MODELS[this.value].name:this.value)+".";
+});
+$("#prefSpeed").addEventListener("change",function(){
+  pgPrefs.speed=this.value;savePrefs();runPreset(currentPreset);
+  $("#prefSaved").textContent="Saved on this device. Streaming speed: "+this.value+".";
+});
+$("#prefStream").addEventListener("change",function(){
+  pgPrefs.stream=this.checked;savePrefs();runPreset(currentPreset);
+  $("#prefSaved").textContent="Saved on this device. Streaming "+(this.checked?"on":"off")+".";
+});
+/* Danger zone: every action needs a second click inside 3.5 seconds */
+function armable(btn,fn){
+  var armed=false,t=null;
+  function disarm(){armed=false;btn.classList.remove("armed");btn.textContent=btn.dataset.arm;}
+  btn.addEventListener("click",function(){
+    if(!armed){armed=true;btn.classList.add("armed");btn.textContent="Click again to confirm";t=setTimeout(disarm,3500);return;}
+    clearTimeout(t);disarm();fn();
+  });
+}
+armable($("#dzRevoke"),function(){
+  var all=loadKeys();all.forEach(function(x){x.status="revoked";});saveKeys(all);renderKeys();
+  $("#dzStatus").textContent="All demo keys revoked. See the API Keys section.";
+});
+armable($("#dzReset"),function(){
+  localStorage.removeItem("gl_keys");localStorage.removeItem("gl_workspace");localStorage.removeItem("gl_usage");
+  usageLog=loadUsage();
+  pgPrefs={};savePrefs();renderPrefs();renderWs();renderKeys();renderOverview();renderUsage();
+  currentModel=PRESETS[0].model;renderModels();runPreset(currentPreset);
+  $("#dzStatus").textContent="Demo data reset: keys re-seeded, usage log re-seeded, workspace name and preferences back to defaults.";
+});
+armable($("#dzWipe"),function(){
+  localStorage.removeItem("gl_keys");localStorage.removeItem("gl_workspace");
+  localStorage.removeItem("gl_prefs");localStorage.removeItem("gl_session");localStorage.removeItem("gl_usage");
+  window.location.href="login.html";
+});
+function signOut(){localStorage.removeItem("gl_session");window.location.href="login.html";}
+$("#topSignOut").addEventListener("click",signOut);
+$("#settingsSignOut").addEventListener("click",signOut);
+/* Copy helper */
+function copyText(text,btn){
+  var done=function(){var old=btn.textContent;btn.textContent="Copied!";setTimeout(function(){btn.textContent=old;},1600);};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(done).catch(function(){fallback();});}
+  else{fallback();}
+  function fallback(){var ta=document.createElement("textarea");ta.value=text;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");}catch(e){}document.body.removeChild(ta);done();}
+}
+function randomChars(n){var chars="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";var out="";var arr=new Uint32Array(n);if(window.crypto&&window.crypto.getRandomValues){window.crypto.getRandomValues(arr);for(var i=0;i<n;i++)out+=chars[arr[i]%chars.length];}else{for(var j=0;j<n;j++)out+=chars[Math.floor(Math.random()*chars.length)];}return out;}
+/* Demo usage data (GT83): one stored dataset drives the Overview chart and totals, the
+   Usage date-range filter, totals and table, and the per-key detail in API Keys, so the
+   sections read as one system. Seeded once into the gl_usage key, then read back.
+   GT84: the Model / Endpoint attribution list extends to the real named models, seeded
+   with the same deterministic generator and per-route demo latency bases. */
+function lcg(seed){var s=seed>>>0;return function(){s=(s*1664525+1013904223)>>>0;return s/4294967296;};}
+var USAGE_EPS=["ghostlabs.agent","ghostlabs.extract","ghost-router-v2","ghostlabs.voice","ghost-guard-v1","ghost-agent-v2","ghost-voice-v1","ghostlabs.build","gemini","claude","gpt","llama","grok","mistral"];
+var USAGE_BASE={"ghostlabs.agent":160,"ghostlabs.extract":142,"ghost-router-v2":131,"ghostlabs.voice":121,"ghost-guard-v1":99,"ghost-agent-v2":178,"ghost-voice-v1":119,"ghostlabs.build":203,"gemini":138,"claude":164,"gpt":149,"llama":126,"grok":133,"mistral":118};
+var USAGE_DAY_COUNTS=[6,8,7,9,10,8,11,12,10,13,12,14,13,15];
+function seedUsage(){
+  var rnd=lcg(20261123), log=[], now=new Date();
+  USAGE_DAY_COUNTS.forEach(function(count,di){
+    for(var j=0;j<count;j++){
+      var d=new Date(now.getFullYear(),now.getMonth(),now.getDate()-(13-di));
+      var hour=7+Math.floor(rnd()*12); if(di===13)hour=Math.min(hour,Math.max(7,now.getHours()));
+      d.setHours(hour,Math.floor(rnd()*60),Math.floor(rnd()*60),0);
+      var ep=USAGE_EPS[Math.floor(rnd()*USAGE_EPS.length)];
+      var r=rnd(), st=r<0.86?200:(r<0.94?403:500);
+      var lat=Math.max(54,Math.round(USAGE_BASE[ep]+(rnd()*36-18)));
+      log.push({ts:d.getTime(),ep:ep,st:st,lat:lat,key:rnd()<0.64?"seed-1":"seed-2"});
+    }
+  });
+  log.sort(function(a,b){return a.ts-b.ts;});
+  return log;
+}
+function loadUsage(){
+  var log=null;
+  try{var raw=JSON.parse(localStorage.getItem("gl_usage")||"null");if(raw&&Array.isArray(raw.log)&&raw.log.length)log=raw.log;}catch(e){log=null;}
+  if(!log){log=seedUsage();try{localStorage.setItem("gl_usage",JSON.stringify({v:1,log:log}));}catch(e){}}
+  return log;
+}
+var usageLog=loadUsage();
+var usageRange=14, usageStatus="all";
+function rangeStart(days){
+  if(days===1)return Date.now()-86400000;
+  var d=new Date(); d.setHours(0,0,0,0); return d.getTime()-(days-1)*86400000;
+}
+function entriesInRange(days){var s=rangeStart(days);return usageLog.filter(function(e){return e.ts>=s;});}
+function totalsFor(entries){
+  var n=entries.length, errs=0, sum=0;
+  entries.forEach(function(e){if(e.st>=400)errs++; sum+=e.lat;});
+  return {n:n, avg:n?Math.round(sum/n):0, err:n?Math.round(errs/n*1000)/10:0};
+}
+function dayBuckets(entries,days){
+  if(days===1)return [entries.length];
+  var out=[], s=rangeStart(days);
+  for(var i=0;i<days;i++){var lo=s+i*86400000, hi=lo+86400000; out.push(entries.filter(function(e){return e.ts>=lo&&e.ts<hi;}).length);}
+  return out;
+}
+function chartSVG(buckets){
+  var base=198, max=Math.max.apply(null,buckets.concat([1]));
+  function X(i){return buckets.length>1?8+i*(624/(buckets.length-1)):320;}
+  function Y(v){return base-(v/max)*168;}
+  var parts=[];
+  buckets.forEach(function(b,i){parts.push('<line x1="'+X(i).toFixed(1)+'" y1="26" x2="'+X(i).toFixed(1)+'" y2="'+base+'" stroke="rgba(255,255,255,0.05)"/>');});
+  if(buckets.length>1)parts.push('<polyline points="'+buckets.map(function(b,i){return X(i).toFixed(1)+","+Y(b).toFixed(1);}).join(" ")+'" fill="none" stroke="#22d3ee" stroke-width="2"/>');
+  buckets.forEach(function(b,i){parts.push('<circle cx="'+X(i).toFixed(1)+'" cy="'+Y(b).toFixed(1)+'" r="3" fill="#22d3ee"/>');});
+  var fl=new Date(rangeStart(buckets.length)).toLocaleDateString("en-GB",{day:"numeric",month:"short"}).toUpperCase();
+  parts.push('<text x="8" y="214" fill="#71809A" font-family="JetBrains Mono, monospace" font-size="10">'+fl+'</text>');
+  parts.push('<text x="592" y="214" fill="#71809A" font-family="JetBrains Mono, monospace" font-size="10">TODAY</text>');
+  parts.push('<text x="8" y="18" fill="#71809A" font-family="JetBrains Mono, monospace" font-size="10">REQUESTS / DAY (DEMO)</text>');
+  return '<svg viewBox="0 0 640 220" width="100%" role="img" aria-label="Demo usage chart, requests per day for the last '+buckets.length+' days" style="display:block;max-width:100%">'+parts.join("")+"</svg>";
+}
+function rangeLabel(){return usageRange===1?"last 24 hours":"last "+usageRange+" days";}
+function renderOverview(){
+  var entries=entriesInRange(usageRange), t=totalsFor(entries);
+  $("#statRequests").textContent=t.n.toLocaleString("en-US");
+  $("#statLatency").textContent=t.avg+"ms";
+  $("#statErrors").textContent=t.err+"%";
+  ["statRequestsD","statLatencyD","statErrorsD"].forEach(function(id){var el=document.getElementById(id); if(el)el.textContent="Demo data, "+rangeLabel();});
+  $("#ovChartTitle").textContent="Usage, "+rangeLabel();
+  $("#ovChart").innerHTML=chartSVG(dayBuckets(entries,usageRange));
+}
+function fmtTime(ts){
+  var d=new Date(ts);
+  return d.toLocaleDateString("en-GB",{day:"numeric",month:"short"})+", "+d.toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"});
+}
+function renderUsage(){
+  var entries=entriesInRange(usageRange), t=totalsFor(entries);
+  $("#uTotReq").textContent=t.n.toLocaleString("en-US");
+  $("#uTotLat").textContent=t.avg+"ms";
+  $("#uTotErr").textContent=t.err+"%";
+  var rows=entries.filter(function(e){return usageStatus==="all"||(usageStatus==="success"?e.st<400:e.st>=400);});
+  rows.sort(function(a,b){return b.ts-a.ts;});
+  var show=rows.slice(0,20), body=$("#usageBody"); body.innerHTML="";
+  show.forEach(function(e){
     var tr=document.createElement("tr");
-    var when=new Date(run.ts);
-    var cells=[when.toLocaleString(), run.vendor||"Not found in this text", fmt(run.total), run.summary];
-    cells.forEach(function(v,i){var td=document.createElement("td");if(i===2)td.className="num";td.textContent=v;tr.appendChild(td);});
-    var td=document.createElement("td");
-    var b=document.createElement("button");b.type="button";b.className="btn-secondary";b.textContent="Open";
-    b.addEventListener("click",function(){
-      var ta=$("#docText"); ta.value=run.text||"";
-      ta.dispatchEvent(new Event("input"));
-      document.getElementById("bench").scrollIntoView();
-      document.getElementById("extractBtn").click();
-    });
-    td.appendChild(b);tr.appendChild(td);body.appendChild(tr);
+    var pill=e.st<400?'<span class="pill ok">'+e.st+' Success</span>':'<span class="pill err">'+e.st+' Error</span>';
+    tr.innerHTML='<td class="mono">'+fmtTime(e.ts)+'</td><td class="mono">'+e.ep+'</td><td>'+pill+'</td><td class="mono">'+e.lat+' ms</td>';
+    body.appendChild(tr);
   });
+  $("#usageNote").textContent="Showing latest "+show.length+" of "+rows.length+" requests in the "+rangeLabel()+" (demo data, stored in this browser).";
 }
-renderHistory();
-document.addEventListener("gl-run",function(e){
-  var r=e.detail.result;
-  var passed=r.checks.filter(function(c){return c.status==="pass";}).length;
-  var failed=r.checks.filter(function(c){return c.status==="fail";}).length;
-  var skipped=r.checks.filter(function(c){return c.status==="skip";}).length;
-  var summary=passed+" passed, "+failed+" failed, "+skipped+" skipped";
-  var h=loadHistory();
-  h.push({ts:Date.now(),vendor:r.fields.vendor,total:r.fields.total,summary:summary,text:e.detail.text});
-  if(h.length>50)h=h.slice(h.length-50);
-  saveHistory(h);renderHistory();
-});
-var clearBtn=$("#clearHistory"), confirmBtn=$("#clearHistoryConfirm");
-clearBtn.addEventListener("click",function(){clearBtn.hidden=true;confirmBtn.hidden=false;confirmBtn.focus();});
-confirmBtn.addEventListener("click",function(){
-  try{localStorage.removeItem(HKEY);}catch(e){}
-  renderHistory();
-  confirmBtn.hidden=true;clearBtn.hidden=false;
-  $("#clearMsg").textContent="History cleared on this device.";
-});
-/* Bench */
-var ta=$("#docText"), btn=$("#extractBtn"), helper=$("#benchHelper"), fileInput=$("#docFile"), fileName=$("#fileName");
-var verdict=$("#verdict"), fieldsList=$("#fieldsList"), itemsWrap=$("#itemsWrap"), itemsBody=$("#itemsBody");
-var checksList=$("#checksList"), rawWrap=$("#rawWrap"), rawJson=$("#rawJson"), copyBtn=$("#copyBtn"), editBtn=$("#editBtn"), noFields=$("#noFields"), live=$("#liveRegion");
-var lastResult=null;
-var extractMsg=$("#extractMsg"), emptyLedger=$("#emptyLedger");
-function syncBtn(){var has=ta.value.trim().length>0;if(has){extractMsg.hidden=true;extractMsg.textContent="";}helper.textContent=has?"Ready. Extract and check runs the document below.":"Pick a sample or paste your own text to start.";}
-ta.addEventListener("input",syncBtn);
-$$("[data-sample]").forEach(function(b){
-  b.addEventListener("click",function(){
-    $$("[data-sample]").forEach(function(x){x.setAttribute("aria-pressed","false");});
-    b.setAttribute("aria-pressed","true");
-    var samples=(window.GhostLabsSamples&&window.GhostLabsSamples.SAMPLES)||[];
-    var s=samples.filter(function(x){return x.id===b.getAttribute("data-sample");})[0];
-    if(s){ta.value=s.text;fileName.textContent="Sample: "+s.label;syncBtn();ta.focus();}
-  });
-});
-fileInput.addEventListener("change",function(){
-  var f=fileInput.files&&fileInput.files[0]; if(!f)return;
-  fileName.textContent=f.name;
-  f.text().then(function(t){
-    if(!t||!t.trim()){verdict.textContent="That file had no readable text.";live.textContent="That file had no readable text.";return;}
-    ta.value=t;syncBtn();
-  }).catch(function(){verdict.textContent="That file could not be read as text.";});
-});
-function fieldRow(label,value,isData){
-  var row=document.createElement("div");row.className="field-row";
-  var dt=document.createElement("dt");dt.textContent=label;
-  var dd=document.createElement("dd");if(isData)dd.className="data";dd.textContent=value;
-  row.appendChild(dt);row.appendChild(dd);return row;
+function keyStats(id){
+  var mine=usageLog.filter(function(e){return e.key===id;});
+  var last=null;
+  mine.forEach(function(e){if(last===null||e.ts>last)last=e.ts;});
+  return {n:mine.length, last:last, buckets:dayBuckets(mine,14)};
 }
-function render(result,text){
-  lastResult=result;
-  var f=result.fields;
-  if(emptyLedger)emptyLedger.hidden=true;
-  fieldsList.hidden=false;
-  fieldsList.innerHTML="";
-  function add(label,value,isData){fieldsList.appendChild(fieldRow(label,(value===null||value===undefined||value==="")?"Not found in this text":value,isData));}
-  add("Vendor",f.vendor,false);
-  add("Invoice number",f.invoiceNumber,true);
-  add("Invoice date",f.invoiceDate,true);
-  add("Due date",f.dueDate,true);
-  add("Currency",f.currency,false);
-  add("Subtotal",fmt(f.subtotal)==="Not found"?null:fmt(f.subtotal),true);
-  var taxText=null;
-  if(f.taxAmount!==null){taxText=fmt(f.taxAmount)+(f.taxRate!==null?" ("+f.taxRate+"%)":"")+(f.taxLabel?" "+f.taxLabel:"");}
-  add("Tax",taxText,true);
-  add("Shipping",f.shipping===null?null:fmt(f.shipping),true);
-  add("Total",f.total===null?null:fmt(f.total),true);
-  add("Amount due",f.amountDue===null?null:fmt(f.amountDue),true);
-  itemsBody.innerHTML="";
-  if(f.lineItems.length){
-    itemsWrap.hidden=false;
-    f.lineItems.forEach(function(it){
-      var tr=document.createElement("tr");
-      [it.description,it.qty===null?"Not found":String(it.qty),it.unitPrice===null?"Not found":fmt(it.unitPrice),fmt(it.amount)].forEach(function(v,i){
-        var td=document.createElement("td");if(i>0)td.className="num";td.textContent=v;tr.appendChild(td);
-      });
-      itemsBody.appendChild(tr);
-    });
-  } else { itemsWrap.hidden=true; }
-  checksList.innerHTML="";
-  var passed=0,failed=0;
-  result.checks.forEach(function(c){
-    if(c.status==="pass")passed++; else if(c.status==="fail")failed++;
-    var li=document.createElement("li");li.className="check "+(c.status==="pass"?"pass":c.status==="fail"?"fail":"skip");
-    var st=document.createElement("span");st.className="status";
-    st.textContent=c.status==="pass"?"Passed":c.status==="fail"?"Does not match":"Skipped";
-    var dt=document.createElement("span");dt.className="detail data";dt.textContent=c.label+": "+c.detail;
-    li.appendChild(st);li.appendChild(dt);checksList.appendChild(li);
-  });
-  if(result.meta.fieldsFound===0){
-    verdict.textContent="Nothing could be extracted from that text.";
-    noFields.hidden=false;
-  } else if(failed===0&&passed>0){
-    verdict.textContent="This document adds up.";
-    noFields.hidden=true;
-  } else if(failed>0){
-    verdict.textContent=passed+" checks passed, "+failed+(failed===1?" does not match.":" do not match.");
-    noFields.hidden=true;
-  } else {
-    verdict.textContent="Extraction finished. Every check was skipped, see the reasons below.";
-    noFields.hidden=true;
+function sparkSVG(buckets){
+  var max=Math.max.apply(null,buckets.concat([1]));
+  var pts=buckets.map(function(b,i){return (i*(96/13)).toFixed(1)+","+(26-(b/max)*22).toFixed(1);}).join(" ");
+  return '<svg class="key-spark" width="96" height="28" viewBox="0 0 96 28" aria-hidden="true"><polyline points="'+pts+'" fill="none" stroke="#22d3ee" stroke-width="1.5"/></svg>';
+}
+/* API Keys */
+function loadKeys(){
+  var keys=null;
+  try{keys=JSON.parse(localStorage.getItem("gl_keys")||"null");}catch(e){keys=null;}
+  if(!Array.isArray(keys)){
+    keys=[
+      {id:"seed-1",name:"Production demo",prefix:"gl_sandbox_",last4:"7K2P",created:"2026-11-10",status:"active"},
+      {id:"seed-2",name:"Staging demo",prefix:"gl_sandbox_",last4:"9QX4",created:"2026-11-18",status:"active"}
+    ];
+    localStorage.setItem("gl_keys",JSON.stringify(keys));
   }
-  rawJson.textContent=JSON.stringify(result,null,2);
-  rawWrap.hidden=false; copyBtn.hidden=false; editBtn.hidden=false; copyBtn.textContent="Copy results";
-  var shell=document.querySelector(".bench-shell");
-  shell.classList.remove("reveal"); void shell.offsetWidth; shell.classList.add("reveal");
-  live.textContent="Checking complete. "+verdict.textContent;
-  verdict.focus();
-  document.dispatchEvent(new CustomEvent("gl-run",{detail:{result:result,text:text}}));
+  return keys;
 }
-btn.addEventListener("click",function(){
-  var text=ta.value;
-  if(!text.trim()){extractMsg.textContent="Paste a document or pick a sample first";extractMsg.hidden=false;ta.focus();return;}
-  if(!window.GhostLabsExtract){verdict.textContent="The extraction engine did not load. Reload the page and try again.";return;}
-  btn.disabled=true; btn.textContent="Checking...";
-  live.textContent="Checking your document";
-  var start=Date.now();
-  var result=window.GhostLabsExtract.extractDocument(text);
-  var wait=Math.max(0,300-(Date.now()-start));
-  setTimeout(function(){
-    render(result,text);
-    btn.disabled=false; btn.textContent="Extract and check";
-  },wait);
+function saveKeys(k){localStorage.setItem("gl_keys",JSON.stringify(k));}
+function renderKeys(){
+  var keys=loadKeys();var list=$("#keyList");list.innerHTML="";
+  keys.forEach(function(k){
+    var row=document.createElement("div");row.className="key-row";
+    var masked=k.prefix+"\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022"+k.last4;
+    var ks=keyStats(k.id);
+    row.innerHTML='<div class="grow"><p style="font-weight:600">'+k.name.replace(/</g,"&lt;")+'</p><p class="mono" style="font-size:.8rem;color:var(--text-2)">'+masked+'</p><p class="note" style="margin-top:.2rem">Created '+k.created+' (demo)</p><p class="key-meta">'+ks.n+' requests in the stored demo data · Last used '+(ks.last?fmtTime(ks.last):"no requests yet")+'</p>'+sparkSVG(ks.buckets)+'</div>';
+    var pill=document.createElement("span");pill.className="pill "+(k.status==="active"?"act":"rev");pill.textContent=k.status;row.appendChild(pill);
+    if(k.status==="active"){
+      var btn=document.createElement("button");btn.className="small-btn";btn.type="button";btn.textContent="Revoke";
+      btn.addEventListener("click",function(){
+        var all=loadKeys();all.forEach(function(x){if(x.id===k.id)x.status="revoked";});saveKeys(all);renderKeys();
+      });
+      row.appendChild(btn);
+    }
+    list.appendChild(row);
+  });
+  var active=keys.filter(function(k){return k.status==="active";}).length;
+  $("#statActiveKeys").textContent=String(active);
+}
+renderKeys();
+$("#keyForm").addEventListener("submit",function(e){
+  e.preventDefault();
+  var name=$("#keyName").value.trim()||"Untitled key";
+  var full="gl_sandbox_"+randomChars(24);
+  var keys=loadKeys();
+  keys.push({id:"k-"+Date.now(),name:name,prefix:"gl_sandbox_",last4:full.slice(-4),created:new Date().toISOString().slice(0,10),status:"active"});
+  saveKeys(keys);renderKeys();
+  $("#newKeyValue").textContent=full;
+  $("#newKeyBox").hidden=false;
+  $("#keyName").value="";
 });
-copyBtn.addEventListener("click",function(){
-  if(!lastResult)return;
-  var plain=JSON.stringify(lastResult,null,2);
-  function done(){copyBtn.textContent="Copied";}
-  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(plain).then(done,done);}else{done();}
+$("#newKeyCopy").addEventListener("click",function(){copyText($("#newKeyValue").textContent,this);});
+/* Usage filters (GT83): the date range recomputes the Usage totals and table and the
+   Overview chart and totals from the stored demo log; the status filter narrows the table. */
+$$(".range-btn").forEach(function(b){
+  b.addEventListener("click",function(){
+    $$(".range-btn").forEach(function(x){x.setAttribute("aria-pressed",x===b?"true":"false");});
+    usageRange=parseInt(b.dataset.range,10);
+    renderOverview(); renderUsage();
+  });
 });
-editBtn.addEventListener("click",function(){ta.focus();ta.setSelectionRange(0,0);});
-syncBtn();
+$$(".filter-btn[data-filter]").forEach(function(b){
+  b.addEventListener("click",function(){
+    $$(".filter-btn[data-filter]").forEach(function(x){x.setAttribute("aria-pressed",x===b?"true":"false");});
+    usageStatus=b.dataset.filter;
+    renderUsage();
+  });
+});
+renderOverview();
+renderUsage();
+/* Playground (landing code and presets reused) */
+var PRESETS=[
+ {id:"extract",label:"Structured extraction",input:"Invoice #1042, Acme Corp, $4,820.00 due Aug 12",latency:142,model:"ghost-router-v2",
+  trace:["Routing request to ghost-router-v2","Parsing document fields","Validating against invoice schema","Structured output ready"],
+  output:{vendor:"Acme Corp",total:4820,currency:"USD",due_date:"2026-08-12"}},
+ {id:"guardrail",label:"Guardrail check",input:"Delete all customer records from 2023.",latency:96,model:"ghost-guard-v1",
+  trace:["Routing request to ghost-guard-v1","Checking action against guardrail policy","Destructive action detected","Blocked with human approval suggestion"],
+  output:{status:"blocked",reason:"destructive_action",suggestion:"Request human approval first."}},
+ {id:"agent",label:"Multi-step agent",input:"Summarize Q2 sales and draft a follow-up email to the top 3 accounts.",latency:178,model:"ghost-agent-v2",
+  trace:["Routing request to ghost-agent-v2","Step 1: fetch_crm","Step 2: summarize","Step 3: draft_email","Plan ready for review"],
+  output:{steps:["fetch_crm","summarize","draft_email"],status:"ready_for_review"}},
+ {id:"voice",label:"Voice & realtime",input:"Voice: 'Book a demo for Thursday at 2pm.'",latency:121,model:"ghost-voice-v1",
+  trace:["Routing request to ghost-voice-v1","Transcribing voice input","Extracting intent, date, and time","Demo confirmed"],
+  output:{intent:"schedule_demo",date:"2026-11-27",time:"14:00",status:"confirmed"}}
+];
+/* Playground engine (GT80, extended GT84): same engine as the landing, with the Settings
+   preferences applied. Preset inputs, traces, outputs, and base latencies stay the frozen
+   spec data. GT84 adds the same real named models as the landing; each carries a demo
+   profile (latency factor, streaming chunk, wrapper line) defined here on this page.
+   The profiles describe this demo's behavior, not the real models. */
+var MODELS={
+ "ghost-router-v2":{name:"Ghost Router",provider:"GhostLabs",factor:1,chunk:6,note:"Balanced routing and structured extraction.",route:"ghost-router-v2",wrap:"",best:"Mixed workloads: the router picks the route per request."},
+ "ghost-guard-v1":{name:"Ghost Guard",provider:"GhostLabs",factor:0.68,chunk:10,note:"Policy checks on the fastest path.",route:"ghost-guard-v1",wrap:"",best:"Policy checks that must clear before anything ships."},
+ "ghost-agent-v2":{name:"Ghost Agent",provider:"GhostLabs",factor:1.28,chunk:4,note:"Multi-step plans with deeper traces.",route:"ghost-agent-v2",wrap:"",best:"Multi-step plans that need a full trace."},
+ "ghost-voice-v1":{name:"Ghost Voice",provider:"GhostLabs",factor:0.86,chunk:8,note:"Realtime intent and entity parsing.",route:"ghost-voice-v1",wrap:"",best:"Voice input and realtime intent parsing."},
+ "gemini":{name:"Gemini",provider:"Google",factor:0.92,chunk:7,note:"Demo profile: quick, even pacing with a generalist tone.",route:"Gemini",wrap:"// demo route: Gemini (Google), generalist profile\n",best:"General-purpose and multimodal-shaped requests."},
+ "claude":{name:"Claude",provider:"Anthropic",factor:1.12,chunk:5,note:"Demo profile: slower, careful pacing with a reasoning-first tone.",route:"Claude",wrap:"// demo route: Claude (Anthropic), reasoning-first profile\n",best:"Long documents and careful reasoning tasks."},
+ "gpt":{name:"GPT",provider:"OpenAI",factor:1.04,chunk:6,note:"Demo profile: balanced pacing with a neutral generalist tone.",route:"GPT",wrap:"// demo route: GPT (OpenAI), balanced profile\n",best:"All-round generation and tool-driven workflows."},
+ "llama":{name:"Llama",provider:"Meta",factor:0.78,chunk:9,note:"Demo profile: brisk pacing on the open-weight route.",route:"Llama",wrap:"// demo route: Llama (Meta), open-weight profile\n",best:"Open-weight routes and custom fine-tune setups."},
+ "grok":{name:"Grok",provider:"xAI",factor:0.84,chunk:8,note:"Demo profile: brisk pacing with a direct tone.",route:"Grok",wrap:"// demo route: Grok (xAI), direct profile\n",best:"Direct answers and realtime-flavored requests."},
+ "mistral":{name:"Mistral",provider:"Mistral AI",factor:0.72,chunk:10,note:"Demo profile: lean, fast pacing with terse output.",route:"Mistral",wrap:"// demo route: Mistral (Mistral AI), lean profile\n",best:"Lean, high-volume request streams."}
+};
+var MODEL_IDS=Object.keys(MODELS);
+var pgDefaultModel=(pgPrefs.model&&MODEL_IDS.indexOf(pgPrefs.model)>=0)?pgPrefs.model:null;
+function pgSpeed(){return pgPrefs.speed==="calm"?1.5:(pgPrefs.speed==="fast"?0.6:1);}
+function pgStreamOn(){return pgPrefs.stream!==false;}
+var presetList=$("#presetList"), pgTimers=[], pgInterval=null, currentPreset=0, runCount=0;
+var currentModel=pgDefaultModel||PRESETS[0].model;
+presetList.innerHTML=PRESETS.map(function(p,i){
+ return '<button class="preset" role="tab" id="preset-'+p.id+'" aria-selected="'+(i===0)+'" data-idx="'+i+'" type="button">'+p.label+'</button>';
+}).join("");
+var modelList=$("#modelList"), modelNote=$("#modelNote");
+function renderModels(){
+ if(!modelList)return;
+ $$(".model-btn",modelList).forEach(function(b){b.setAttribute("aria-pressed", b.dataset.model===currentModel?"true":"false");});
+ if(modelNote)modelNote.textContent=MODELS[currentModel].name+" · "+MODELS[currentModel].provider+" · "+MODELS[currentModel].note;
+}
+if(modelList){
+ modelList.innerHTML=MODEL_IDS.map(function(id){return '<button class="model-btn" type="button" data-model="'+id+'" aria-pressed="'+(id===currentModel?"true":"false")+'">'+MODELS[id].name+'</button>';}).join("");
+ $$(".model-btn",modelList).forEach(function(b){b.addEventListener("click",function(){currentModel=b.dataset.model;renderModels();runPreset(currentPreset);});});
+ renderModels();
+}
+/* Settings default-model list (GT84): same real model set as the playground selector. */
+var prefSel=$("#prefModel");
+if(prefSel){
+ prefSel.innerHTML=MODEL_IDS.map(function(id){return '<option value="'+id+'">'+MODELS[id].name+" ("+MODELS[id].provider+")</option>";}).join("");
+ prefSel.value=(pgPrefs.model&&MODEL_IDS.indexOf(pgPrefs.model)>=0)?pgPrefs.model:"ghost-router-v2";
+}
+function clearTimers(){pgTimers.forEach(function(t){clearTimeout(t)});pgTimers=[];if(pgInterval){clearInterval(pgInterval);pgInterval=null;}}
+function setMeta(status,latency,tokens){
+ $("#pgMeta").innerHTML='<span class="tag">'+(MODELS[currentModel]?MODELS[currentModel].name:currentModel)+'</span><span class="tag status'+(status==="running"?" running":"")+'">'+status+'</span><span class="tag latency">'+latency.replace(/ ms$/," ms · sim")+'</span><span class="tag">'+tokens+'</span>';
+}
+function runPreset(idx){
+ currentPreset=idx; clearTimers(); runCount++;
+ $$(".preset",presetList).forEach(function(b,i){b.setAttribute("aria-selected", i===idx?"true":"false");b.tabIndex=i===idx?0:-1;});
+ var p=PRESETS[idx];
+ $("#pgInput").textContent=p.input;
+ var trace=$("#pgTrace"); trace.innerHTML="";
+ var wrap=$("#pgOutputWrap"); wrap.classList.remove("show");
+ var out=$("#pgOutput"); out.textContent=""; out.classList.remove("streaming");
+ var runId=idx+"-"+Date.now();
+ trace.dataset.run=runId;
+ var model=MODELS[currentModel]||MODELS[p.model];
+ var jitter=((idx*7)+(MODEL_IDS.indexOf(currentModel)*13)+(runCount*5))%11-5;
+ var targetLatency=Math.max(24,Math.round(p.latency*model.factor)+jitter);
+ var full=(model.wrap||"")+JSON.stringify(p.output,null,2);
+ var inTok=Math.max(1,Math.round(p.input.length/4));
+ var outTok=Math.max(1,Math.round(full.length/4));
+ setMeta("running","0 ms","0 tok");
+ function finish(){
+   if(trace.dataset.run!==runId) return;
+   out.textContent=full; out.classList.remove("streaming");
+   setMeta("complete",targetLatency+" ms",(inTok+outTok)+" tok");
+   wrap.classList.add("show");
+ }
+ function startStream(){
+   if(trace.dataset.run!==runId) return;
+   wrap.classList.add("show");
+   if(reduced||!pgStreamOn()){finish();return;}
+   out.classList.add("streaming");
+   var totalTicks=Math.max(1,Math.ceil(full.length/model.chunk));
+   var tickMs=Math.round(Math.min(40,Math.max(12,(targetLatency*2.2)/totalTicks))*pgSpeed());
+   var pos=0;
+   pgInterval=setInterval(function(){
+     if(trace.dataset.run!==runId){clearInterval(pgInterval);pgInterval=null;return;}
+     pos=Math.min(full.length,pos+model.chunk);
+     out.textContent=full.slice(0,pos);
+     var prog=full.length?pos/full.length:1;
+     setMeta("running",Math.round(targetLatency*prog)+" ms",(inTok+Math.round(outTok*prog))+" tok");
+     if(pos>=full.length){clearInterval(pgInterval);pgInterval=null;finish();}
+   },tickMs);
+ }
+ var stepDelay = reduced ? 0 : 320;
+ p.trace.forEach(function(line,i){
+   var t=setTimeout(function(){
+     if(trace.dataset.run!==runId) return;
+     var d=document.createElement("div"); d.className="line"; d.textContent=line.replace(/ghost-[a-z]+-v[0-9]/,model.route||currentModel); trace.appendChild(d);
+     if(i===p.trace.length-1){
+       var t2=setTimeout(startStream, reduced?0:260); pgTimers.push(t2);
+     }
+   }, stepDelay*(i+1)); pgTimers.push(t);
+ });
+}
+$$(".preset",presetList).forEach(function(b){b.addEventListener("click",function(){runPreset(parseInt(b.dataset.idx,10));});});
+presetList.addEventListener("keydown",function(e){
+if(e.key!=="ArrowRight"&&e.key!=="ArrowLeft")return; e.preventDefault();
+var n=(currentPreset+(e.key==="ArrowRight"?1:PRESETS.length-1))%PRESETS.length;
+runPreset(n); $$(".preset",presetList)[n].focus();
+});
+$("#pgCopy").addEventListener("click",function(){copyText($("#pgOutput").textContent,this);});
+runPreset(0);
 })();
 </script>
 </body>
