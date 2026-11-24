@@ -335,6 +335,43 @@ footer{border-top:1px solid var(--border);padding:3.5rem 0 2.5rem}
 .gl-item input{width:6.5rem;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.45rem .6rem;color:var(--text);font-family:inherit}
 .gl-item .gl-desc{flex:1;min-width:140px;color:var(--text-2);font-size:.9rem}
 .gl-actions{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:.8rem}
+/* GT117 click-to-trace: Argon backdrop mirror behind the editable textarea.
+   Mirror and textarea share font, size, line-height, padding and wrapping so
+   mark offsets line up with the textarea glyphs. Colors reuse GT84 tokens:
+   slate (--text-2), amber (#fcd34d, the .tag.status.running color), green
+   (#6ee7b7 / rgba(52,211,153) from .tag.status), cyan (--cyan), red (#fca5a5
+   from .tag.fail). */
+.gl-pane{position:relative}
+.gl-mirror{position:absolute;inset:0;z-index:0;background:var(--bg);border:1px solid transparent;border-radius:10px;padding:.9rem 1rem;overflow:hidden;pointer-events:none;font-family:'Inter',system-ui,sans-serif;font-size:.95rem;line-height:1.6;color:transparent}
+.gl-mirror-inner{white-space:pre-wrap;word-wrap:break-word;overflow-wrap:break-word;will-change:transform}
+.gl-mirror mark{color:transparent;border-radius:3px;background:transparent}
+.gl-mirror mark.hl-anchor{background:rgba(148,163,184,.5)}
+.gl-mirror mark.hl-value{background:rgba(252,211,77,.8)}
+.gl-mirror mark.hl-op-a{background:rgba(52,211,153,.55)}
+.gl-mirror mark.hl-op-b{background:rgba(34,211,238,.5)}
+.gl-mirror mark.hl-target-pass{background:rgba(52,211,153,.85)}
+.gl-mirror mark.hl-target-fail{background:rgba(248,113,113,.85)}
+.gl-mirror mark.hl-ambig{background:rgba(252,211,77,.35);box-shadow:inset 0 0 0 2px rgba(252,211,77,.95)}
+#docInput{position:relative;z-index:1;background:transparent;font-family:'Inter',system-ui,sans-serif;font-size:.95rem;line-height:1.6}
+.gl-trace-badge{margin-top:.55rem;border:1px solid var(--border);background:var(--surface-2);border-radius:10px;padding:.55rem .8rem;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--text-2);overflow-y:auto}
+.gl-trace-badge strong{color:var(--text);font-weight:600}
+.gl-trace-legend{display:flex;gap:.45rem;flex-wrap:wrap;align-items:center;margin-top:.55rem}
+.gl-trace-legend[hidden]{display:none}
+.gl-trace-legend .sw{display:inline-block;width:.7rem;height:.7rem;border-radius:3px;vertical-align:-.08rem;margin-right:.35rem}
+.gl-trace-legend .sw-anchor{background:rgba(148,163,184,.5)}
+.gl-trace-legend .sw-value{background:rgba(252,211,77,.8)}
+.gl-trace-legend .sw-op-a{background:rgba(52,211,153,.55)}
+.gl-trace-legend .sw-op-b{background:rgba(34,211,238,.5)}
+.gl-trace-legend .sw-target-pass{background:rgba(52,211,153,.85)}
+.gl-trace-legend .sw-target-fail{background:rgba(248,113,113,.85)}
+@media(max-width:639px){.gl-mirror{padding:.42rem .55rem}}
+.gl-field.traced input{border-color:rgba(252,211,77,.65)}
+.gl-check{cursor:pointer}
+.gl-check.traced{border-color:rgba(52,211,153,.55)}
+.gl-item.traced{border-color:rgba(252,211,77,.65)}
+.gl-prov-row{display:flex;gap:.45rem;flex-wrap:wrap;align-items:center}
+.gl-cand{font-family:'JetBrains Mono',monospace;font-size:.75rem}
+.gl-edited{color:var(--muted);font-size:.8rem}
 </style>
 </head>
 <body>
@@ -397,7 +434,9 @@ footer{border-top:1px solid var(--border);padding:3.5rem 0 2.5rem}
       <div class="pg-body">
         <div>
           <div class="pg-label">Invoice or receipt text</div>
-          <textarea class="pg-input gl-input" id="docInput" rows="10" placeholder="Paste invoice or receipt text here" aria-label="Invoice or receipt text"></textarea>
+          <div class="gl-pane"><div class="gl-mirror" id="docMirror" aria-hidden="true"><div class="gl-mirror-inner" id="docMirrorInner"></div></div><textarea class="pg-input gl-input" id="docInput" rows="10" placeholder="Paste invoice or receipt text here" aria-label="Invoice or receipt text"></textarea></div>
+          <div class="gl-trace-badge" id="traceBadge" hidden></div>
+          <div class="gl-trace-legend" id="traceLegend" hidden><span class="tag"><span class="sw sw-anchor"></span>Anchor: slate</span><span class="tag"><span class="sw sw-value"></span>Value: amber</span><span class="tag"><span class="sw sw-op-a"></span><span class="sw sw-op-b"></span>Operand: green / blue</span><span class="tag"><span class="sw sw-target-pass"></span>Target: green, pass</span><span class="tag"><span class="sw sw-target-fail"></span>Target: red, fail</span></div>
           <p class="note">Your text is processed on this device and is not uploaded.</p>
           <p class="note">On a phone: copy text from a photo with Live Text (iOS) or Google Lens (Android), then paste it here.</p>
           <p class="note" id="sizeNote" hidden>That text is over the 100 KB cap for this checker. Trim it and run again.</p>
@@ -859,6 +898,138 @@ function normalizeInput(raw) {
 }
 
 // ------------------------------------------------------------------
+// Provenance helpers (GT117). Spans are character offsets into the
+// normalized input string produced by normalizeInput, the exact string
+// extractDocument parses. A span is recorded only when slicing that
+// string at [start, end) returns the raw text stored on the span, so a
+// span that cannot be made exact is left null instead of being wrong.
+// ------------------------------------------------------------------
+function makeSpan(sourceText, lineStart, lineNo, startInLine, raw, ruleId, anchor) {
+  if (startInLine === null || startInLine === undefined || raw === null || raw === undefined || raw === '') return null;
+  const start = lineStart + startInLine;
+  const end = start + String(raw).length;
+  if (sourceText.slice(start, end) !== String(raw)) return null;
+  return { start, end, line: lineNo, raw: String(raw), ruleId, anchor: anchor || null };
+}
+function anchorSpan(sourceText, lineStart, line, re) {
+  const m = line.match(re);
+  if (!m) return null;
+  const start = lineStart + m.index, end = start + m[0].length;
+  return sourceText.slice(start, end) === m[0] ? { start, end } : null;
+}
+// stripRate with a position map: map[i] is the index in the original
+// line of stripped character i. Lets amount positions found on the
+// rate-stripped line be translated back to original line coordinates.
+function stripRateWithMap(line) {
+  const re = /\d+(?:[.,]\d+)?\s*%/g;
+  let stripped = '', last = 0, m;
+  const map = [];
+  while ((m = re.exec(line)) !== null) {
+    for (let i = last; i < m.index; i++) { stripped += line[i]; map.push(i); }
+    last = m.index + m[0].length;
+  }
+  for (let i = last; i < line.length; i++) { stripped += line[i]; map.push(i); }
+  map.push(line.length);
+  return { stripped, map };
+}
+// Same selection as lastAmount(stripRate(line)), but the returned index
+// is in original line coordinates. Returns { value, raw, index }.
+function lastAmountMapped(line) {
+  const { stripped, map } = stripRateWithMap(line);
+  if (stripped !== stripRate(line)) return lastAmount(stripped);
+  const re = /\(?[\$\u20AC\u00A3]?\s*-?\d[\d\s.,]*\d\)?|\(?[\$\u20AC\u00A3]?\s*-?\d\)?/g;
+  let m, last = null;
+  while ((m = re.exec(stripped)) !== null) {
+    const token = m[0].trim();
+    const v = parseNumber(token);
+    if (v !== null) {
+      const lead = m[0].length - m[0].trimStart().length;
+      last = { value: v, raw: token, index: map[m.index + lead] };
+    }
+  }
+  return last;
+}
+// Same values as allAmounts(stripRate(line)), indices in original line
+// coordinates.
+function allAmountsMapped(line) {
+  const { stripped, map } = stripRateWithMap(line);
+  if (stripped !== stripRate(line)) return allAmounts(stripped);
+  const re = /\(?[\$\u20AC\u00A3]?\s*-?\d[\d.,]*\d\)?|\(?[\$\u20AC\u00A3]?\s*-?\d\)?/g;
+  const out = [];
+  let m;
+  while ((m = re.exec(stripped)) !== null) {
+    const v = parseNumber(m[0]);
+    if (v !== null) {
+      const lead = m[0].length - m[0].trimStart().length;
+      out.push({ value: v, raw: m[0].trim(), index: map[m.index + lead] });
+    }
+  }
+  return out;
+}
+// The raw date token parseDate would read from a line, with its index,
+// following the same pattern order and stopping rules as parseDate.
+function findDateSpanInLine(line) {
+  let m = line.match(/(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})/);
+  if (m) return parseDate(m[0]) ? { raw: m[0], index: m.index } : null;
+  m = line.match(/(\d{1,2})[-\/](\d{1,2})[-\/](\d{4})/);
+  if (m) return parseDate(m[0]) ? { raw: m[0], index: m.index } : null;
+  m = line.match(/([A-Za-z]+)\.?\s+(\d{1,2})(?:st|nd|rd|th)?,?\s+(\d{4})/);
+  if (m && MONTHS[m[1].toLowerCase()]) return { raw: m[0], index: m.index };
+  m = line.match(/(\d{1,2})(?:st|nd|rd|th)?\s+([A-Za-z]+)\.?,?\s+(\d{4})/);
+  if (m && MONTHS[m[2].toLowerCase()]) return { raw: m[0], index: m.index };
+  return null;
+}
+// Provenance for one parsed line item, located by token search on its
+// source line. A subfield whose token cannot be located exactly stays
+// null: the amount is the last amount token with the item value, the
+// unit price is the last amount token before it with the unit value,
+// the quantity is the last plain number token before the unit price
+// (or amount) with the qty value, and the description must appear
+// verbatim in the line. A unit price the parser computed (amount
+// divided by qty) has no source token and stays null.
+function lineItemProvenance(sourceText, lineStart, lineNo, line, item) {
+  const out = { description: null, qty: null, unitPrice: null, amount: null };
+  if (!item) return out;
+  // Amount tokens on the line, with indices at the trimmed token start
+  // (the amount regex can begin a match on the space before a token,
+  // which is the offset allAmounts reports; that offset is not exact).
+  const amounts = [];
+  {
+    const re = /-?\(?[\$\u20AC\u00A3]?\s*-?\d[\d.,]*\d\)?|-?\(?[\$\u20AC\u00A3]?\s*-?\d\)?/g;
+    let m;
+    while ((m = re.exec(line)) !== null) {
+      const v = parseNumber(m[0]);
+      if (v !== null) {
+        const lead = m[0].length - m[0].trimStart().length;
+        amounts.push({ value: v, raw: m[0].trim(), index: m.index + lead });
+      }
+    }
+  }
+  let amtTok = null;
+  for (const t of amounts) if (t.value === item.amount) amtTok = t;
+  if (amtTok) out.amount = makeSpan(sourceText, lineStart, lineNo, amtTok.index, amtTok.raw, 'LINE_ITEM_AMOUNT', null);
+  let unitTok = null;
+  if (item.unitPrice !== null && amtTok) {
+    for (const t of amounts) if (t.index < amtTok.index && t.value === item.unitPrice) unitTok = t;
+    if (unitTok) out.unitPrice = makeSpan(sourceText, lineStart, lineNo, unitTok.index, unitTok.raw, 'LINE_ITEM_UNIT_PRICE', null);
+  }
+  if (item.qty !== null) {
+    const limit = unitTok ? unitTok.index : (amtTok ? amtTok.index : line.length);
+    const numRe = /\d+(?:[.,]\d+)?/g;
+    let nm, qTok = null;
+    while ((nm = numRe.exec(line)) !== null) {
+      if (nm.index < limit && parseNumber(nm[0]) === item.qty) qTok = { index: nm.index, raw: nm[0] };
+    }
+    if (qTok) out.qty = makeSpan(sourceText, lineStart, lineNo, qTok.index, qTok.raw, 'LINE_ITEM_QTY', null);
+  }
+  if (item.description) {
+    const di = line.indexOf(item.description);
+    if (di >= 0) out.description = makeSpan(sourceText, lineStart, lineNo, di, item.description, 'LINE_ITEM_DESCRIPTION', null);
+  }
+  return out;
+}
+
+// ------------------------------------------------------------------
 // Main entry
 // ------------------------------------------------------------------
 function extractDocument(text) {
@@ -866,6 +1037,51 @@ function extractDocument(text) {
   const input = normalizeInput(typeof text === 'string' ? text : ''); // [PATCH P4]
   const rawLines = input.split(/\r?\n/);
   const lines = rawLines.map(l => l.trim()).filter(l => l.length > 0);
+  // Provenance bookkeeping (GT117). lineInfos[i] locates lines[i] in the
+  // normalized input: the offset of its first character and its 1-based
+  // line number in that string. Every span below is verified against
+  // the input by makeSpan before it is recorded.
+  const lineInfos = [];
+  {
+    let off = 0;
+    const parts = input.split('\n');
+    for (let i = 0; i < parts.length; i++) {
+      if (parts[i].trim().length > 0) {
+        lineInfos.push({ start: off + (parts[i].length - parts[i].trimStart().length), line: i + 1 });
+      }
+      off += parts[i].length + 1;
+    }
+  }
+  const provFields = {
+    vendor: null, invoiceNumber: null, invoiceDate: null, dueDate: null,
+    currency: null, subtotal: null, taxLabel: null, taxRate: null,
+    taxAmount: null, shipping: null, tip: null, total: null, amountDue: null
+  };
+  const provLineItems = [];
+  const provTaxes = [];
+  const ambiguous = {};
+  const cand = { total: [], subtotal: [], amountDue: [], taxAmount: [], invoiceNumber: [] };
+  function noteCandidate(key, span, value) { if (span) cand[key].push({ span, value }); }
+  function settleAmbiguous() {
+    for (const key of Object.keys(cand)) {
+      const fspan = provFields[key];
+      if (!fspan) continue;
+      const byRule = {};
+      for (const c of cand[key]) {
+        if (!byRule[c.span.ruleId]) byRule[c.span.ruleId] = [];
+        byRule[c.span.ruleId].push(c);
+      }
+      for (const rule of Object.keys(byRule)) {
+        const group = byRule[rule];
+        if (group.length < 2) continue;
+        if (new Set(group.map(c => c.value)).size < 2) continue;
+        let picked = -1;
+        group.forEach((c, i) => { if (c.span.start === fspan.start && c.span.end === fspan.end) picked = i; });
+        if (picked < 0) continue;
+        ambiguous[key] = { candidates: group.map(c => c.span), picked };
+      }
+    }
+  }
   const fields = {
     vendor: null, invoiceNumber: null, invoiceDate: null, dueDate: null,
     currency: null, lineItems: [], subtotal: null, taxLabel: null,
@@ -880,49 +1096,98 @@ function extractDocument(text) {
     if (findDateInLine(l) && l.length < 30) continue;
     if (/\b(invoice\s*(no|number|#)|date|due)\b/i.test(l)) continue;
     if (l.includes('@') || /^https?:\/\//i.test(l)) continue;
-    if (/[A-Za-z]/.test(l)) { fields.vendor = l.replace(/\s{2,}.*$/, '').trim() || l; break; }
+    if (/[A-Za-z]/.test(l)) {
+      fields.vendor = l.replace(/\s{2,}.*$/, '').trim() || l;
+      const info = lineInfos[i];
+      provFields.vendor = info ? makeSpan(input, info.start, info.line, 0, fields.vendor, 'VENDOR_FIRST_HEADER_LINE', null) : null;
+      break;
+    }
   }
 
-  // Invoice number
-  for (const line of lines) {
+  // Invoice number. The first match wins, exactly as before; later
+  // matches are still collected as AMBIGUOUS candidates (GT117, D-C).
+  for (let li = 0; li < lines.length; li++) {
+    const line = lines[li];
+    const info = lineInfos[li];
     let m = line.match(/(?:invoice\s*(?:no\.?|number|#)|inv\.?\s*(?:no\.?|#)|invoice)\s*[:#]\s*([A-Za-z0-9][A-Za-z0-9\-\/]*)/i);
-    if (m && !parseDate(line)) { fields.invoiceNumber = m[1]; break; }
-    m = line.match(/#\s*([A-Za-z0-9][A-Za-z0-9\-\/]{2,})/);
-    if (m && /\binvoice\b/i.test(line)) { fields.invoiceNumber = m[1]; break; }
-    // [PATCH P6] Receipt numbers count as document numbers on receipts.
-    m = line.match(/(?:receipt\s*(?:no\.?|number|#))\s*[:#]?\s*([A-Za-z0-9][A-Za-z0-9\-\/]*)/i);
-    if (m) { fields.invoiceNumber = m[1]; break; }
+    let ruleId = 'INVOICE_NUMBER_ANCHOR';
+    let matched = !!(m && !parseDate(line));
+    if (!matched) {
+      m = line.match(/#\s*([A-Za-z0-9][A-Za-z0-9\-\/]{2,})/);
+      ruleId = 'INVOICE_NUMBER_HASH';
+      matched = !!(m && /\binvoice\b/i.test(line));
+    }
+    if (!matched) {
+      // [PATCH P6] Receipt numbers count as document numbers on receipts.
+      m = line.match(/(?:receipt\s*(?:no\.?|number|#))\s*[:#]?\s*([A-Za-z0-9][A-Za-z0-9\-\/]*)/i);
+      ruleId = 'RECEIPT_NUMBER_ANCHOR';
+      matched = !!m;
+    }
+    if (!matched || !m) continue;
+    const valStart = m.index + m[0].length - m[1].length;
+    const anchor = info ? { start: info.start + m.index, end: info.start + valStart } : null;
+    const span = info ? makeSpan(input, info.start, info.line, valStart, m[1], ruleId, anchor) : null;
+    noteCandidate('invoiceNumber', span, m[1]);
+    if (fields.invoiceNumber === null) { fields.invoiceNumber = m[1]; provFields.invoiceNumber = span; }
   }
 
   // Dates
-  for (const line of lines) {
+  for (let li = 0; li < lines.length; li++) {
+    const line = lines[li];
     const d = findDateInLine(line);
     if (!d) continue;
     const isDue = /\b(due|payment due|pay by)\b/i.test(line);
     const isInvoiceDate = /\b(invoice date|issued|issue date|date)\b/i.test(line);
-    if (isDue && !fields.dueDate) fields.dueDate = d;
-    else if (isInvoiceDate && !fields.invoiceDate) fields.invoiceDate = d;
-    else if (!fields.invoiceDate && !isDue) fields.invoiceDate = d;
+    let target = null, ruleId = null;
+    if (isDue && !fields.dueDate) { target = 'dueDate'; ruleId = 'DATE_DUE_ANCHOR'; }
+    else if (isInvoiceDate && !fields.invoiceDate) { target = 'invoiceDate'; ruleId = 'DATE_INVOICE_ANCHOR'; }
+    else if (!fields.invoiceDate && !isDue) { target = 'invoiceDate'; ruleId = 'DATE_FIRST_UNLABELED'; }
+    if (!target) continue;
+    fields[target] = d;
+    const info = lineInfos[li];
+    const ds = findDateSpanInLine(line);
+    let anchor = null;
+    if (info) {
+      const am = line.match(/\b(invoice date|issue date|issued|payment due|pay by|due|date)\b/i);
+      if (am) anchor = { start: info.start + am.index, end: info.start + am.index + am[0].length };
+    }
+    provFields[target] = (info && ds) ? makeSpan(input, info.start, info.line, ds.index, ds.raw, ruleId, anchor) : null;
   }
 
   // Footer fields and line items, line by line.
-  for (const line of lines) {
+  for (let li = 0; li < lines.length; li++) {
+    const line = lines[li];
+    const info = lineInfos[li];
     // [PATCH P2] Tax-line guards: identifier and registration lines are
     // never the tax line (a Tax ID or VAT Reg number is not a tax amount).
     if (/\b(tax\s*(id|no\.?|number|reg)|vat\s*reg|tax\s*number|registration|tax[-\s]?exempt)\b/i.test(line)) continue;
     // Subtotal takes priority over total.
     if (RE_SUBTOTAL.test(line)) {
-      const a = lastAmount(stripRate(line));
-      if (a) fields.subtotal = a.value;
+      const a = lastAmountMapped(line);
+      if (a) {
+        fields.subtotal = a.value;
+        const span = info ? makeSpan(input, info.start, info.line, a.index, a.raw, 'SUBTOTAL_ANCHOR', anchorSpan(input, info.start, line, RE_SUBTOTAL)) : null;
+        provFields.subtotal = span;
+        noteCandidate('subtotal', span, a.value);
+      }
       continue;
     }
     if (RE_AMOUNT_DUE.test(line)) {
-      const a = lastAmount(stripRate(line));
+      const a = lastAmountMapped(line);
       if (a) {
         fields.amountDue = a.value;
+        const anchor = info ? anchorSpan(input, info.start, line, RE_AMOUNT_DUE) : null;
+        const span = info ? makeSpan(input, info.start, info.line, a.index, a.raw, 'AMOUNT_DUE_ANCHOR', anchor) : null;
+        provFields.amountDue = span;
+        noteCandidate('amountDue', span, a.value);
         // [PATCH P3] "Net Balance Due", "Total Due", "TOTAL PAYABLE" and
         // "Amount Due" also populate total when no total was found yet.
-        if (fields.total === null && /\b(net\s+balance\s+due|total\s+due|total\s+payable|amount\s+due)\b/i.test(line)) fields.total = a.value;
+        if (fields.total === null && /\b(net\s+balance\s+due|total\s+due|total\s+payable|amount\s+due)\b/i.test(line)) {
+          fields.total = a.value;
+          const tspan = info ? makeSpan(input, info.start, info.line, a.index, a.raw, 'TOTAL_FROM_AMOUNT_DUE', anchor) : null;
+          provFields.total = tspan;
+          noteCandidate('total', tspan, a.value);
+        }
       }
       // Amount Due line may also be the total in some layouts; do not
       // also treat it as total unless no total was found yet and the
@@ -932,13 +1197,19 @@ function extractDocument(text) {
     // [PATCH P1] Tip is a first-class field: tip lines are never line
     // items, and the grand total check below accounts for the tip.
     if (RE_TIP.test(line)) {
-      const a = lastAmount(stripRate(line));
-      if (a) fields.tip = a.value;
+      const a = lastAmountMapped(line);
+      if (a) {
+        fields.tip = a.value;
+        provFields.tip = info ? makeSpan(input, info.start, info.line, a.index, a.raw, 'TIP_ANCHOR', anchorSpan(input, info.start, line, RE_TIP)) : null;
+      }
       continue;
     }
     if (RE_SHIPPING.test(line) && !RE_TAX.test(line)) { // [PATCH P2] a VAT or tax line must not overwrite shipping
-      const a = lastAmount(stripRate(line));
-      if (a) fields.shipping = a.value;
+      const a = lastAmountMapped(line);
+      if (a) {
+        fields.shipping = a.value;
+        provFields.shipping = info ? makeSpan(input, info.start, info.line, a.index, a.raw, 'SHIPPING_ANCHOR', anchorSpan(input, info.start, line, RE_SHIPPING)) : null;
+      }
       continue;
     }
     if (RE_TAX.test(line) && !RE_SUBTOTAL.test(line) && !/\[\s*tax\b/i.test(line)) { // [PATCH P2] bracket guard
@@ -949,12 +1220,23 @@ function extractDocument(text) {
       // itself another tax line.
       const rateMatch = line.match(/(\d+(?:[.,]\d+)?)\s*%/);
       const rate = rateMatch ? parseNumber(rateMatch[1]) : null;
-      const amounts = allAmounts(stripRate(line));
+      const amounts = allAmountsMapped(line);
       if (!amounts.length) continue;
-      const amount = amounts[amounts.length - 1].value;
-      if (/^\s*total\s+(tax|vat|gst)\b/i.test(line)) { fields.taxAmount = amount; continue; }
+      const amountTok = amounts[amounts.length - 1];
+      const amount = amountTok.value;
+      const taxAnchor = info ? anchorSpan(input, info.start, line, RE_TAX) : null;
+      if (/^\s*total\s+(tax|vat|gst)\b/i.test(line)) {
+        fields.taxAmount = amount;
+        const span = info ? makeSpan(input, info.start, info.line, amountTok.index, amountTok.raw, 'TAX_TOTAL_SUMMARY', taxAnchor) : null;
+        provFields.taxAmount = span;
+        noteCandidate('taxAmount', span, amount);
+        continue;
+      }
       const labelMatch = line.match(RE_TAX);
-      if (labelMatch && !fields.taxLabel) fields.taxLabel = labelMatch[1].replace(/\s+/g, ' ').trim();
+      if (labelMatch && !fields.taxLabel) {
+        fields.taxLabel = labelMatch[1].replace(/\s+/g, ' ').trim();
+        provFields.taxLabel = info ? makeSpan(input, info.start, info.line, labelMatch.index, fields.taxLabel, 'TAX_LABEL', null) : null;
+      }
       let base = null;
       const onMatch = line.match(/\bon\b/i);
       if (onMatch) {
@@ -962,16 +1244,32 @@ function extractDocument(text) {
         if (bm) { const bv = parseNumber(bm[0]); if (bv !== null && bv !== amount) base = bv; }
       }
       fields.taxes.push({ label: line.trim(), rate, base, amount });
+      const taxAmtSpan = info ? makeSpan(input, info.start, info.line, amountTok.index, amountTok.raw, 'TAX_LINE_AMOUNT', taxAnchor) : null;
+      provTaxes.push({ amount: taxAmtSpan });
       fields.taxAmount = round2(fields.taxes.reduce((sum, t) => sum + t.amount, 0));
       fields.taxRate = fields.taxes.length === 1 ? fields.taxes[0].rate : null;
+      if (fields.taxes.length === 1) {
+        // A single tax line: the combined amount is that line's amount.
+        provFields.taxAmount = taxAmtSpan;
+        provFields.taxRate = (info && rateMatch) ? makeSpan(input, info.start, info.line, rateMatch.index, rateMatch[1], 'TAX_RATE_PERCENT', taxAnchor) : null;
+      } else {
+        // A sum of several tax lines has no single source span.
+        provFields.taxAmount = null;
+        provFields.taxRate = null;
+      }
       continue;
     }
     if (RE_TOTAL.test(line)) {
       // Only treat as total if line starts with total or has colon,
       // to avoid catching prose containing the word total.
       if (/^\s*(grand\s+)?total\b/i.test(line) || /\btotal\s*:/i.test(line) || /\btotal\s+due\b/i.test(line) || /\bgrand\s+total\b/i.test(line) || /\btotal\s+(payable|paid)\b/i.test(line)) { // [PATCH P3]
-        const a = lastAmount(stripRate(line));
-        if (a) fields.total = a.value;
+        const a = lastAmountMapped(line);
+        if (a) {
+          fields.total = a.value;
+          const span = info ? makeSpan(input, info.start, info.line, a.index, a.raw, 'TOTAL_ANCHOR', anchorSpan(input, info.start, line, /\b(grand\s+total|total\s+due|total\s+payable|total\s+paid|total)\b/i)) : null;
+          provFields.total = span;
+          noteCandidate('total', span, a.value);
+        }
         continue;
       }
     }
@@ -979,13 +1277,21 @@ function extractDocument(text) {
     // an email or header line even though isHeaderOrMetaLine matches @.
     if (/^\d+(?:[.,]\d+)?\s*[x\u00D7]\s+.+\s*@.*\d/.test(line)) {
       const item = parseLineItem(line);
-      if (item) { fields.lineItems.push(item); continue; }
+      if (item) {
+        fields.lineItems.push(item);
+        provLineItems.push(info ? lineItemProvenance(input, info.start, info.line, line, item) : { description: null, qty: null, unitPrice: null, amount: null });
+        continue;
+      }
     }
     if (isHeaderOrMetaLine(line)) continue;
     if (fields.vendor && line === fields.vendor) continue;
     // Skip address-like and contact lines without a trailing amount pattern.
     const item = parseLineItem(line);
-    if (item) { fields.lineItems.push(item); continue; }
+    if (item) {
+      fields.lineItems.push(item);
+      provLineItems.push(info ? lineItemProvenance(input, info.start, info.line, line, item) : { description: null, qty: null, unitPrice: null, amount: null });
+      continue;
+    }
     // Warning heuristic: line has letters and a number and at least
     // 8 chars, is not a date or header, and looked item-like.
     if (/[A-Za-z]/.test(line) && /\d/.test(line) && line.length >= 8 &&
@@ -1100,13 +1406,66 @@ function extractDocument(text) {
     fields.total, fields.amountDue
   ].filter(v => v !== null && v !== undefined).length + (fields.lineItems.length ? 1 : 0);
 
+  // Check provenance (GT117): operand spans are the field spans the
+  // check arithmetic reads; the target is the stated field span the
+  // computed value is compared against. The line qty check compares
+  // per line, so its operands carry qty, unit price and amount spans
+  // and its target is null.
+  settleAmbiguous();
+  const spanRef = (field, span) => span ? { field, start: span.start, end: span.end } : null;
+  const itemAmountRefs = [];
+  provLineItems.forEach((p, i) => { if (p && p.amount) itemAmountRefs.push({ field: `lineItems[${i}].amount`, start: p.amount.start, end: p.amount.end }); });
+  const provChecks = {};
+  provChecks['items-sum-subtotal'] = { operands: itemAmountRefs, target: spanRef('subtotal', provFields.subtotal) };
+  {
+    const ops = [];
+    if (provFields.subtotal) ops.push(spanRef('subtotal', provFields.subtotal));
+    else ops.push(...itemAmountRefs);
+    for (const k of ['taxAmount', 'shipping', 'tip']) if (provFields[k]) ops.push(spanRef(k, provFields[k]));
+    provChecks['subtotal-plus-charges-total'] = { operands: ops, target: spanRef('total', provFields.total) };
+  }
+  {
+    const ops = [];
+    fields.lineItems.forEach((it, i) => {
+      const p = provLineItems[i];
+      if (!p || it.qty === null || it.unitPrice === null || it.amount === null) return;
+      if (p.qty) ops.push({ field: `lineItems[${i}].qty`, start: p.qty.start, end: p.qty.end });
+      if (p.unitPrice) ops.push({ field: `lineItems[${i}].unitPrice`, start: p.unitPrice.start, end: p.unitPrice.end });
+      if (p.amount) ops.push({ field: `lineItems[${i}].amount`, start: p.amount.start, end: p.amount.end });
+    });
+    provChecks['line-qty-price-amount'] = { operands: ops, target: null };
+  }
+  {
+    const ops = [];
+    if (provFields.taxRate) ops.push(spanRef('taxRate', provFields.taxRate));
+    if (fields.taxes.length > 1) {
+      provTaxes.forEach((p, i) => { if (p && p.amount) ops.push({ field: `taxes[${i}].amount`, start: p.amount.start, end: p.amount.end }); });
+      if (provFields.subtotal) ops.push(spanRef('subtotal', provFields.subtotal));
+    } else if (provFields.subtotal) {
+      ops.push(spanRef('subtotal', provFields.subtotal));
+    } else {
+      ops.push(...itemAmountRefs);
+      if (provFields.shipping) ops.push(spanRef('shipping', provFields.shipping));
+    }
+    provChecks['tax-rate-amount'] = { operands: ops, target: spanRef('taxAmount', provFields.taxAmount) };
+  }
+
+  const provenance = {
+    sourceText: input,
+    fields: provFields,
+    lineItems: provLineItems,
+    taxes: provTaxes,
+    checks: provChecks,
+    ambiguous: ambiguous
+  };
+
   return {
     fields,
     checks,
-    meta: { linesProcessed: lines.length, fieldsFound, warnings }
+    meta: { linesProcessed: lines.length, fieldsFound, warnings },
+    provenance
   };
 }
-
 function stripRate(line) {
   return line.replace(/\d+(?:[.,]\d+)?\s*%/g, '');
 }
@@ -1116,7 +1475,6 @@ if (typeof globalThis !== 'undefined') {
   globalThis.extractDocument = extractDocument;
   globalThis.GhostLabsExtract = { extractDocument, parseNumber, parseDate };
 }
-
 
 </script>
 <script>
@@ -1229,6 +1587,12 @@ Array.prototype.forEach.call(document.querySelectorAll(".faq-q"),function(btn){
 var MAX_BYTES=100*1024;
 var HISTORY_KEY="ghostlabs.runHistory.v1";
 var current=null; // {fields, checks}
+var prov=null; // provenance of the run being displayed (S2 shape), or null
+var editedFields={}; // scalar keys the user edited since the run: span cleared
+var resolvedPicks={}; // AMBIGUOUS keys resolved this run: key -> chosen candidate span (GT118 fix 5)
+var editedParts={}; // "itemIndex.part" keys the user edited since the run
+var traceSegs=[]; // [{start,end,cls}] into prov.sourceText, painted on the mirror
+var tracedField=null, tracedCheck=null;
 function round2(n){return Math.round((n+Number.EPSILON)*100)/100}
 function approx(a,b){return Math.abs(a-b)<=0.02}
 function fmt(n){return n===null||n===undefined?"Not found":Number(n).toFixed(2)}
@@ -1309,14 +1673,159 @@ var HERO=[["line-qty-price-amount","Line totals"],["items-sum-subtotal","Subtota
 function statusTag(st){return st==="pass"?'<span class="tag status">PASS</span>':st==="fail"?'<span class="tag fail">FAIL</span>':'<span class="tag skip">SKIP</span>'}
 function esc(t){return String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;")}
 
+/* ---------------- GT117 click-to-trace ----------------
+   D-A guarantee: highlights index into prov.sourceText only. run() sets the
+   textarea value to prov.sourceText after extraction, so the text the
+   visitor sees in the pane IS the string the spans index into. Editing the
+   source text invalidates prov (see the docInput input handler); editing a
+   result field clears that field's span (see the field input handlers). */
+function syncMirrorScroll(){
+  var ta=$("docInput"), inner=$("docMirrorInner"); if(!ta||!inner)return;
+  inner.style.transform="translate("+(-ta.scrollLeft)+"px,"+(-ta.scrollTop)+"px)";
+}
+function paintMirror(){
+  var inner=$("docMirrorInner"); if(!inner)return;
+  var text=prov?prov.sourceText:$("docInput").value;
+  if(!traceSegs.length){ inner.textContent=text; syncMirrorScroll(); return; }
+  var segs=traceSegs.slice().sort(function(a,b){return a.start-b.start});
+  var html="", pos=0;
+  segs.forEach(function(s){
+    if(s.end<=pos)return;
+    var st=Math.max(s.start,pos);
+    html+=esc(text.slice(pos,st))+'<mark class="'+s.cls+'">'+esc(text.slice(st,s.end))+"</mark>";
+    pos=s.end;
+  });
+  html+=esc(text.slice(pos));
+  inner.innerHTML=html; syncMirrorScroll();
+}
+var TRACE_PLACEHOLDER="Trace readout. Hover or tap a field, line item, or check to see its source span.";
+function showBadge(html){
+  var b=$("traceBadge"); if(!b)return;
+  if(html){ b.innerHTML=html; b.hidden=false; }
+  else if(b.dataset.reserved){ b.innerHTML=esc(TRACE_PLACEHOLDER); b.hidden=false; }
+  else { b.hidden=true; b.innerHTML=""; }
+}
+function scrollSpanIntoView(line){
+  var ta=$("docInput"); if(!ta||!line)return;
+  var lh=parseFloat(window.getComputedStyle(ta).lineHeight)||24.32;
+  ta.scrollTop=Math.max(0,(line-2)*lh);
+  syncMirrorScroll();
+  if(ta.scrollIntoView)ta.scrollIntoView({block:"nearest"});
+}
+function setTrace(segs,badgeHtml,scrollLine){
+  traceSegs=segs; showBadge(badgeHtml); paintMirror();
+  if(scrollLine)scrollSpanIntoView(scrollLine);
+}
+function clearTrace(){
+  traceSegs=[]; tracedField=null; tracedCheck=null; showBadge(""); paintMirror();
+}
+/* Fix 1 (GT118): reserve the trace badge slot at run time. Every trace
+   this run can show (all fields, all checks, line item amounts) is
+   rendered once, synchronously and before any paint, and the tallest
+   badge height becomes the slot height for the whole run. The first
+   real trace then changes badge content only, never geometry. */
+function reserveTraceBadge(){
+  var b=$("traceBadge"); if(!b||!prov)return;
+  b.style.height=""; delete b.dataset.reserved;
+  var maxH=0;
+  Object.keys(FIELD_KIND).forEach(function(k){ traceField(k,false); if(!b.hidden&&b.offsetHeight>maxH)maxH=b.offsetHeight; });
+  if(current&&current.checks)current.checks.forEach(function(c){ traceCheck(c.id,false); if(!b.hidden&&b.offsetHeight>maxH)maxH=b.offsetHeight; });
+  if(prov.lineItems)prov.lineItems.forEach(function(it,i){ traceItemPart(i,"amount",false); if(!b.hidden&&b.offsetHeight>maxH)maxH=b.offsetHeight; });
+  clearTrace();
+  if(maxH>0){ b.style.height=maxH+"px"; b.dataset.reserved="1"; showBadge(""); }
+}
+function spanSegs(span){
+  var segs=[];
+  if(span.anchor)segs.push({start:span.anchor.start,end:span.anchor.end,cls:"hl-anchor"});
+  segs.push({start:span.start,end:span.end,cls:"hl-value"});
+  return segs;
+}
+function traceField(key,scroll){
+  if(!prov)return false;
+  tracedCheck=null;
+  var amb=prov.ambiguous&&prov.ambiguous[key];
+  if(amb&&amb.candidates&&amb.candidates.length){
+    tracedField=key;
+    var segs=[], parts=[];
+    amb.candidates.forEach(function(c,i){
+      if(c.anchor)segs.push({start:c.anchor.start,end:c.anchor.end,cls:"hl-anchor"});
+      segs.push({start:c.start,end:c.end,cls:"hl-ambig"});
+      parts.push("candidate "+(i+1)+": "+c.ruleId+" · Line "+c.line+" · chars "+c.start+"-"+c.end+" · "+c.raw);
+    });
+    setTrace(segs,"<strong>AMBIGUOUS</strong> · "+esc(key)+"<br>"+parts.map(esc).join("<br>")+"<br>Click a highlighted candidate in the source text, or a candidate button on the field row, to use that value.",scroll?amb.candidates[0].line:null);
+    return true;
+  }
+  var span=prov.fields&&prov.fields[key];
+  if(!span){ clearTrace(); showBadge(esc(key)+" has no source span in this run."); return false; }
+  tracedField=key;
+  setTrace(spanSegs(span),"<strong>"+esc(span.ruleId)+"</strong> · "+esc(key)+" · Line "+span.line+" · chars "+span.start+"-"+span.end+"<br>"+esc(span.raw),scroll?span.line:null);
+  return true;
+}
+function traceItemPart(i,part,scroll){
+  if(!prov||!prov.lineItems||!prov.lineItems[i])return false;
+  var span=prov.lineItems[i][part];
+  if(!span){ return false; }
+  tracedCheck=null; tracedField=null;
+  setTrace([{start:span.start,end:span.end,cls:"hl-value"}],"<strong>"+esc(span.ruleId)+"</strong> · lineItems["+i+"]."+esc(part)+" · Line "+span.line+" · chars "+span.start+"-"+span.end+"<br>"+esc(span.raw),scroll?span.line:null);
+  return true;
+}
+function operandEdited(field){
+  if(editedFields[field])return true;
+  var m=/^lineItems\[(\d+)\]\.(qty|unitPrice|amount)$/.exec(field);
+  if(m&&editedParts[m[1]+"."+m[2]])return true;
+  return false;
+}
+function traceCheck(id,scroll){
+  if(!prov||!prov.checks||!prov.checks[id])return false;
+  var cp=prov.checks[id];
+  var check=null; current.checks.forEach(function(c){if(c.id===id)check=c});
+  if(!check)return false;
+  tracedField=null; tracedCheck=id;
+  var segs=[], firstLine=null, opCount=0;
+  cp.operands.forEach(function(op,i){
+    if(operandEdited(op.field))return;
+    opCount++;
+    segs.push({start:op.start,end:op.end,cls:(i%2===0?"hl-op-a":"hl-op-b")});
+    if(firstLine===null&&prov.sourceText){ firstLine=prov.sourceText.slice(0,op.start).split("\n").length; }
+  });
+  var targetNote="no target highlighted";
+  if(cp.target&&check.status!=="skip"&&!operandEdited(cp.target.field)){
+    segs.push({start:cp.target.start,end:cp.target.end,cls:check.status==="pass"?"hl-target-pass":"hl-target-fail"});
+    targetNote="target "+cp.target.field+" chars "+cp.target.start+"-"+cp.target.end+" · "+check.status.toUpperCase();
+    if(firstLine===null)firstLine=prov.sourceText.slice(0,cp.target.start).split("\n").length;
+  }
+  var heroLabel=null; HERO.forEach(function(p){ if(p[0]===id)heroLabel=p[1]; });
+  setTrace(segs,"<strong>"+esc(heroLabel||check.label||id)+"</strong> · operands "+opCount+" highlighted<br>"+esc(targetNote),scroll?firstLine:null);
+  return true;
+}
+var FIELD_KIND={vendor:"text",invoiceNumber:"text",invoiceDate:"text",dueDate:"text",currency:"text",subtotal:"number",taxRate:"number",taxAmount:"number",shipping:"number",tip:"number",total:"number",amountDue:"number"};
+function resolveAmbiguous(key,idx){
+  if(!prov||!prov.ambiguous||!prov.ambiguous[key])return;
+  var cand=prov.ambiguous[key].candidates[idx]; if(!cand)return;
+  var raw=cand.raw;
+  if(FIELD_KIND[key]==="number"){ var n=Number(String(raw).replace(/[^0-9.\-]/g,"")); current.fields[key]=(raw===""||isNaN(n))?null:n; }
+  else { current.fields[key]=raw; }
+  prov.fields[key]=cand; // resolved field points at the chosen candidate span
+  resolvedPicks[key]=cand; // GT118 fix 5: the field row keeps marking this pick
+  delete prov.ambiguous[key];
+  current.checks=recompute(current.fields);
+  render();
+  traceField(key,true);
+}
+
 function render(){
   if(!current)return;
+  var ae=document.activeElement, focusSpec=null;
+  if(ae&&ae.getAttribute){
+    if(ae.getAttribute("data-field"))focusSpec={q:'input[data-field="'+ae.getAttribute("data-field")+'"]',sel:(typeof ae.selectionStart==="number"?ae.selectionStart:null)};
+    else if(ae.getAttribute("data-item")!==null&&ae.getAttribute("data-part"))focusSpec={q:'input[data-item="'+ae.getAttribute("data-item")+'"][data-part="'+ae.getAttribute("data-part")+'"]',sel:(typeof ae.selectionStart==="number"?ae.selectionStart:null)};
+  }
   var f=current.fields;
   var byId={}; current.checks.forEach(function(c){byId[c.id]=c});
   var html="";
   HERO.forEach(function(pair){
     var c=byId[pair[0]]; if(!c)return;
-    html+='<div class="gl-check"><div class="gl-check-head"><strong>'+pair[1]+'</strong>'+statusTag(c.status)+'</div><p>'+esc(c.detail)+'</p>';
+    html+='<div class="gl-check" data-check="'+c.id+'" tabindex="0" role="button" aria-label="Trace check '+esc(pair[1])+' in the source text"><div class="gl-check-head"><strong>'+pair[1]+'</strong>'+statusTag(c.status)+'</div><p>'+esc(c.detail)+'</p>';
     if(c.id==="line-qty-price-amount"){
       f.lineItems.forEach(function(it,i){
         if(it.qty!==null&&it.unitPrice!==null&&it.amount!==null&&!approx(it.qty*it.unitPrice,it.amount)){
@@ -1327,32 +1836,92 @@ function render(){
     html+='</div>';
   });
   $("checksOut").innerHTML=html;
+  Array.prototype.forEach.call($("checksOut").querySelectorAll(".gl-check"),function(card){
+    var id=card.getAttribute("data-check");
+    card.addEventListener("click",function(){
+      Array.prototype.forEach.call($("checksOut").querySelectorAll(".gl-check"),function(x){x.classList.remove("traced")});
+      if(traceCheck(id,true))card.classList.add("traced");
+    });
+    card.addEventListener("keydown",function(ev){ if(ev.key==="Enter"||ev.key===" "){ ev.preventDefault(); card.click(); } });
+  });
   var FIELDS=[["vendor","Vendor","text"],["invoiceNumber","Invoice number","text"],["invoiceDate","Invoice date","text"],["dueDate","Due date","text"],["currency","Currency","text"],["subtotal","Subtotal","number"],["taxRate","Tax rate %","number"],["taxAmount","Tax amount","number"],["shipping","Shipping","number"],["tip","Tip","number"],["total","Total","number"],["amountDue","Amount due","number"]];
   $("fieldsOut").innerHTML=FIELDS.map(function(fd){
     var v=f[fd[0]];
     var nf=(v===null||v===undefined);
-    return '<label class="gl-field"><span class="pg-label" style="margin-bottom:0">'+fd[1]+(nf?' <span class="gl-notfound">Not found</span>':'')+'</span>'+
-      '<input data-field="'+fd[0]+'" data-kind="'+fd[2]+'" type="text" inputmode="'+(fd[2]==="number"?"decimal":"text")+'" value="'+(nf?"":esc(v))+'" placeholder="Not found"></label>';
+    var extra="";
+    if(editedFields[fd[0]]){
+      extra='<span class="gl-prov-row"><span class="gl-edited">Edited. Source span cleared.</span></span>';
+    } else if(prov&&prov.ambiguous&&prov.ambiguous[fd[0]]){
+      var amb=prov.ambiguous[fd[0]];
+      var pickedC=amb.candidates[amb.picked]||amb.candidates[0];
+      extra='<span class="gl-prov-row"><span class="tag status running">AMBIGUOUS</span><span class="tag status">Picked: '+esc(pickedC.raw)+' · L'+pickedC.line+' · '+pickedC.start+'-'+pickedC.end+'</span>'+
+        amb.candidates.map(function(c,i){return '<button class="copy-btn gl-cand" type="button" data-cand-key="'+fd[0]+'" data-cand-idx="'+i+'">Use '+esc(c.raw)+' · L'+c.line+' · '+c.start+'-'+c.end+'</button>'}).join("")+'</span>';
+    } else if(fd[0]==="currency"&&prov&&!nf){
+      extra='<span class="gl-prov-row"><span class="tag">Inferred from the whole document</span><span class="tag">No single source span</span></span>';
+    } else if(prov&&prov.fields&&prov.fields[fd[0]]){
+      var sp=prov.fields[fd[0]];
+      var pickTag=resolvedPicks[fd[0]]?'<span class="tag status">Picked: '+esc(resolvedPicks[fd[0]].raw)+' · L'+resolvedPicks[fd[0]].line+' · '+resolvedPicks[fd[0]].start+'-'+resolvedPicks[fd[0]].end+'</span>':"";
+      extra='<span class="gl-prov-row">'+pickTag+'<span class="tag">'+esc(sp.ruleId)+' · L'+sp.line+' · '+sp.start+'-'+sp.end+'</span></span>';
+    }
+    return '<label class="gl-field" data-field-row="'+fd[0]+'"><span class="pg-label" style="margin-bottom:0">'+fd[1]+(nf?' <span class="gl-notfound">Not found</span>':'')+'</span>'+
+      '<input data-field="'+fd[0]+'" data-kind="'+fd[2]+'" type="text" inputmode="'+(fd[2]==="number"?"decimal":"text")+'" value="'+(nf?"":esc(v))+'" placeholder="Not found">'+extra+'</label>';
   }).join("");
+  Array.prototype.forEach.call($("fieldsOut").querySelectorAll("[data-cand-key]"),function(btn){
+    btn.addEventListener("click",function(ev){
+      ev.preventDefault(); ev.stopPropagation();
+      resolveAmbiguous(btn.getAttribute("data-cand-key"),Number(btn.getAttribute("data-cand-idx")));
+    });
+  });
+  Array.prototype.forEach.call($("fieldsOut").querySelectorAll("[data-field-row]"),function(row){
+    var key=row.getAttribute("data-field-row");
+    row.addEventListener("mouseenter",function(){ if(traceField(key,false))row.classList.add("traced"); });
+    row.addEventListener("mouseleave",function(){ row.classList.remove("traced"); });
+    row.addEventListener("click",function(){ if(traceField(key,true))row.classList.add("traced"); });
+    row.addEventListener("focusin",function(){ if(traceField(key,false))row.classList.add("traced"); });
+  });
   Array.prototype.forEach.call($("fieldsOut").querySelectorAll("input"),function(inp){
     inp.addEventListener("input",function(){
       var key=inp.getAttribute("data-field"), kind=inp.getAttribute("data-kind"), raw=inp.value.trim();
       if(kind==="number"){ f[key]=raw===""?null:Number(raw.replace(/,/g,"")); if(f[key]!==null&&isNaN(f[key]))f[key]=null; }
       else { f[key]=raw===""?null:raw; }
+      /* Edited-field provenance rule: an edited value no longer comes from
+         its span, so the span is dropped and never shown as its source. */
+      editedFields[key]=true;
+      delete resolvedPicks[key];
+      if(prov){ if(prov.fields)prov.fields[key]=null; if(prov.ambiguous)delete prov.ambiguous[key]; }
+      if(tracedField===key)clearTrace();
       current.checks=recompute(f); render();
     });
   });
   if(f.lineItems.length){
     $("itemsOut").innerHTML=f.lineItems.map(function(it,i){
-      return '<div class="gl-item"><span class="gl-desc">'+esc(it.description)+'</span>'+
+      var amtSpan=(prov&&prov.lineItems&&prov.lineItems[i])?prov.lineItems[i].amount:null;
+      var provTag=(amtSpan&&!editedParts[i+".amount"])?' <span class="tag">'+esc(amtSpan.ruleId)+' · L'+amtSpan.line+' · '+amtSpan.start+'-'+amtSpan.end+'</span>':"";
+      return '<div class="gl-item" data-item-row="'+i+'"><span class="gl-desc">'+esc(it.description)+provTag+'</span>'+
         '<label>Qty <input data-item="'+i+'" data-part="qty" type="text" inputmode="decimal" value="'+(it.qty===null?"":it.qty)+'"></label>'+
         '<label>Unit <input data-item="'+i+'" data-part="unitPrice" type="text" inputmode="decimal" value="'+(it.unitPrice===null?"":it.unitPrice)+'"></label>'+
         '<label>Amount <input data-item="'+i+'" data-part="amount" type="text" inputmode="decimal" value="'+(it.amount===null?"":it.amount)+'"></label></div>';
     }).join("");
+    Array.prototype.forEach.call($("itemsOut").querySelectorAll("[data-item-row]"),function(row){
+      var i=Number(row.getAttribute("data-item-row"));
+      row.addEventListener("mouseenter",function(){ if(traceItemPart(i,"amount",false))row.classList.add("traced"); });
+      row.addEventListener("mouseleave",function(){ row.classList.remove("traced"); });
+      row.addEventListener("click",function(){ if(traceItemPart(i,"amount",true))row.classList.add("traced"); });
+    });
     Array.prototype.forEach.call($("itemsOut").querySelectorAll("input"),function(inp){
+      inp.addEventListener("focus",function(){
+        traceItemPart(Number(inp.getAttribute("data-item")),inp.getAttribute("data-part"),false);
+      });
+      inp.addEventListener("click",function(ev){
+        ev.stopPropagation();
+        traceItemPart(Number(inp.getAttribute("data-item")),inp.getAttribute("data-part"),true);
+      });
       inp.addEventListener("input",function(){
         var it=f.lineItems[Number(inp.getAttribute("data-item"))], part=inp.getAttribute("data-part"), raw=inp.value.trim();
         it[part]=raw===""?null:Number(raw.replace(/,/g,"")); if(it[part]!==null&&isNaN(it[part]))it[part]=null;
+        editedParts[inp.getAttribute("data-item")+"."+part]=true;
+        if(prov&&prov.lineItems&&prov.lineItems[Number(inp.getAttribute("data-item"))])prov.lineItems[Number(inp.getAttribute("data-item"))][part]=null;
+        clearTrace();
         current.checks=recompute(f); render();
       });
     });
@@ -1361,6 +1930,11 @@ function render(){
   }
   $("jsonOut").textContent=JSON.stringify({fields:f,checks:current.checks},null,2);
   $("resultWrap").classList.add("show");
+  paintMirror();
+  if(focusSpec){
+    var el=$("resultWrap").querySelector(focusSpec.q);
+    if(el){ el.focus(); if(focusSpec.sel!==null&&el.setSelectionRange){ try{el.setSelectionRange(focusSpec.sel,focusSpec.sel)}catch(e){} } }
+  }
 }
 
 function saveHistory(){
@@ -1382,12 +1956,41 @@ function run(){
   $("sizeNote").hidden=true;
   var r=extractDocument(text);
   current={fields:r.fields,checks:r.checks};
+  prov=r.provenance||null;
+  editedFields={}; editedParts={}; resolvedPicks={}; traceSegs=[]; tracedField=null; tracedCheck=null; showBadge("");
+  /* D-A guarantee: the pane now shows exactly prov.sourceText, the string
+     every span indexes into, even where normalization changed the input. */
+  if(prov&&$("docInput").value!==prov.sourceText)$("docInput").value=prov.sourceText;
   render(); saveHistory();
+  var lg=$("traceLegend"); if(lg)lg.hidden=false;
+  reserveTraceBadge();
 }
 function loadSample(text){ $("docInput").value=text; run(); $("playground").scrollIntoView({behavior:"smooth",block:"start"}); }
 
 $("runBtn").addEventListener("click",run);
-$("clearBtn").addEventListener("click",function(){ $("docInput").value=""; $("fileNote").textContent=""; current=null; $("resultWrap").classList.remove("show"); });
+$("clearBtn").addEventListener("click",function(){ $("docInput").value=""; $("fileNote").textContent=""; current=null; prov=null; editedFields={}; editedParts={}; resolvedPicks={}; traceSegs=[]; var b=$("traceBadge"); if(b){ b.style.height=""; delete b.dataset.reserved; } var lg=$("traceLegend"); if(lg)lg.hidden=true; showBadge(""); paintMirror(); $("resultWrap").classList.remove("show"); });
+$("docInput").addEventListener("scroll",syncMirrorScroll);
+$("docInput").addEventListener("input",function(){
+  /* Source edited after a run: the old spans no longer index into this
+     text, so provenance is invalidated until the next run. */
+  if(prov&&$("docInput").value!==prov.sourceText){
+    prov=null; traceSegs=[]; tracedField=null; tracedCheck=null;
+    showBadge("Source text changed. Run checks to trace the new text.");
+    if(current)render();
+    paintMirror();
+  } else { paintMirror(); }
+});
+$("docInput").addEventListener("click",function(){
+  /* AMBIGUOUS resolve by clicking a candidate span in the source text. */
+  if(!prov||!prov.ambiguous)return;
+  var pos=$("docInput").selectionStart; if(pos===null||pos===undefined)return;
+  for(var key in prov.ambiguous){
+    var cands=prov.ambiguous[key].candidates;
+    for(var i=0;i<cands.length;i++){
+      if(pos>=cands[i].start&&pos<=cands[i].end){ resolveAmbiguous(key,i); return; }
+    }
+  }
+});
 $("docInput").addEventListener("paste",function(){ setTimeout(run,0); });
 $("sampleClean").addEventListener("click",function(){ loadSample(window.GhostLabsSamples.clean); });
 $("sampleMessy").addEventListener("click",function(){ loadSample(window.GhostLabsSamples.messy); });

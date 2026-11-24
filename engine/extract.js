@@ -334,6 +334,138 @@ function normalizeInput(raw) {
 }
 
 // ------------------------------------------------------------------
+// Provenance helpers (GT117). Spans are character offsets into the
+// normalized input string produced by normalizeInput, the exact string
+// extractDocument parses. A span is recorded only when slicing that
+// string at [start, end) returns the raw text stored on the span, so a
+// span that cannot be made exact is left null instead of being wrong.
+// ------------------------------------------------------------------
+function makeSpan(sourceText, lineStart, lineNo, startInLine, raw, ruleId, anchor) {
+  if (startInLine === null || startInLine === undefined || raw === null || raw === undefined || raw === '') return null;
+  const start = lineStart + startInLine;
+  const end = start + String(raw).length;
+  if (sourceText.slice(start, end) !== String(raw)) return null;
+  return { start, end, line: lineNo, raw: String(raw), ruleId, anchor: anchor || null };
+}
+function anchorSpan(sourceText, lineStart, line, re) {
+  const m = line.match(re);
+  if (!m) return null;
+  const start = lineStart + m.index, end = start + m[0].length;
+  return sourceText.slice(start, end) === m[0] ? { start, end } : null;
+}
+// stripRate with a position map: map[i] is the index in the original
+// line of stripped character i. Lets amount positions found on the
+// rate-stripped line be translated back to original line coordinates.
+function stripRateWithMap(line) {
+  const re = /\d+(?:[.,]\d+)?\s*%/g;
+  let stripped = '', last = 0, m;
+  const map = [];
+  while ((m = re.exec(line)) !== null) {
+    for (let i = last; i < m.index; i++) { stripped += line[i]; map.push(i); }
+    last = m.index + m[0].length;
+  }
+  for (let i = last; i < line.length; i++) { stripped += line[i]; map.push(i); }
+  map.push(line.length);
+  return { stripped, map };
+}
+// Same selection as lastAmount(stripRate(line)), but the returned index
+// is in original line coordinates. Returns { value, raw, index }.
+function lastAmountMapped(line) {
+  const { stripped, map } = stripRateWithMap(line);
+  if (stripped !== stripRate(line)) return lastAmount(stripped);
+  const re = /\(?[\$\u20AC\u00A3]?\s*-?\d[\d\s.,]*\d\)?|\(?[\$\u20AC\u00A3]?\s*-?\d\)?/g;
+  let m, last = null;
+  while ((m = re.exec(stripped)) !== null) {
+    const token = m[0].trim();
+    const v = parseNumber(token);
+    if (v !== null) {
+      const lead = m[0].length - m[0].trimStart().length;
+      last = { value: v, raw: token, index: map[m.index + lead] };
+    }
+  }
+  return last;
+}
+// Same values as allAmounts(stripRate(line)), indices in original line
+// coordinates.
+function allAmountsMapped(line) {
+  const { stripped, map } = stripRateWithMap(line);
+  if (stripped !== stripRate(line)) return allAmounts(stripped);
+  const re = /\(?[\$\u20AC\u00A3]?\s*-?\d[\d.,]*\d\)?|\(?[\$\u20AC\u00A3]?\s*-?\d\)?/g;
+  const out = [];
+  let m;
+  while ((m = re.exec(stripped)) !== null) {
+    const v = parseNumber(m[0]);
+    if (v !== null) {
+      const lead = m[0].length - m[0].trimStart().length;
+      out.push({ value: v, raw: m[0].trim(), index: map[m.index + lead] });
+    }
+  }
+  return out;
+}
+// The raw date token parseDate would read from a line, with its index,
+// following the same pattern order and stopping rules as parseDate.
+function findDateSpanInLine(line) {
+  let m = line.match(/(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})/);
+  if (m) return parseDate(m[0]) ? { raw: m[0], index: m.index } : null;
+  m = line.match(/(\d{1,2})[-\/](\d{1,2})[-\/](\d{4})/);
+  if (m) return parseDate(m[0]) ? { raw: m[0], index: m.index } : null;
+  m = line.match(/([A-Za-z]+)\.?\s+(\d{1,2})(?:st|nd|rd|th)?,?\s+(\d{4})/);
+  if (m && MONTHS[m[1].toLowerCase()]) return { raw: m[0], index: m.index };
+  m = line.match(/(\d{1,2})(?:st|nd|rd|th)?\s+([A-Za-z]+)\.?,?\s+(\d{4})/);
+  if (m && MONTHS[m[2].toLowerCase()]) return { raw: m[0], index: m.index };
+  return null;
+}
+// Provenance for one parsed line item, located by token search on its
+// source line. A subfield whose token cannot be located exactly stays
+// null: the amount is the last amount token with the item value, the
+// unit price is the last amount token before it with the unit value,
+// the quantity is the last plain number token before the unit price
+// (or amount) with the qty value, and the description must appear
+// verbatim in the line. A unit price the parser computed (amount
+// divided by qty) has no source token and stays null.
+function lineItemProvenance(sourceText, lineStart, lineNo, line, item) {
+  const out = { description: null, qty: null, unitPrice: null, amount: null };
+  if (!item) return out;
+  // Amount tokens on the line, with indices at the trimmed token start
+  // (the amount regex can begin a match on the space before a token,
+  // which is the offset allAmounts reports; that offset is not exact).
+  const amounts = [];
+  {
+    const re = /-?\(?[\$\u20AC\u00A3]?\s*-?\d[\d.,]*\d\)?|-?\(?[\$\u20AC\u00A3]?\s*-?\d\)?/g;
+    let m;
+    while ((m = re.exec(line)) !== null) {
+      const v = parseNumber(m[0]);
+      if (v !== null) {
+        const lead = m[0].length - m[0].trimStart().length;
+        amounts.push({ value: v, raw: m[0].trim(), index: m.index + lead });
+      }
+    }
+  }
+  let amtTok = null;
+  for (const t of amounts) if (t.value === item.amount) amtTok = t;
+  if (amtTok) out.amount = makeSpan(sourceText, lineStart, lineNo, amtTok.index, amtTok.raw, 'LINE_ITEM_AMOUNT', null);
+  let unitTok = null;
+  if (item.unitPrice !== null && amtTok) {
+    for (const t of amounts) if (t.index < amtTok.index && t.value === item.unitPrice) unitTok = t;
+    if (unitTok) out.unitPrice = makeSpan(sourceText, lineStart, lineNo, unitTok.index, unitTok.raw, 'LINE_ITEM_UNIT_PRICE', null);
+  }
+  if (item.qty !== null) {
+    const limit = unitTok ? unitTok.index : (amtTok ? amtTok.index : line.length);
+    const numRe = /\d+(?:[.,]\d+)?/g;
+    let nm, qTok = null;
+    while ((nm = numRe.exec(line)) !== null) {
+      if (nm.index < limit && parseNumber(nm[0]) === item.qty) qTok = { index: nm.index, raw: nm[0] };
+    }
+    if (qTok) out.qty = makeSpan(sourceText, lineStart, lineNo, qTok.index, qTok.raw, 'LINE_ITEM_QTY', null);
+  }
+  if (item.description) {
+    const di = line.indexOf(item.description);
+    if (di >= 0) out.description = makeSpan(sourceText, lineStart, lineNo, di, item.description, 'LINE_ITEM_DESCRIPTION', null);
+  }
+  return out;
+}
+
+// ------------------------------------------------------------------
 // Main entry
 // ------------------------------------------------------------------
 export function extractDocument(text) {
@@ -341,6 +473,51 @@ export function extractDocument(text) {
   const input = normalizeInput(typeof text === 'string' ? text : ''); // [PATCH P4]
   const rawLines = input.split(/\r?\n/);
   const lines = rawLines.map(l => l.trim()).filter(l => l.length > 0);
+  // Provenance bookkeeping (GT117). lineInfos[i] locates lines[i] in the
+  // normalized input: the offset of its first character and its 1-based
+  // line number in that string. Every span below is verified against
+  // the input by makeSpan before it is recorded.
+  const lineInfos = [];
+  {
+    let off = 0;
+    const parts = input.split('\n');
+    for (let i = 0; i < parts.length; i++) {
+      if (parts[i].trim().length > 0) {
+        lineInfos.push({ start: off + (parts[i].length - parts[i].trimStart().length), line: i + 1 });
+      }
+      off += parts[i].length + 1;
+    }
+  }
+  const provFields = {
+    vendor: null, invoiceNumber: null, invoiceDate: null, dueDate: null,
+    currency: null, subtotal: null, taxLabel: null, taxRate: null,
+    taxAmount: null, shipping: null, tip: null, total: null, amountDue: null
+  };
+  const provLineItems = [];
+  const provTaxes = [];
+  const ambiguous = {};
+  const cand = { total: [], subtotal: [], amountDue: [], taxAmount: [], invoiceNumber: [] };
+  function noteCandidate(key, span, value) { if (span) cand[key].push({ span, value }); }
+  function settleAmbiguous() {
+    for (const key of Object.keys(cand)) {
+      const fspan = provFields[key];
+      if (!fspan) continue;
+      const byRule = {};
+      for (const c of cand[key]) {
+        if (!byRule[c.span.ruleId]) byRule[c.span.ruleId] = [];
+        byRule[c.span.ruleId].push(c);
+      }
+      for (const rule of Object.keys(byRule)) {
+        const group = byRule[rule];
+        if (group.length < 2) continue;
+        if (new Set(group.map(c => c.value)).size < 2) continue;
+        let picked = -1;
+        group.forEach((c, i) => { if (c.span.start === fspan.start && c.span.end === fspan.end) picked = i; });
+        if (picked < 0) continue;
+        ambiguous[key] = { candidates: group.map(c => c.span), picked };
+      }
+    }
+  }
   const fields = {
     vendor: null, invoiceNumber: null, invoiceDate: null, dueDate: null,
     currency: null, lineItems: [], subtotal: null, taxLabel: null,
@@ -355,49 +532,98 @@ export function extractDocument(text) {
     if (findDateInLine(l) && l.length < 30) continue;
     if (/\b(invoice\s*(no|number|#)|date|due)\b/i.test(l)) continue;
     if (l.includes('@') || /^https?:\/\//i.test(l)) continue;
-    if (/[A-Za-z]/.test(l)) { fields.vendor = l.replace(/\s{2,}.*$/, '').trim() || l; break; }
+    if (/[A-Za-z]/.test(l)) {
+      fields.vendor = l.replace(/\s{2,}.*$/, '').trim() || l;
+      const info = lineInfos[i];
+      provFields.vendor = info ? makeSpan(input, info.start, info.line, 0, fields.vendor, 'VENDOR_FIRST_HEADER_LINE', null) : null;
+      break;
+    }
   }
 
-  // Invoice number
-  for (const line of lines) {
+  // Invoice number. The first match wins, exactly as before; later
+  // matches are still collected as AMBIGUOUS candidates (GT117, D-C).
+  for (let li = 0; li < lines.length; li++) {
+    const line = lines[li];
+    const info = lineInfos[li];
     let m = line.match(/(?:invoice\s*(?:no\.?|number|#)|inv\.?\s*(?:no\.?|#)|invoice)\s*[:#]\s*([A-Za-z0-9][A-Za-z0-9\-\/]*)/i);
-    if (m && !parseDate(line)) { fields.invoiceNumber = m[1]; break; }
-    m = line.match(/#\s*([A-Za-z0-9][A-Za-z0-9\-\/]{2,})/);
-    if (m && /\binvoice\b/i.test(line)) { fields.invoiceNumber = m[1]; break; }
-    // [PATCH P6] Receipt numbers count as document numbers on receipts.
-    m = line.match(/(?:receipt\s*(?:no\.?|number|#))\s*[:#]?\s*([A-Za-z0-9][A-Za-z0-9\-\/]*)/i);
-    if (m) { fields.invoiceNumber = m[1]; break; }
+    let ruleId = 'INVOICE_NUMBER_ANCHOR';
+    let matched = !!(m && !parseDate(line));
+    if (!matched) {
+      m = line.match(/#\s*([A-Za-z0-9][A-Za-z0-9\-\/]{2,})/);
+      ruleId = 'INVOICE_NUMBER_HASH';
+      matched = !!(m && /\binvoice\b/i.test(line));
+    }
+    if (!matched) {
+      // [PATCH P6] Receipt numbers count as document numbers on receipts.
+      m = line.match(/(?:receipt\s*(?:no\.?|number|#))\s*[:#]?\s*([A-Za-z0-9][A-Za-z0-9\-\/]*)/i);
+      ruleId = 'RECEIPT_NUMBER_ANCHOR';
+      matched = !!m;
+    }
+    if (!matched || !m) continue;
+    const valStart = m.index + m[0].length - m[1].length;
+    const anchor = info ? { start: info.start + m.index, end: info.start + valStart } : null;
+    const span = info ? makeSpan(input, info.start, info.line, valStart, m[1], ruleId, anchor) : null;
+    noteCandidate('invoiceNumber', span, m[1]);
+    if (fields.invoiceNumber === null) { fields.invoiceNumber = m[1]; provFields.invoiceNumber = span; }
   }
 
   // Dates
-  for (const line of lines) {
+  for (let li = 0; li < lines.length; li++) {
+    const line = lines[li];
     const d = findDateInLine(line);
     if (!d) continue;
     const isDue = /\b(due|payment due|pay by)\b/i.test(line);
     const isInvoiceDate = /\b(invoice date|issued|issue date|date)\b/i.test(line);
-    if (isDue && !fields.dueDate) fields.dueDate = d;
-    else if (isInvoiceDate && !fields.invoiceDate) fields.invoiceDate = d;
-    else if (!fields.invoiceDate && !isDue) fields.invoiceDate = d;
+    let target = null, ruleId = null;
+    if (isDue && !fields.dueDate) { target = 'dueDate'; ruleId = 'DATE_DUE_ANCHOR'; }
+    else if (isInvoiceDate && !fields.invoiceDate) { target = 'invoiceDate'; ruleId = 'DATE_INVOICE_ANCHOR'; }
+    else if (!fields.invoiceDate && !isDue) { target = 'invoiceDate'; ruleId = 'DATE_FIRST_UNLABELED'; }
+    if (!target) continue;
+    fields[target] = d;
+    const info = lineInfos[li];
+    const ds = findDateSpanInLine(line);
+    let anchor = null;
+    if (info) {
+      const am = line.match(/\b(invoice date|issue date|issued|payment due|pay by|due|date)\b/i);
+      if (am) anchor = { start: info.start + am.index, end: info.start + am.index + am[0].length };
+    }
+    provFields[target] = (info && ds) ? makeSpan(input, info.start, info.line, ds.index, ds.raw, ruleId, anchor) : null;
   }
 
   // Footer fields and line items, line by line.
-  for (const line of lines) {
+  for (let li = 0; li < lines.length; li++) {
+    const line = lines[li];
+    const info = lineInfos[li];
     // [PATCH P2] Tax-line guards: identifier and registration lines are
     // never the tax line (a Tax ID or VAT Reg number is not a tax amount).
     if (/\b(tax\s*(id|no\.?|number|reg)|vat\s*reg|tax\s*number|registration|tax[-\s]?exempt)\b/i.test(line)) continue;
     // Subtotal takes priority over total.
     if (RE_SUBTOTAL.test(line)) {
-      const a = lastAmount(stripRate(line));
-      if (a) fields.subtotal = a.value;
+      const a = lastAmountMapped(line);
+      if (a) {
+        fields.subtotal = a.value;
+        const span = info ? makeSpan(input, info.start, info.line, a.index, a.raw, 'SUBTOTAL_ANCHOR', anchorSpan(input, info.start, line, RE_SUBTOTAL)) : null;
+        provFields.subtotal = span;
+        noteCandidate('subtotal', span, a.value);
+      }
       continue;
     }
     if (RE_AMOUNT_DUE.test(line)) {
-      const a = lastAmount(stripRate(line));
+      const a = lastAmountMapped(line);
       if (a) {
         fields.amountDue = a.value;
+        const anchor = info ? anchorSpan(input, info.start, line, RE_AMOUNT_DUE) : null;
+        const span = info ? makeSpan(input, info.start, info.line, a.index, a.raw, 'AMOUNT_DUE_ANCHOR', anchor) : null;
+        provFields.amountDue = span;
+        noteCandidate('amountDue', span, a.value);
         // [PATCH P3] "Net Balance Due", "Total Due", "TOTAL PAYABLE" and
         // "Amount Due" also populate total when no total was found yet.
-        if (fields.total === null && /\b(net\s+balance\s+due|total\s+due|total\s+payable|amount\s+due)\b/i.test(line)) fields.total = a.value;
+        if (fields.total === null && /\b(net\s+balance\s+due|total\s+due|total\s+payable|amount\s+due)\b/i.test(line)) {
+          fields.total = a.value;
+          const tspan = info ? makeSpan(input, info.start, info.line, a.index, a.raw, 'TOTAL_FROM_AMOUNT_DUE', anchor) : null;
+          provFields.total = tspan;
+          noteCandidate('total', tspan, a.value);
+        }
       }
       // Amount Due line may also be the total in some layouts; do not
       // also treat it as total unless no total was found yet and the
@@ -407,13 +633,19 @@ export function extractDocument(text) {
     // [PATCH P1] Tip is a first-class field: tip lines are never line
     // items, and the grand total check below accounts for the tip.
     if (RE_TIP.test(line)) {
-      const a = lastAmount(stripRate(line));
-      if (a) fields.tip = a.value;
+      const a = lastAmountMapped(line);
+      if (a) {
+        fields.tip = a.value;
+        provFields.tip = info ? makeSpan(input, info.start, info.line, a.index, a.raw, 'TIP_ANCHOR', anchorSpan(input, info.start, line, RE_TIP)) : null;
+      }
       continue;
     }
     if (RE_SHIPPING.test(line) && !RE_TAX.test(line)) { // [PATCH P2] a VAT or tax line must not overwrite shipping
-      const a = lastAmount(stripRate(line));
-      if (a) fields.shipping = a.value;
+      const a = lastAmountMapped(line);
+      if (a) {
+        fields.shipping = a.value;
+        provFields.shipping = info ? makeSpan(input, info.start, info.line, a.index, a.raw, 'SHIPPING_ANCHOR', anchorSpan(input, info.start, line, RE_SHIPPING)) : null;
+      }
       continue;
     }
     if (RE_TAX.test(line) && !RE_SUBTOTAL.test(line) && !/\[\s*tax\b/i.test(line)) { // [PATCH P2] bracket guard
@@ -424,12 +656,23 @@ export function extractDocument(text) {
       // itself another tax line.
       const rateMatch = line.match(/(\d+(?:[.,]\d+)?)\s*%/);
       const rate = rateMatch ? parseNumber(rateMatch[1]) : null;
-      const amounts = allAmounts(stripRate(line));
+      const amounts = allAmountsMapped(line);
       if (!amounts.length) continue;
-      const amount = amounts[amounts.length - 1].value;
-      if (/^\s*total\s+(tax|vat|gst)\b/i.test(line)) { fields.taxAmount = amount; continue; }
+      const amountTok = amounts[amounts.length - 1];
+      const amount = amountTok.value;
+      const taxAnchor = info ? anchorSpan(input, info.start, line, RE_TAX) : null;
+      if (/^\s*total\s+(tax|vat|gst)\b/i.test(line)) {
+        fields.taxAmount = amount;
+        const span = info ? makeSpan(input, info.start, info.line, amountTok.index, amountTok.raw, 'TAX_TOTAL_SUMMARY', taxAnchor) : null;
+        provFields.taxAmount = span;
+        noteCandidate('taxAmount', span, amount);
+        continue;
+      }
       const labelMatch = line.match(RE_TAX);
-      if (labelMatch && !fields.taxLabel) fields.taxLabel = labelMatch[1].replace(/\s+/g, ' ').trim();
+      if (labelMatch && !fields.taxLabel) {
+        fields.taxLabel = labelMatch[1].replace(/\s+/g, ' ').trim();
+        provFields.taxLabel = info ? makeSpan(input, info.start, info.line, labelMatch.index, fields.taxLabel, 'TAX_LABEL', null) : null;
+      }
       let base = null;
       const onMatch = line.match(/\bon\b/i);
       if (onMatch) {
@@ -437,16 +680,32 @@ export function extractDocument(text) {
         if (bm) { const bv = parseNumber(bm[0]); if (bv !== null && bv !== amount) base = bv; }
       }
       fields.taxes.push({ label: line.trim(), rate, base, amount });
+      const taxAmtSpan = info ? makeSpan(input, info.start, info.line, amountTok.index, amountTok.raw, 'TAX_LINE_AMOUNT', taxAnchor) : null;
+      provTaxes.push({ amount: taxAmtSpan });
       fields.taxAmount = round2(fields.taxes.reduce((sum, t) => sum + t.amount, 0));
       fields.taxRate = fields.taxes.length === 1 ? fields.taxes[0].rate : null;
+      if (fields.taxes.length === 1) {
+        // A single tax line: the combined amount is that line's amount.
+        provFields.taxAmount = taxAmtSpan;
+        provFields.taxRate = (info && rateMatch) ? makeSpan(input, info.start, info.line, rateMatch.index, rateMatch[1], 'TAX_RATE_PERCENT', taxAnchor) : null;
+      } else {
+        // A sum of several tax lines has no single source span.
+        provFields.taxAmount = null;
+        provFields.taxRate = null;
+      }
       continue;
     }
     if (RE_TOTAL.test(line)) {
       // Only treat as total if line starts with total or has colon,
       // to avoid catching prose containing the word total.
       if (/^\s*(grand\s+)?total\b/i.test(line) || /\btotal\s*:/i.test(line) || /\btotal\s+due\b/i.test(line) || /\bgrand\s+total\b/i.test(line) || /\btotal\s+(payable|paid)\b/i.test(line)) { // [PATCH P3]
-        const a = lastAmount(stripRate(line));
-        if (a) fields.total = a.value;
+        const a = lastAmountMapped(line);
+        if (a) {
+          fields.total = a.value;
+          const span = info ? makeSpan(input, info.start, info.line, a.index, a.raw, 'TOTAL_ANCHOR', anchorSpan(input, info.start, line, /\b(grand\s+total|total\s+due|total\s+payable|total\s+paid|total)\b/i)) : null;
+          provFields.total = span;
+          noteCandidate('total', span, a.value);
+        }
         continue;
       }
     }
@@ -454,13 +713,21 @@ export function extractDocument(text) {
     // an email or header line even though isHeaderOrMetaLine matches @.
     if (/^\d+(?:[.,]\d+)?\s*[x\u00D7]\s+.+\s*@.*\d/.test(line)) {
       const item = parseLineItem(line);
-      if (item) { fields.lineItems.push(item); continue; }
+      if (item) {
+        fields.lineItems.push(item);
+        provLineItems.push(info ? lineItemProvenance(input, info.start, info.line, line, item) : { description: null, qty: null, unitPrice: null, amount: null });
+        continue;
+      }
     }
     if (isHeaderOrMetaLine(line)) continue;
     if (fields.vendor && line === fields.vendor) continue;
     // Skip address-like and contact lines without a trailing amount pattern.
     const item = parseLineItem(line);
-    if (item) { fields.lineItems.push(item); continue; }
+    if (item) {
+      fields.lineItems.push(item);
+      provLineItems.push(info ? lineItemProvenance(input, info.start, info.line, line, item) : { description: null, qty: null, unitPrice: null, amount: null });
+      continue;
+    }
     // Warning heuristic: line has letters and a number and at least
     // 8 chars, is not a date or header, and looked item-like.
     if (/[A-Za-z]/.test(line) && /\d/.test(line) && line.length >= 8 &&
@@ -575,13 +842,66 @@ export function extractDocument(text) {
     fields.total, fields.amountDue
   ].filter(v => v !== null && v !== undefined).length + (fields.lineItems.length ? 1 : 0);
 
+  // Check provenance (GT117): operand spans are the field spans the
+  // check arithmetic reads; the target is the stated field span the
+  // computed value is compared against. The line qty check compares
+  // per line, so its operands carry qty, unit price and amount spans
+  // and its target is null.
+  settleAmbiguous();
+  const spanRef = (field, span) => span ? { field, start: span.start, end: span.end } : null;
+  const itemAmountRefs = [];
+  provLineItems.forEach((p, i) => { if (p && p.amount) itemAmountRefs.push({ field: `lineItems[${i}].amount`, start: p.amount.start, end: p.amount.end }); });
+  const provChecks = {};
+  provChecks['items-sum-subtotal'] = { operands: itemAmountRefs, target: spanRef('subtotal', provFields.subtotal) };
+  {
+    const ops = [];
+    if (provFields.subtotal) ops.push(spanRef('subtotal', provFields.subtotal));
+    else ops.push(...itemAmountRefs);
+    for (const k of ['taxAmount', 'shipping', 'tip']) if (provFields[k]) ops.push(spanRef(k, provFields[k]));
+    provChecks['subtotal-plus-charges-total'] = { operands: ops, target: spanRef('total', provFields.total) };
+  }
+  {
+    const ops = [];
+    fields.lineItems.forEach((it, i) => {
+      const p = provLineItems[i];
+      if (!p || it.qty === null || it.unitPrice === null || it.amount === null) return;
+      if (p.qty) ops.push({ field: `lineItems[${i}].qty`, start: p.qty.start, end: p.qty.end });
+      if (p.unitPrice) ops.push({ field: `lineItems[${i}].unitPrice`, start: p.unitPrice.start, end: p.unitPrice.end });
+      if (p.amount) ops.push({ field: `lineItems[${i}].amount`, start: p.amount.start, end: p.amount.end });
+    });
+    provChecks['line-qty-price-amount'] = { operands: ops, target: null };
+  }
+  {
+    const ops = [];
+    if (provFields.taxRate) ops.push(spanRef('taxRate', provFields.taxRate));
+    if (fields.taxes.length > 1) {
+      provTaxes.forEach((p, i) => { if (p && p.amount) ops.push({ field: `taxes[${i}].amount`, start: p.amount.start, end: p.amount.end }); });
+      if (provFields.subtotal) ops.push(spanRef('subtotal', provFields.subtotal));
+    } else if (provFields.subtotal) {
+      ops.push(spanRef('subtotal', provFields.subtotal));
+    } else {
+      ops.push(...itemAmountRefs);
+      if (provFields.shipping) ops.push(spanRef('shipping', provFields.shipping));
+    }
+    provChecks['tax-rate-amount'] = { operands: ops, target: spanRef('taxAmount', provFields.taxAmount) };
+  }
+
+  const provenance = {
+    sourceText: input,
+    fields: provFields,
+    lineItems: provLineItems,
+    taxes: provTaxes,
+    checks: provChecks,
+    ambiguous: ambiguous
+  };
+
   return {
     fields,
     checks,
-    meta: { linesProcessed: lines.length, fieldsFound, warnings }
+    meta: { linesProcessed: lines.length, fieldsFound, warnings },
+    provenance
   };
 }
-
 function stripRate(line) {
   return line.replace(/\d+(?:[.,]\d+)?\s*%/g, '');
 }
