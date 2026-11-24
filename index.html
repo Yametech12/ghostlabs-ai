@@ -3,17 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GhostLabs AI - Autonomous AI Infrastructure That Ships Itself</title>
-<meta name="description" content="GhostLabs routes, verifies, and deploys your AI workflows across the edge in under 180ms, no glue code, no lock-in.">
+<title>GhostLabs AI, Browser Invoice &amp; Receipt Math Checker</title>
+<meta name="description" content="Paste invoice or receipt text to extract line items, tax, and totals right in your browser. Automatically verifies 4 math checks with zero data uploaded.">
 <meta name="theme-color" content="#090A0F">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%2322d3ee'/%3E%3Cpath d='M16 7a7 7 0 0 0-7 7v9l2.5-2 2.5 2 2-2 2 2 2.5-2 .5.4V14a7 7 0 0 0-5-7Z' fill='%23090A0F'/%3E%3C/svg%3E">
 <meta property="og:type" content="website">
-<meta property="og:title" content="GhostLabs AI - Autonomous AI Infrastructure That Ships Itself">
-<meta property="og:description" content="GhostLabs routes, verifies, and deploys your AI workflows across the edge in under 180ms, no glue code, no lock-in.">
+<meta property="og:title" content="GhostLabs AI, Browser Invoice &amp; Receipt Math Checker">
+<meta property="og:description" content="Paste invoice or receipt text to extract line items, tax, and totals right in your browser. Automatically verifies 4 math checks with zero data uploaded.">
 <meta name="twitter:card" content="summary">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#090A0F; --surface:#11131B; --surface-2:#151824; --border:rgba(255,255,255,0.08);
@@ -255,7 +252,7 @@ footer{border-top:1px solid var(--border);padding:3.5rem 0 2.5rem}
  /* D1: break the uniform phone feature stack with two extra treatments */
  #featureGrid .card:nth-child(3){background:transparent;border:none;border-top:1px solid var(--border);border-bottom:1px solid var(--border);border-radius:0;padding-left:.25rem;padding-right:.25rem}
  #featureGrid .card:nth-child(6){background:var(--surface-2);box-shadow:inset 0 3px 0 var(--cyan)}
- /* D3: SOC2 cell numeral sized to stay on one line in the 2x2 band */
+ /* D3: last-cell numeral sized to stay on one line in the 2x2 band */
  .stats-grid>div:last-child .stat-num{font-size:1.02rem;letter-spacing:-0.03em}
 }
 /* D2: CTA banner reframed in the console language */
@@ -270,7 +267,7 @@ footer{border-top:1px solid var(--border);padding:3.5rem 0 2.5rem}
 /* GT80 design pass: hierarchy tick, headline gradient word, badge pulse, card hover lift */
 .section-head{position:relative}
 .section-head::after{content:"";position:absolute;top:-1px;left:0;width:44px;height:2px;background:linear-gradient(90deg,var(--cyan),var(--violet))}
-.grad{background:linear-gradient(92deg,var(--cyan),var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent;white-space:nowrap}
+.grad{background:linear-gradient(92deg,var(--cyan),var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent}
 .badge .dot{animation:pgpulse 2.4s ease-in-out infinite}
 @keyframes pgpulse{0%,100%{opacity:1}50%{opacity:.35}}
 .card{transition:transform .25s var(--ease),border-color .25s var(--ease)}
@@ -322,10 +319,26 @@ footer{border-top:1px solid var(--border);padding:3.5rem 0 2.5rem}
   html{scroll-behavior:auto}
   *,*::before,*::after{animation-duration:.01ms !important;transition-duration:.01ms !important}
 }
+
+/* GT115 playground glue: layout only, built from the GT84 tokens above. */
+.gl-input{width:100%;font-family:inherit;resize:vertical}
+.gl-check{border:1px solid var(--border);background:var(--surface-2);border-radius:10px;padding:.8rem .9rem;margin-bottom:.6rem;text-align:left}
+.gl-check-head{display:flex;justify-content:space-between;align-items:center;gap:.8rem;flex-wrap:wrap}
+.gl-check p{color:var(--text-2);font-size:.9rem;margin-top:.35rem}
+.tag.fail{color:#fca5a5;background:rgba(248,113,113,.09);border-color:rgba(248,113,113,.35)}
+.tag.skip{color:var(--text-2);background:rgba(148,163,184,.08)}
+.gl-fields{display:grid;gap:.6rem}
+.gl-field{display:grid;gap:.3rem}
+.gl-field input{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.6rem .8rem;color:var(--text);font-family:inherit;font-size:.95rem;width:100%}
+.gl-notfound{color:#fcd34d;font-size:.8rem}
+.gl-item{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;border:1px solid var(--border);border-radius:10px;padding:.6rem .7rem;margin-bottom:.5rem}
+.gl-item input{width:6.5rem;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.45rem .6rem;color:var(--text);font-family:inherit}
+.gl-item .gl-desc{flex:1;min-width:140px;color:var(--text-2);font-size:.9rem}
+.gl-actions{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:.8rem}
 </style>
 </head>
 <body>
-<noscript><p style="padding:1rem;text-align:center;color:#94A3B8">Features, use cases and the FAQ need JavaScript to display.</p></noscript>
+<noscript><p style="padding:1rem;text-align:center;color:#94A3B8">The invoice checker needs JavaScript to run. It runs entirely in your browser; nothing is uploaded.</p></noscript>
 <header>
   <div class="container nav">
     <a class="logo" href="#top" aria-label="GhostLabs AI home">
@@ -334,28 +347,26 @@ footer{border-top:1px solid var(--border);padding:3.5rem 0 2.5rem}
     </a>
     <nav aria-label="Primary">
       <ul class="nav-links">
-        <li><a href="#features">Features</a></li>
-        <li><a href="#how">How it works</a></li>
-        <li><a href="#usecases">Use cases</a></li>
-        <li><a href="#pricing">Pricing</a></li>
+        <li><a href="#playground">Playground</a></li>
+        <li><a href="#limits">What it reads</a></li>
         <li><a href="#faq">FAQ</a></li>
-        <li><a href="login.html">Login</a></li>
+        <li><a href="dashboard.html">Recent checks</a></li>
+        <li><a href="login.html">Accounts</a></li>
       </ul>
     </nav>
     <div class="nav-actions">
-      <button class="btn btn-primary btn-sm" data-open-modal="key" type="button">Get API</button>
+      <a class="btn btn-primary btn-sm" href="#playground">Try the checker</a>
       <button class="menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="drawer" aria-label="Open menu">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
       </button>
     </div>
   </div>
   <div class="drawer" id="drawer">
-    <a href="#features">Features</a>
-    <a href="#how">How it works</a>
-    <a href="#usecases">Use cases</a>
-    <a href="#pricing">Pricing</a>
+    <a href="#playground">Playground</a>
+    <a href="#limits">What it reads</a>
     <a href="#faq">FAQ</a>
-    <a href="login.html">Login</a>
+    <a href="dashboard.html">Recent checks</a>
+    <a href="login.html">Accounts</a>
   </div>
 </header>
 <main id="top">
@@ -363,160 +374,81 @@ footer{border-top:1px solid var(--border);padding:3.5rem 0 2.5rem}
 <section class="hero">
   <div class="container">
     <div class="hero-intro">
-    <span class="badge"><span class="dot" aria-hidden="true"></span>v2.4 Now Live, Sub-180ms Edge Routing</span>
-    <h1>Autonomous AI Infrastructure That <span class="grad">Ships Itself</span></h1>
-    <p class="sub">GhostLabs routes, verifies, and deploys your AI workflows across the edge in under 180ms, no glue code, no lock-in.</p>
+    <span class="badge"><span class="dot" aria-hidden="true"></span>Extraction engine, runs in your browser</span>
+    <h1>Paste an invoice. <span class="grad">Watch it check itself.</span></h1>
+    <p class="sub">Reads vendor, date, line items, subtotal, tax and total from your pasted invoice or receipt text, then checks four sums and shows the exact difference when they do not match. Anything it cannot find is marked "Not found".</p>
     <div class="hero-ctas">
-      <button class="btn btn-primary" data-open-modal="key" type="button">Get API key</button>
-      <a class="btn btn-ghost" href="#playground">View live demo</a>
+      <button class="btn btn-primary" id="ctaClean" type="button">Try a clean invoice</button>
+      <button class="btn btn-ghost" id="ctaMessy" type="button">Try a receipt with a mistake</button>
     </div>
     </div>
     <div class="playground" id="playground">
       <div class="pg-head">
         <span class="pg-title">GhostLabs Playground</span>
-        <span class="pg-title">Simulated run, client-side only</span>
+        <span class="pg-title">Extraction engine, on this device</span>
       </div>
-      <div class="presets" role="tablist" aria-label="Playground presets" id="presetList"></div>
+      <div class="presets" role="group" aria-label="Sample inputs">
+        <button class="preset" id="sampleClean" type="button">Try a clean invoice</button>
+        <button class="preset" id="sampleMessy" type="button">Try a receipt with a mistake</button>
+        <button class="preset" id="sampleGtClean" type="button">Sample input: Acme invoice</button>
+        <button class="preset" id="sampleGtError" type="button">Sample input: subtotal error</button>
+        <button class="preset" id="sampleGtMessy" type="button">Sample input: messy receipt</button>
+      </div>
       <div class="pg-body">
-        <div class="pg-model-block">
-          <div class="pg-label">Model</div>
-          <div class="models" id="modelList" role="group" aria-label="Model selector"></div>
-          <p class="pg-model-note mono" id="modelNote"></p>
-        </div>
         <div>
-          <div class="pg-label">Input</div>
-          <div class="pg-input" id="pgInput"></div>
-        </div>
-        <div>
-          <div class="pg-label">Trace</div>
-          <div class="pg-trace" id="pgTrace" aria-live="polite"></div>
-        </div>
-        <div class="pg-output-wrap" id="pgOutputWrap">
-          <div class="code-head">
-            <div class="pg-meta" id="pgMeta"></div>
-            <button class="copy-btn" id="pgCopy" type="button">Copy</button>
+          <div class="pg-label">Invoice or receipt text</div>
+          <textarea class="pg-input gl-input" id="docInput" rows="10" placeholder="Paste invoice or receipt text here" aria-label="Invoice or receipt text"></textarea>
+          <p class="note">Your text is processed on this device and is not uploaded.</p>
+          <p class="note">On a phone: copy text from a photo with Live Text (iOS) or Google Lens (Android), then paste it here.</p>
+          <p class="note" id="sizeNote" hidden>That text is over the 100 KB cap for this checker. Trim it and run again.</p>
+          <p class="note" id="fileNote" role="status"></p>
+          <div class="gl-actions">
+            <button class="btn btn-primary" id="runBtn" type="button">Run checks</button>
+            <button class="btn btn-ghost" id="fileBtn" type="button">Open a .txt or .csv file</button>
+            <button class="btn btn-ghost" id="clearBtn" type="button">Clear</button>
+            <input type="file" id="fileInput" accept=".txt,.csv,text/plain,text/csv" hidden>
           </div>
-          <pre class="code" id="pgOutput" tabindex="0" aria-label="Playground output, JSON"></pre>
+        </div>
+        <div class="pg-output-wrap" id="resultWrap">
+          <div class="pg-label">Arithmetic checks</div>
+          <div id="checksOut" aria-live="polite"></div>
+          <div class="pg-label" style="margin-top:1.2rem">Extracted fields, tap a value to correct it and the checks update</div>
+          <div class="gl-fields" id="fieldsOut"></div>
+          <div class="pg-label" style="margin-top:1.2rem">Line items</div>
+          <div id="itemsOut"></div>
+          <div class="gl-actions">
+            <button class="copy-btn" id="copyJson" type="button">Copy JSON</button>
+            <button class="copy-btn" id="dlCsv" type="button">Download CSV</button>
+          </div>
+          <div class="code-head" style="margin-top:1rem"><div class="pg-label" style="margin-bottom:0">JSON</div></div>
+          <pre class="code" id="jsonOut" tabindex="0" aria-label="Extracted data as JSON"></pre>
         </div>
       </div>
     </div>
   </div>
 </section>
-<!-- 3. LogoCloud -->
-<div class="logocloud">
-  <div class="container">
-    <p>Works with the models and platforms you already use</p>
-    <div class="logo-row" aria-label="Ecosystem">
-      <span class="wordmark">OpenAI</span>
-      <span class="wordmark">Anthropic</span>
-      <span class="wordmark">Gemini</span>
-      <span class="wordmark">Vertex</span>
-      <span class="wordmark">Cloudflare Workers</span>
-      <span class="wordmark">Postgres</span>
-      <span class="wordmark">Webhooks</span>
-    </div>
-    <p style="margin:1.25rem 0 0;font-size:.75rem">Names shown for compatibility only. All trademarks belong to their owners.</p>
-  </div>
-</div>
-<!-- 3b. Model routes (GT84) -->
-<section id="models">
-  <div class="container">
-    <div class="section-head">
-      <h2>One router, the models you already know</h2>
-      <p>Demo routing profiles for the playground above. Pacing and latency inside the playground are simulated demo data, not measurements of the real models.</p>
-    </div>
-    <div class="grid-3" id="modelStrip"></div>
-  </div>
-</section>
-<!-- 4. FeatureGrid -->
-<section id="features">
+<!-- 3. Limits panel -->
+<section id="limits">
   <div class="container">
     <div class="section-head" data-num="01">
-      <h2>Everything you need to ship AI in production</h2>
-      <p>Six concrete pillars, from edge routing to schema guardrails, in one infrastructure layer.</p>
+      <h2>What it reads and where it fails</h2>
+      <p>The honest list. If a document shape is not covered here, expect "Not found" fields and skipped checks rather than a guessed answer.</p>
     </div>
-    <div class="grid-3" id="featureGrid"></div>
-  </div>
-</section>
-<!-- 5. HowItWorks -->
-<section id="how">
-  <div class="container">
-    <div class="section-head" data-num="02">
-      <h2>From prompt to production in three steps</h2>
-      <p>Connect your sources, orchestrate with guardrails, and deploy to the edge.</p>
-    </div>
-    <div class="rail">
-      <div class="card"><div class="step-num">01</div><h3>Connect Sources</h3><p>Plug in your APIs, databases, and tools in minutes.</p></div>
-      <div class="card"><div class="step-num">02</div><h3>Orchestrate &amp; Verify</h3><p>Build multi-step agents with guardrails and human review.</p></div>
-      <div class="card"><div class="step-num">03</div><h3>Ship to Production</h3><p>Deploy to the edge with one click and monitor every run.</p></div>
-    </div>
-    <div class="stepper" id="howStepper">
-      <button class="step-btn" id="stepPrev" type="button" aria-label="Previous step"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
-      <div class="step-dots" role="group" aria-label="Workflow steps">
-        <button class="step-dot" type="button" data-step="1" aria-label="Step 1: Connect Sources" aria-current="step"><span class="pip" aria-hidden="true"></span></button>
-        <button class="step-dot" type="button" data-step="2" aria-label="Step 2: Orchestrate and Verify"><span class="pip" aria-hidden="true"></span></button>
-        <button class="step-dot" type="button" data-step="3" aria-label="Step 3: Ship to Production"><span class="pip" aria-hidden="true"></span></button>
+    <div class="grid-3">
+      <div class="card">
+        <h3>Supported inputs</h3>
+        <p>Pasted invoice or receipt text, and .txt or .csv files opened from your device (read locally in the browser, never uploaded). The sample inputs above run through the same extraction engine as your own text.</p>
+        <p style="margin-top:.6rem">Not supported: images, scans, PDFs, photos, and handwriting. Copy the text out of a photo first (Live Text on iOS, Google Lens on Android), then paste it.</p>
       </div>
-      <button class="step-btn" id="stepNext" type="button" aria-label="Next step"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
-    </div>
-  </div>
-</section>
-<!-- 6. UseCaseTabs -->
-<section id="usecases">
-  <div class="container">
-    <div class="section-head" data-num="03">
-      <h2>One platform, four ways teams use it</h2>
-      <p>Pick a use case to see the workflow and the code that runs it.</p>
-    </div>
-    <div class="tabs" role="tablist" aria-label="Use cases" id="ucTabs"></div>
-    <div id="ucPanels"></div>
-  </div>
-</section>
-<!-- 7. StatsBand -->
-<section class="stats" aria-label="Platform stats">
-  <div class="container">
-    <div class="stats-grid">
-      <div><div class="stat-num" data-count="99.98" data-decimals="2" data-suffix="%">99.98%</div><div class="stat-label">Uptime</div></div>
-      <div><div class="stat-num" data-count="180" data-decimals="0" data-prefix="&lt;" data-suffix="ms">&lt;180ms</div><div class="stat-label">p95 Latency</div></div>
-      <div><div class="stat-num" data-count="4.2" data-decimals="1" data-suffix="x">4.2x</div><div class="stat-label">Throughput</div></div>
-      <div><div class="stat-num">SOC2 Type II</div><div class="stat-label">Compliance</div></div>
-    </div>
-  </div>
-</section>
-<!-- 8. Pricing -->
-<section id="pricing">
-  <div class="container">
-    <div class="section-head" data-num="04">
-      <h2>Pricing that scales with your requests</h2>
-      <p>Start small, move to Pro as you ship, and talk to us when compliance needs grow.</p>
-    </div>
-    <div class="toggle-wrap">
-      <span class="toggle-label on" id="lblMonthly">Monthly</span>
-      <button class="toggle" id="billingToggle" type="button" role="switch" aria-checked="false" aria-label="Toggle annual billing"></button>
-      <span class="toggle-label" id="lblAnnual">Annual</span>
-    </div>
-    <div class="grid-3 price-grid" style="align-items:stretch">
-      <div class="card price-card">
-        <h3>Starter</h3>
-        <p>For indie hackers and side projects</p>
-        <div class="price"><span data-price data-monthly="$29" data-annual="$290">$29</span><small data-period data-monthly="/mo" data-annual="/yr">/mo</small></div>
-        <ul><li>100k requests/mo</li><li>1 project</li><li>Community support</li><li>Basic analytics</li></ul>
-        <button class="btn btn-ghost" data-open-modal="key" type="button">Get started</button>
+      <div class="card">
+        <h3>Numbers, dates, tolerance</h3>
+        <p>Handles decimal points and decimal commas, thousands separators, parentheses for negative amounts, and the currency symbols and codes it can recognise ($, EUR, GBP, PHP, JPY signs and codes). Ambiguous dates such as 01/02/2026 are read as day, month, year.</p>
+        <p style="margin-top:.6rem">Tolerance rule: a check passes when its computed figure is within 0.02 of the figure printed on the document. Amounts are compared after rounding to two decimal places, so a one cent rounding difference in the source document does not fail a check.</p>
       </div>
-      <div class="card price-card featured">
-        <div><span class="pop">MOST POPULAR</span></div>
-        <h3>Pro</h3>
-        <p>For growing teams shipping AI features</p>
-        <div class="price"><span data-price data-monthly="$79" data-annual="$790">$79</span><small data-period data-monthly="/mo" data-annual="/yr">/mo</small></div>
-        <ul><li>1M requests/mo</li><li>Unlimited projects</li><li>Priority support</li><li>Advanced analytics</li><li>Custom guardrails</li></ul>
-        <button class="btn btn-primary" data-open-modal="key" type="button">Start free trial</button>
-      </div>
-      <div class="card price-card">
-        <h3>Enterprise</h3>
-        <p>For companies with compliance needs</p>
-        <div class="price">Custom</div>
-        <ul><li>Unlimited requests</li><li>SSO &amp; SAML</li><li>Dedicated support</li><li>Custom SLAs</li><li>On-prem deployment</li></ul>
-        <button class="btn btn-ghost" data-open-modal="form" type="button">Contact us</button>
+      <div class="card">
+        <h3>Tests and known limits</h3>
+        <p>The extraction engine is covered by 129 automated battery expectations: 46 engine unit tests, 62 expectations across 6 adversarial documents, and 21 expectations across 2 sample documents. This build passes 129 of 129.</p>
+        <p style="margin-top:.6rem">Still limited: split tax rates are only checked when each tax line states its own rate and the base it applies to; a tax line without a stated base is checked against the subtotal and the result says so. When no subtotal is printed, tax and total are checked against the line items sum plus shipping, and the check says it used that implied base. Line items need a trailing amount per row; rows in other shapes can be missed. The vendor is a best-effort guess from the first header lines.</p>
       </div>
     </div>
   </div>
@@ -524,23 +456,28 @@ footer{border-top:1px solid var(--border);padding:3.5rem 0 2.5rem}
 <!-- 9. FAQ -->
 <section id="faq">
   <div class="container">
-    <div class="section-head" data-num="05">
+    <div class="section-head" data-num="02">
       <h2>Frequently asked questions</h2>
-      <p>Speed, models, fallback, security, trials, and cancellation, answered plainly.</p>
+      <p>Privacy, cost, method, and limits, answered plainly.</p>
     </div>
-    <div class="faq-list" id="faqList"></div>
+    <div class="faq-list" id="faqList">
+      <div class="faq-item"><button class="faq-q" type="button" aria-expanded="false"><span>Where does my document go?</span><span class="chev" aria-hidden="true">▾</span></button><div class="faq-a"><div class="faq-a-in"><div class="faq-a-pad">Nowhere. The extraction runs in your browser on this device. Nothing is uploaded, and no account is needed to use the checker. Recent check summaries are stored only in this browser, and you can clear them on the Recent checks page.</div></div></div></div>
+      <div class="faq-item"><button class="faq-q" type="button" aria-expanded="false"><span>Does it cost anything?</span><span class="chev" aria-hidden="true">▾</span></button><div class="faq-a"><div class="faq-a-in"><div class="faq-a-pad">No. The checker is free to use in your browser. There are no pricing tiers, no trial, and no subscription attached to it.</div></div></div></div>
+      <div class="faq-item"><button class="faq-q" type="button" aria-expanded="false"><span>Is this AI?</span><span class="chev" aria-hidden="true">▾</span></button><div class="faq-a"><div class="faq-a-in"><div class="faq-a-pad">No model is called. GhostLabs AI is the brand name; the tool itself is a rule-based extraction engine and arithmetic validator that runs locally. It reports only what it finds and marks the rest "Not found".</div></div></div></div>
+      <div class="faq-item"><button class="faq-q" type="button" aria-expanded="false"><span>What does it check?</span><span class="chev" aria-hidden="true">▾</span></button><div class="faq-a"><div class="faq-a-in"><div class="faq-a-pad">Four sums: each line total (qty x unit price), the subtotal against the line items, the tax against its rate and base, and the grand total against subtotal plus tax, shipping and tip. A passing check means the arithmetic agrees; it does not prove the document itself is correct.</div></div></div></div>
+      <div class="faq-item"><button class="faq-q" type="button" aria-expanded="false"><span>What can it not read?</span><span class="chev" aria-hidden="true">▾</span></button><div class="faq-a"><div class="faq-a-in"><div class="faq-a-pad">Images, scans, PDFs, photos and handwriting. It reads text only. See "What it reads and where it fails" above for the full list, including the layouts and tax shapes it can miss.</div></div></div></div>
+    </div>
   </div>
 </section>
 <!-- 10. CTA banner + Footer -->
 <section>
   <div class="container">
     <div class="banner">
-      <h2>Ship your first AI workflow today</h2>
-      <p>Generate a sandbox key and run the playground presets, or book an architecture demo with the team.</p>
+      <h2>Paste, check the math, copy the data.</h2>
+      <p>Run the checker on your own invoice or receipt text, then copy the JSON or download the CSV. No account, no upload.</p>
       <div class="hero-ctas">
-        <button class="btn btn-primary" data-open-modal="key" type="button">Start building free</button>
-        <button class="btn btn-ghost" data-open-modal="form" type="button">Book a demo</button>
-        <button class="btn btn-ghost" data-open-modal="form" type="button">Talk to engineering</button>
+        <a class="btn btn-primary" href="#playground">Open the playground</a>
+        <a class="btn btn-ghost" href="dashboard.html">Recent checks on this device</a>
       </div>
     </div>
   </div>
@@ -554,33 +491,28 @@ footer{border-top:1px solid var(--border);padding:3.5rem 0 2.5rem}
           <span class="logo-mark" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 3a7 7 0 0 0-7 7v9l2.5-2 2.5 2 2-2 2 2 2.5-2L19 19v-9a7 7 0 0 0-7-7Z" fill="#090A0F"/><circle cx="9.5" cy="11" r="1.4" fill="#22d3ee"/><circle cx="14.5" cy="11" r="1.4" fill="#22d3ee"/></svg></span>
           GhostLabs AI
         </a>
-        <p style="color:var(--text-2);font-size:.93rem;margin-top:1rem;max-width:320px">Autonomous AI infrastructure that routes, verifies, and deploys your workflows across the edge.</p>
-        <p style="margin-top:1.2rem"><span class="status"><span class="dot" aria-hidden="true"></span><span id="edgeStatus">Edge status: operational</span></span></p>
+        <p style="color:var(--text-2);font-size:.93rem;margin-top:1rem;max-width:320px">A browser invoice and receipt checker. The extraction engine runs on this device; nothing is uploaded.</p>
       </div>
       <div>
         <h4>Product</h4>
         <ul>
-          <li><a href="#features">Features</a></li>
-          <li><a href="#how">How it works</a></li>
-          <li><a href="#usecases">Use cases</a></li>
-          <li><a href="#pricing">Pricing</a></li>
+          <li><a href="#playground">Playground</a></li>
+          <li><a href="#limits">What it reads</a></li>
           <li><a href="#faq">FAQ</a></li>
         </ul>
       </div>
       <div>
         <h4>Resources</h4>
         <ul>
-          <li><button class="foot-link-btn" data-info="changelog" type="button">Changelog</button></li>
-          <li><button class="foot-link-btn" data-info="api" type="button">API reference</button></li>
-          <li><a href="#playground">Playground</a></li>
+          <li><a href="dashboard.html">Recent checks</a></li>
+          <li><a href="login.html">Accounts</a></li>
         </ul>
       </div>
       <div>
-        <h4>Company</h4>
+        <h4>Honesty</h4>
         <ul>
-          <li><button class="foot-link-btn" data-info="about" type="button">About</button></li>
-          <li><button class="foot-link-btn" data-info="privacy" type="button">Privacy</button></li>
-          <li><button class="foot-link-btn" data-info="terms" type="button">Terms</button></li>
+          <li><a href="#limits">Limits and test coverage</a></li>
+          <li><a href="#faq">Privacy answer in the FAQ</a></li>
         </ul>
       </div>
     </div>
@@ -589,438 +521,922 @@ footer{border-top:1px solid var(--border);padding:3.5rem 0 2.5rem}
     </div>
   </div>
 </footer>
-<!-- CTA Modal -->
-<div class="modal-backdrop" id="ctaBackdrop" role="dialog" aria-modal="true" aria-labelledby="ctaTitle" hidden>
-  <div class="modal">
-    <button class="modal-close" data-close-modal type="button" aria-label="Close dialog"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
-    <div id="keyMode">
-      <h3 id="ctaTitle">Get your sandbox API key</h3>
-      <p class="sub">Generate a sandbox key and try the playground presets. No account needed for this demo.</p>
-      <button class="btn btn-primary w-full" id="generateKey" type="button">Generate sandbox key</button>
-      <div class="key-box" id="keyBox">
-        <div class="pg-label">Your sandbox key</div>
-        <div class="key-value" id="keyValue"></div>
-        <button class="copy-btn" id="keyCopy" type="button" style="margin-top:.7rem">Copy key</button>
-      </div>
-      <p class="note">This is a sandbox key generated locally in your browser for demo purposes. It is not a live production key and no data leaves this page.</p>
-      <p class="note">Need a guided walkthrough instead? <button class="foot-link-btn" id="switchToForm" type="button" style="color:var(--cyan);font-size:.82rem">Request an architecture demo</button></p>
-    </div>
-    <div id="formMode" hidden>
-      <h3>Request an architecture demo</h3>
-      <p class="sub">Tell us what you are building and the team will walk through routing, guardrails, and deployment for your stack.</p>
-      <form id="demoForm" novalidate>
-        <div class="field" data-field="name"><label for="fName">Full name</label><input id="fName" name="name" type="text" autocomplete="name" placeholder="e.g. Alex Rivera…"><span class="err">Please enter your name.</span></div>
-        <div class="field" data-field="email"><label for="fEmail">Work email</label><input id="fEmail" name="email" type="email" autocomplete="email" spellcheck="false" placeholder="e.g. alex@company.com…"><span class="err">Please enter a valid work email.</span></div>
-        <div class="field" data-field="company"><label for="fCompany">Company</label><input id="fCompany" name="company" type="text" autocomplete="organization" placeholder="e.g. Acme Corp…"><span class="err">Please enter your company.</span></div>
-        <div class="field" data-field="message"><label for="fMessage">What are you building?</label><textarea id="fMessage" name="message" rows="4" placeholder="e.g. A support agent that reads invoices…"></textarea><span class="err">Please add a short message.</span></div>
-        <button class="btn btn-primary w-full" type="submit">Request demo</button>
-        <div class="success" id="formSuccess" role="status">Request received. This demo build records the request in this browser session only, and the team flow continues once an endpoint is connected.</div>
-        <p class="note" id="demoNote">Footnote: this demo build sends nothing until a form endpoint or webhook is connected. Submitting shows the received state locally only.</p>
-      </form>
-      <p class="note">Want to try it yourself first? <button class="foot-link-btn" id="switchToKey" type="button" style="color:var(--cyan);font-size:.82rem">Generate a sandbox key</button></p>
-    </div>
-  </div>
-</div>
-<!-- Info Modal -->
-<div class="modal-backdrop" id="infoBackdrop" role="dialog" aria-modal="true" aria-labelledby="infoTitle" hidden>
-  <div class="modal">
-    <button class="modal-close" data-close-info type="button" aria-label="Close dialog"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
-    <h3 id="infoTitle"></h3>
-    <div class="sub" id="infoBody" style="display:grid;gap:.8rem"></div>
-  </div>
-</div>
+<script>
+/* Patched extraction engine, GT115 candidate copy of the GT105 engine with cherry-pick patches P1 to P6. Source: engine/extract.js in this candidate folder. */
+/*
+ * GhostLabs AI - Document Extraction Engine
+ * Dependency-free, deterministic, client-side parser for invoice and
+ * receipt text. No model, no network, no simulation. It only reports
+ * what it can find with the heuristics below and returns null for
+ * anything missing. It never invents values.
+ *
+ * Limitations:
+ * - Heuristic only. Unusual layouts, scanned images, PDFs, and tables
+ *   without a trailing amount per row will miss line items.
+ * - Vendor is a best-effort guess from the first header lines.
+ * - Ambiguous dates such as 01/02/2026 are read as day/month/year.
+ * - Ambiguous numbers such as 1,234 may be thousands or decimal in
+ *   some locales. The parser uses the rules in parseNumber and the
+ *   result can be wrong for documents that mix conventions.
+ * - Currency for the dollar sign is reported as USD. Other dollar
+ *   currencies cannot be distinguished from the symbol alone.
+ * - Tax is read from a single tax, VAT, or GST line. Multi-tax
+ *   documents are not fully modelled.
+ * - Line items need a trailing amount. Quantity and unit price are
+ *   null when the line does not state them clearly.
+ */
+
+// ------------------------------------------------------------------
+// Number parsing
+// ------------------------------------------------------------------
+
+function parseNumber(raw) {
+  if (raw === null || raw === undefined) return null;
+  let s = String(raw).trim();
+  if (!s) return null;
+  let negative = false;
+  // Parentheses mean negative in accounting notation: (1,234.56)
+  if (/^\(.*\)$/.test(s)) { negative = true; s = s.slice(1, -1).trim(); }
+  if (/^-/.test(s)) { negative = true; s = s.replace(/^-/, '').trim(); }
+  if (/^-$/.test(s)) return null;
+  // Strip currency symbols and codes and spaces used as grouping.
+  s = s.replace(/PHP|USD|EUR|GBP|JPY|AUD|CAD/gi, '');
+  s = s.replace(/[$\u20AC\u00A3\u00A5]/g, '');
+  s = s.replace(/\s+/g, '');
+  s = s.replace(/%$/, '');
+  if (!s || !/\d/.test(s)) return null;
+  if (!/^-?[\d.,]+$/.test(s)) return null;
+
+  const hasDot = s.includes('.');
+  const hasComma = s.includes(',');
+  let normalized = s;
+  if (hasDot && hasComma) {
+    // Last separator is the decimal separator.
+    if (s.lastIndexOf(',') > s.lastIndexOf('.')) {
+      normalized = s.replace(/\./g, '').replace(',', '.');
+    } else {
+      normalized = s.replace(/,/g, '');
+    }
+  } else if (hasComma && !hasDot) {
+    const parts = s.split(',');
+    const last = parts[parts.length - 1];
+    if (parts.length === 2 && last.length === 3 && parts[0].length <= 3) {
+      // Single comma with exactly three trailing digits: thousands.
+      normalized = s.replace(/,/g, '');
+    } else if (last.length === 1 || last.length === 2) {
+      normalized = s.replace(/\./g, '').replace(',', '.');
+    } else {
+      normalized = s.replace(/,/g, '');
+    }
+  }
+  const n = Number(normalized);
+  if (!Number.isFinite(n)) return null;
+  return negative ? -n : n;
+}
+
+// Find the last amount-like token in a string. Returns {value, raw} or null.
+function lastAmount(str) {
+  if (!str) return null;
+  // Amount token: optional parens, optional currency, digits with
+  // grouping or decimal separators. Rate tokens ending in % are skipped
+  // by the caller when needed.
+  const re = /\(?[\$\u20AC\u00A3]?\s*-?\d[\d\s.,]*\d\)?|\(?[\$\u20AC\u00A3]?\s*-?\d\)?/g;
+  let m, last = null;
+  while ((m = re.exec(str)) !== null) {
+    const token = m[0].trim();
+    // Skip pure year-like tokens when a longer amount exists is hard;
+    // keep all candidates and let caller decide by position.
+    const v = parseNumber(token);
+    if (v !== null) last = { value: v, raw: token, index: m.index };
+  }
+  return last;
+}
+
+function allAmounts(str) {
+  const re = /\(?[\$\u20AC\u00A3]?\s*-?\d[\d.,]*\d\)?|\(?[\$\u20AC\u00A3]?\s*-?\d\)?/g;
+  const out = [];
+  let m;
+  while ((m = re.exec(str)) !== null) {
+    const v = parseNumber(m[0]);
+    if (v !== null) out.push({ value: v, raw: m[0].trim(), index: m.index });
+  }
+  return out;
+}
+
+// ------------------------------------------------------------------
+// Date parsing: returns YYYY-MM-DD or null
+// ------------------------------------------------------------------
+const MONTHS = {
+  jan: 1, january: 1, feb: 2, february: 2, mar: 3, march: 3,
+  apr: 4, april: 4, may: 5, jun: 6, june: 6, jul: 7, july: 7,
+  aug: 8, august: 8, sep: 9, sept: 9, september: 9, oct: 10, october: 10,
+  nov: 11, november: 11, dec: 12, december: 12
+};
+function pad(n) { return String(n).padStart(2, '0'); }
+function validDate(y, mo, d) {
+  if (mo < 1 || mo > 12 || d < 1 || d > 31 || y < 1900 || y > 2100) return null;
+  return `${y}-${pad(mo)}-${pad(d)}`;
+}
+function parseDate(str) {
+  if (!str) return null;
+  const s = String(str).trim();
+  let m;
+  // 2026-11-23 or 2026/11/23
+  m = s.match(/(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})/);
+  if (m) return validDate(+m[1], +m[2], +m[3]);
+  // 23/11/2026 or 11/23/2026 : disambiguate, else day first
+  m = s.match(/(\d{1,2})[-\/](\d{1,2})[-\/](\d{4})/);
+  if (m) {
+    const a = +m[1], b = +m[2], y = +m[3];
+    if (a > 12 && b <= 12) return validDate(y, b, a);
+    if (b > 12 && a <= 12) return validDate(y, a, b);
+    return validDate(y, b, a); // day/month/year default
+  }
+  // Nov 23, 2026 or November 23 2026
+  m = s.match(/([A-Za-z]+)\.?\s+(\d{1,2})(?:st|nd|rd|th)?,?\s+(\d{4})/);
+  if (m && MONTHS[m[1].toLowerCase()]) return validDate(+m[3], MONTHS[m[1].toLowerCase()], +m[2]);
+  // 23 Nov 2026
+  m = s.match(/(\d{1,2})(?:st|nd|rd|th)?\s+([A-Za-z]+)\.?,?\s+(\d{4})/);
+  if (m && MONTHS[m[2].toLowerCase()]) return validDate(+m[3], MONTHS[m[2].toLowerCase()], +m[1]);
+  return null;
+}
+function findDateInLine(line) {
+  // Try the whole line; parseDate searches inside the string.
+  return parseDate(line);
+}
+
+// ------------------------------------------------------------------
+// Currency
+// ------------------------------------------------------------------
+function detectCurrency(text) {
+  const upper = text.toUpperCase();
+  if (/\bPHP\b/.test(upper) || text.includes('\u20B1')) return 'PHP';
+  if (/\bEUR\b/.test(upper) || text.includes('\u20AC')) return 'EUR';
+  if (/\bGBP\b/.test(upper) || text.includes('\u00A3')) return 'GBP';
+  if (/\bJPY\b/.test(upper) || text.includes('\u00A5')) return 'JPY';
+  if (/\bUSD\b/.test(upper) || text.includes('$')) return 'USD';
+  return null;
+}
+
+// ------------------------------------------------------------------
+// Label helpers
+// ------------------------------------------------------------------
+const RE_SUBTOTAL = /\bsub\s*-?\s*total\b/i;
+const RE_TAX = /\b(vat|gst|sales\s+tax|tax)\b/i;
+const RE_SHIPPING = /\b(shipping|delivery|freight|postage)\b/i;
+const RE_TIP = /\b(tip|gratuity)\b/i; // [PATCH P1]
+const RE_TOTAL = /\b(grand\s+total|total\s+due|total)\b/i;
+const RE_AMOUNT_DUE = /\b(amount\s+due|balance\s+due|balance)\b/i;
+
+function isFooterLabel(line) {
+  return RE_SUBTOTAL.test(line) || RE_TAX.test(line) || RE_SHIPPING.test(line) || RE_TIP.test(line) || // [PATCH P1]
+    RE_AMOUNT_DUE.test(line) || /\bgrand\s+total\b/i.test(line) ||
+    /^\s*total\b/i.test(line) || /\btotal\s*:/i.test(line) || /\btotal\s+due\b/i.test(line);
+}
+function isHeaderOrMetaLine(line) {
+  return /\b(invoice|receipt|date|due|bill\s+to|ship\s+to|customer|payment|terms|thank|page|tel|phone|email|address|street|road|ave|city)\b/i.test(line) ||
+    /^\s*(invoice|receipt)\s*$/i.test(line) || line.includes('@');
+}
+
+// ------------------------------------------------------------------
+// Line item parsing
+// ------------------------------------------------------------------
+const AMT = String.raw`\(?\$?[\u20AC\u00A3]?\s*-?\d[\d.,]*\d\)?|\(?\$?[\u20AC\u00A3]?\s*-?\d\)?`;
+
+function parseLineItem(line) {
+  const trimmed = line.trim();
+  if (!trimmed) return null;
+
+  // Pattern A: description, qty x unitPrice, amount
+  // Example: Widget Pro 2 x 49.00 98.00
+  let m = trimmed.match(new RegExp(`^(.+?)\\s+(\\d+(?:[.,]\\d+)?)\\s*[x\\u00D7]\\s*(${AMT})\\s+(${AMT})\\s*$`, 'i'));
+  if (m) {
+    const qty = parseNumber(m[2]);
+    const unitPrice = parseNumber(m[3]);
+    const amount = parseNumber(m[4]);
+    const description = m[1].trim().replace(/[\t ]{2,}.*$/, '').trim() || m[1].trim();
+    if (qty !== null && unitPrice !== null && amount !== null && description) {
+      return { description, qty, unitPrice, amount };
+    }
+  }
+
+  // Split by tab or 2+ spaces into columns.
+  const cols = trimmed.split(/\t+|\s{2,}/).map(c => c.trim()).filter(Boolean);
+  if (cols.length >= 3) {
+    const last = parseNumber(cols[cols.length - 1]);
+    const secondLast = parseNumber(cols[cols.length - 2]);
+    const thirdLast = parseNumber(cols[cols.length - 3]);
+    if (last !== null && secondLast !== null && thirdLast !== null && cols.length >= 4) {
+      const description = cols.slice(0, cols.length - 3).join(' ');
+      return { description, qty: thirdLast, unitPrice: secondLast, amount: last };
+    }
+    if (last !== null && secondLast !== null) {
+      // desc, qty, amount  OR  desc, unitPrice, amount
+      // If secondLast is a small integer and first column count allows,
+      // treat as qty when there is a separate unit pattern? Heuristic:
+      // if cols length is 3, ambiguous. Prefer qty if integer and
+      // last / secondLast yields a plausible unit price only when
+      // the middle value looks like qty (integer, <= 1000).
+      const description = cols.slice(0, cols.length - 2).join(' ');
+      if (Number.isInteger(secondLast)) {
+        const unit = secondLast !== 0 ? round2(last / secondLast) : null;
+        // If description columns already handled above, this is qty case
+        // only when original line had qty pattern in columns.
+        // Use qty interpretation for 3-col tab separated rows.
+        return { description, qty: secondLast, unitPrice: unit, amount: last };
+      }
+      return { description, qty: null, unitPrice: secondLast, amount: last };
+    }
+    if (last !== null && cols.length >= 2) {
+      const description = cols.slice(0, cols.length - 1).join(' ');
+      if (description) return { description, qty: null, unitPrice: null, amount: last };
+    }
+  }
+
+  // [PATCH P5] Comma separated line layout fallback:
+  // "description, qty, unit price, amount". The qty segment may carry a
+  // unit word ("2.5 hrs", "0.75 kg", "12.5 ft"). A 3-segment variant
+  // carries the qty at the head of the description segment
+  // ("2 Wood-Fired Margherita, 18.50, 37.00").
+  if (trimmed.includes(',')) {
+    const parts = trimmed.split(',').map(c => c.trim());
+    if (parts.length >= 3) {
+      const amtC = parseNumber(parts[parts.length - 1]);
+      const unitC = parseNumber(parts[parts.length - 2]);
+      if (parts.length >= 4 && amtC !== null && unitC !== null) {
+        const qm = parts[parts.length - 3].match(/^(\d+(?:[.,]\d+)?)\s*(?:[A-Za-z]{1,4}\.?)?$/);
+        const descC = parts.slice(0, parts.length - 3).join(', ').trim();
+        if (qm && descC && /[A-Za-z]/.test(descC)) {
+          return { description: descC, qty: parseNumber(qm[1]), unitPrice: unitC, amount: amtC };
+        }
+      }
+      if (parts.length === 3 && amtC !== null && unitC !== null) {
+        const fm = parts[0].match(/^(\d+(?:[.,]\d+)?)\s+(.+)$/);
+        if (fm) return { description: fm[2].trim(), qty: parseNumber(fm[1]), unitPrice: unitC, amount: amtC };
+      }
+    }
+  }
+
+  // [PATCH P5] Prefix line layout fallback:
+  // "4 x Description @ $15.00, $60.00" and "2x Description @ GBP 120.00 = GBP 240.00".
+  // A trailing bracket note (for example a tax class tag) is not part of
+  // the description.
+  m = trimmed.match(/^(\d+(?:[.,]\d+)?)\s*[x\u00D7]\s+(.+?)\s*@\s*((?:GBP|USD|EUR|PHP|[$\u20AC\u00A3])?\s*\(?-?\d[\d.,]*\d\)?|(?:GBP|USD|EUR|PHP|[$\u20AC\u00A3])?\s*\(?-?\d\)?)\s*(?:=|,)\s*((?:GBP|USD|EUR|PHP|[$\u20AC\u00A3])?\s*\(?-?\d[\d.,]*\d\)?|(?:GBP|USD|EUR|PHP|[$\u20AC\u00A3])?\s*\(?-?\d\)?)/i);
+  if (m) {
+    const qty = parseNumber(m[1]);
+    const unitPrice = parseNumber(m[3]);
+    const amount = parseNumber(m[4]);
+    const description = m[2].trim().replace(/\s*\[[^\]]*\]\s*$/, '').trim();
+    if (qty !== null && unitPrice !== null && amount !== null && description) {
+      return { description, qty, unitPrice, amount };
+    }
+  }
+
+  // Pattern B: description, qty, unitPrice, amount (single spaces)
+  // Example: Widget Pro 3 25.50 76.50
+  m = trimmed.match(new RegExp(`^(.+?)\\s+(\\d+)\\s+(${AMT})\\s+(${AMT})\\s*$`));
+  if (m) {
+    const qty = parseNumber(m[2]);
+    const unitPrice = parseNumber(m[3]);
+    const amount = parseNumber(m[4]);
+    const description = m[1].trim();
+    if (qty !== null && unitPrice !== null && amount !== null && description && !/\d$/.test(description)) {
+      return { description, qty, unitPrice, amount };
+    }
+    if (qty !== null && unitPrice !== null && amount !== null && description) {
+      return { description, qty, unitPrice, amount };
+    }
+  }
+
+  // Pattern C: description and a single trailing amount.
+  // Example: Coffee 45.50  or  Coffee - 45.50
+  m = trimmed.match(new RegExp(`^(.+?)\\s+[-:]?\\s*(${AMT})\\s*$`));
+  if (m) {
+    const amount = parseNumber(m[2]);
+    const description = m[1].trim().replace(/[-:]$/, '').trim();
+    if (amount !== null && description && /[A-Za-z]/.test(description)) {
+      // Reject if description is just a label or a date fragment.
+      if (isFooterLabel(description) || isHeaderOrMetaLine(description)) return null;
+      return { description, qty: null, unitPrice: null, amount };
+    }
+  }
+  return null;
+}
+
+function round2(n) { return Math.round((n + Number.EPSILON) * 100) / 100; }
+function approxEqual(a, b, tol) { return Math.abs(a - b) <= tol; }
+
+// ------------------------------------------------------------------
+// [PATCH P4] Input normalizer, cherry-picked from the Genspark package
+// (extractor.js normalize()). Runs before extraction so messy phone
+// copy-paste survives: NBSP and exotic spaces, Unicode minus and dash
+// variants, zero-width characters, currency glued to words, and
+// split-line joining (a description-only line followed by a qty or
+// price line is joined back into one line).
+// ------------------------------------------------------------------
+function normalizeInput(raw) {
+  let s = String(raw == null ? '' : raw);
+  s = s.replace(/\r\n?/g, '\n')
+    .replace(/[\u200B-\u200D\uFEFF\u00AD]/g, '')
+    .replace(/[\u00A0\u2000-\u200A\u202F\u205F\u3000]/g, ' ')
+    .replace(/[\u2212\u2012\u2013\u2014\uFE63\uFF0D]/g, '-')
+    .replace(/([A-Za-z:])([$\u20AC\u00A3])/g, '$1 $2')
+    .replace(/([$\u20AC\u00A3])\s+(?=\d)/g, '$1')
+    .replace(/(\d)(USD|EUR|GBP)\b/gi, '$1 $2')
+    .replace(/[ \t]+/g, ' ')
+    .replace(/ *\n */g, '\n');
+  const linesIn = s.split('\n'); const out = [];
+  for (let i = 0; i < linesIn.length; i++) {
+    const cur = linesIn[i].trim();
+    const next = i + 1 < linesIn.length ? linesIn[i + 1].trim() : '';
+    if (cur && /[A-Za-z]/.test(cur) && !/\d/.test(cur) &&
+        /^(?:\d+(?:[.,]\d+)?\s*[x\u00D7@]\s*)?[$\u20AC\u00A3]?\d[\d.,]*(?:\s+[$\u20AC\u00A3]?\d[\d.,]*)?$/i.test(next)) {
+      out.push(cur + ' ' + next); i++; continue;
+    }
+    if (cur) out.push(cur);
+  }
+  return out.join('\n');
+}
+
+// ------------------------------------------------------------------
+// Main entry
+// ------------------------------------------------------------------
+function extractDocument(text) {
+  const warnings = [];
+  const input = normalizeInput(typeof text === 'string' ? text : ''); // [PATCH P4]
+  const rawLines = input.split(/\r?\n/);
+  const lines = rawLines.map(l => l.trim()).filter(l => l.length > 0);
+  const fields = {
+    vendor: null, invoiceNumber: null, invoiceDate: null, dueDate: null,
+    currency: null, lineItems: [], subtotal: null, taxLabel: null,
+    taxRate: null, taxAmount: null, shipping: null, tip: null, taxes: [], total: null, amountDue: null // [PATCH P1] tip field; [PATCH P6] taxes array
+  };
+  fields.currency = detectCurrency(input);
+
+  // Vendor: first plausible header line in first 5 lines.
+  for (let i = 0; i < Math.min(lines.length, 5); i++) {
+    const l = lines[i];
+    if (/^\s*(invoice|receipt|tax invoice|sales invoice)\s*$/i.test(l)) continue;
+    if (findDateInLine(l) && l.length < 30) continue;
+    if (/\b(invoice\s*(no|number|#)|date|due)\b/i.test(l)) continue;
+    if (l.includes('@') || /^https?:\/\//i.test(l)) continue;
+    if (/[A-Za-z]/.test(l)) { fields.vendor = l.replace(/\s{2,}.*$/, '').trim() || l; break; }
+  }
+
+  // Invoice number
+  for (const line of lines) {
+    let m = line.match(/(?:invoice\s*(?:no\.?|number|#)|inv\.?\s*(?:no\.?|#)|invoice)\s*[:#]\s*([A-Za-z0-9][A-Za-z0-9\-\/]*)/i);
+    if (m && !parseDate(line)) { fields.invoiceNumber = m[1]; break; }
+    m = line.match(/#\s*([A-Za-z0-9][A-Za-z0-9\-\/]{2,})/);
+    if (m && /\binvoice\b/i.test(line)) { fields.invoiceNumber = m[1]; break; }
+    // [PATCH P6] Receipt numbers count as document numbers on receipts.
+    m = line.match(/(?:receipt\s*(?:no\.?|number|#))\s*[:#]?\s*([A-Za-z0-9][A-Za-z0-9\-\/]*)/i);
+    if (m) { fields.invoiceNumber = m[1]; break; }
+  }
+
+  // Dates
+  for (const line of lines) {
+    const d = findDateInLine(line);
+    if (!d) continue;
+    const isDue = /\b(due|payment due|pay by)\b/i.test(line);
+    const isInvoiceDate = /\b(invoice date|issued|issue date|date)\b/i.test(line);
+    if (isDue && !fields.dueDate) fields.dueDate = d;
+    else if (isInvoiceDate && !fields.invoiceDate) fields.invoiceDate = d;
+    else if (!fields.invoiceDate && !isDue) fields.invoiceDate = d;
+  }
+
+  // Footer fields and line items, line by line.
+  for (const line of lines) {
+    // [PATCH P2] Tax-line guards: identifier and registration lines are
+    // never the tax line (a Tax ID or VAT Reg number is not a tax amount).
+    if (/\b(tax\s*(id|no\.?|number|reg)|vat\s*reg|tax\s*number|registration|tax[-\s]?exempt)\b/i.test(line)) continue;
+    // Subtotal takes priority over total.
+    if (RE_SUBTOTAL.test(line)) {
+      const a = lastAmount(stripRate(line));
+      if (a) fields.subtotal = a.value;
+      continue;
+    }
+    if (RE_AMOUNT_DUE.test(line)) {
+      const a = lastAmount(stripRate(line));
+      if (a) {
+        fields.amountDue = a.value;
+        // [PATCH P3] "Net Balance Due", "Total Due", "TOTAL PAYABLE" and
+        // "Amount Due" also populate total when no total was found yet.
+        if (fields.total === null && /\b(net\s+balance\s+due|total\s+due|total\s+payable|amount\s+due)\b/i.test(line)) fields.total = a.value;
+      }
+      // Amount Due line may also be the total in some layouts; do not
+      // also treat it as total unless no total was found yet and the
+      // line explicitly says total. Keep amountDue separate.
+      continue;
+    }
+    // [PATCH P1] Tip is a first-class field: tip lines are never line
+    // items, and the grand total check below accounts for the tip.
+    if (RE_TIP.test(line)) {
+      const a = lastAmount(stripRate(line));
+      if (a) fields.tip = a.value;
+      continue;
+    }
+    if (RE_SHIPPING.test(line) && !RE_TAX.test(line)) { // [PATCH P2] a VAT or tax line must not overwrite shipping
+      const a = lastAmount(stripRate(line));
+      if (a) fields.shipping = a.value;
+      continue;
+    }
+    if (RE_TAX.test(line) && !RE_SUBTOTAL.test(line) && !/\[\s*tax\b/i.test(line)) { // [PATCH P2] bracket guard
+      // [PATCH P6] Split tax: every tax line is recorded in fields.taxes
+      // with its own rate and stated base (the amount after "on", when
+      // stated), following the Genspark per-tax-line structure. A
+      // "Total Tax" summary line sets the combined amount and is not
+      // itself another tax line.
+      const rateMatch = line.match(/(\d+(?:[.,]\d+)?)\s*%/);
+      const rate = rateMatch ? parseNumber(rateMatch[1]) : null;
+      const amounts = allAmounts(stripRate(line));
+      if (!amounts.length) continue;
+      const amount = amounts[amounts.length - 1].value;
+      if (/^\s*total\s+(tax|vat|gst)\b/i.test(line)) { fields.taxAmount = amount; continue; }
+      const labelMatch = line.match(RE_TAX);
+      if (labelMatch && !fields.taxLabel) fields.taxLabel = labelMatch[1].replace(/\s+/g, ' ').trim();
+      let base = null;
+      const onMatch = line.match(/\bon\b/i);
+      if (onMatch) {
+        const bm = line.slice(onMatch.index + onMatch[0].length).match(/-?\d[\d.,]*\d|-?\d/);
+        if (bm) { const bv = parseNumber(bm[0]); if (bv !== null && bv !== amount) base = bv; }
+      }
+      fields.taxes.push({ label: line.trim(), rate, base, amount });
+      fields.taxAmount = round2(fields.taxes.reduce((sum, t) => sum + t.amount, 0));
+      fields.taxRate = fields.taxes.length === 1 ? fields.taxes[0].rate : null;
+      continue;
+    }
+    if (RE_TOTAL.test(line)) {
+      // Only treat as total if line starts with total or has colon,
+      // to avoid catching prose containing the word total.
+      if (/^\s*(grand\s+)?total\b/i.test(line) || /\btotal\s*:/i.test(line) || /\btotal\s+due\b/i.test(line) || /\bgrand\s+total\b/i.test(line) || /\btotal\s+(payable|paid)\b/i.test(line)) { // [PATCH P3]
+        const a = lastAmount(stripRate(line));
+        if (a) fields.total = a.value;
+        continue;
+      }
+    }
+    // [PATCH P5] A prefix item line uses @ as its price marker; it is not
+    // an email or header line even though isHeaderOrMetaLine matches @.
+    if (/^\d+(?:[.,]\d+)?\s*[x\u00D7]\s+.+\s*@.*\d/.test(line)) {
+      const item = parseLineItem(line);
+      if (item) { fields.lineItems.push(item); continue; }
+    }
+    if (isHeaderOrMetaLine(line)) continue;
+    if (fields.vendor && line === fields.vendor) continue;
+    // Skip address-like and contact lines without a trailing amount pattern.
+    const item = parseLineItem(line);
+    if (item) { fields.lineItems.push(item); continue; }
+    // Warning heuristic: line has letters and a number and at least
+    // 8 chars, is not a date or header, and looked item-like.
+    if (/[A-Za-z]/.test(line) && /\d/.test(line) && line.length >= 8 &&
+        !findDateInLine(line) && !/^\d+\s/.test(line) === false) {
+      // Only warn for lines with a currency or decimal amount fragment
+      // that failed to parse as an item.
+      if (/[\$\u20AC\u00A3]|\d+[.,]\d{2}\b/.test(line) && !isHeaderOrMetaLine(line)) {
+        warnings.push(`Could not parse line as item: "${line}"`);
+      }
+    }
+  }
+
+  // If tax amount ended up equal to rate and no real amount, clear it
+  // when there is no other evidence. Handled by samples: tax lines in
+  // samples always carry an amount, so this guard is conservative.
+  // (No-op unless tax line had only a percent: detect by scanning.)
+  // Checks
+  const TOL = 0.02;
+  const checks = [];
+  const itemsSum = fields.lineItems.reduce((s, it) => s + (it.amount || 0), 0);
+
+  if (fields.lineItems.length && fields.subtotal !== null) {
+    const ok = approxEqual(itemsSum, fields.subtotal, TOL);
+    checks.push({ id: 'items-sum-subtotal', label: 'Line items sum vs subtotal', status: ok ? 'pass' : 'fail',
+      detail: ok ? `Line items sum ${itemsSum.toFixed(2)} matches subtotal ${fields.subtotal.toFixed(2)}`
+                 : `Line items sum ${itemsSum.toFixed(2)} does not match subtotal ${fields.subtotal.toFixed(2)} (difference ${(itemsSum - fields.subtotal).toFixed(2)})` });
+  } else {
+    checks.push({ id: 'items-sum-subtotal', label: 'Line items sum vs subtotal', status: 'skip',
+      detail: !fields.lineItems.length ? 'Skipped: no line items found' : 'Skipped: no subtotal stated' });
+  }
+
+  if (fields.subtotal !== null && fields.total !== null) {
+    const expected = fields.subtotal + (fields.taxAmount || 0) + (fields.shipping || 0) + (fields.tip || 0); // [PATCH P1]
+    const parts = [`subtotal ${fields.subtotal.toFixed(2)}`];
+    if (fields.taxAmount !== null) parts.push(`tax ${fields.taxAmount.toFixed(2)}`);
+    if (fields.shipping !== null) parts.push(`shipping ${fields.shipping.toFixed(2)}`);
+    if (fields.tip !== null) parts.push(`tip ${fields.tip.toFixed(2)}`); // [PATCH P1]
+    const ok = approxEqual(expected, fields.total, TOL);
+    checks.push({ id: 'subtotal-plus-charges-total', label: 'Subtotal + tax + shipping vs total', status: ok ? 'pass' : 'fail',
+      detail: ok ? `${parts.join(' + ')} = ${expected.toFixed(2)} matches total ${fields.total.toFixed(2)}`
+                 : `${parts.join(' + ')} = ${expected.toFixed(2)} does not match total ${fields.total.toFixed(2)} (difference ${(expected - fields.total).toFixed(2)})` });
+  } else if (fields.subtotal === null && fields.total !== null && fields.lineItems.length) {
+    // [PATCH P6] No subtotal stated: check the total against the implied
+    // base (line items sum plus tax, shipping and tip). The subtotal
+    // field itself stays null; nothing is invented.
+    const expected = round2(itemsSum + (fields.taxAmount || 0) + (fields.shipping || 0) + (fields.tip || 0));
+    const ok = approxEqual(expected, fields.total, TOL);
+    checks.push({ id: 'subtotal-plus-charges-total', label: 'Line items + tax + shipping vs total (no subtotal stated)', status: ok ? 'pass' : 'fail',
+      detail: ok ? `Line items ${itemsSum.toFixed(2)} + charges = ${expected.toFixed(2)} matches total ${fields.total.toFixed(2)} (no subtotal stated)`
+                 : `Line items ${itemsSum.toFixed(2)} + charges = ${expected.toFixed(2)} does not match total ${fields.total.toFixed(2)} (difference ${(expected - fields.total).toFixed(2)})` });
+  } else {
+    checks.push({ id: 'subtotal-plus-charges-total', label: 'Subtotal + tax + shipping vs total', status: 'skip',
+      detail: fields.subtotal === null ? 'Skipped: no subtotal stated' : 'Skipped: no total stated' });
+  }
+
+  const badLines = [];
+  let anyQtyPrice = false;
+  fields.lineItems.forEach((it, idx) => {
+    if (it.qty !== null && it.unitPrice !== null && it.amount !== null) {
+      anyQtyPrice = true;
+      if (!approxEqual(it.qty * it.unitPrice, it.amount, TOL)) badLines.push(idx + 1);
+    }
+  });
+  if (anyQtyPrice) {
+    const ok = badLines.length === 0;
+    checks.push({ id: 'line-qty-price-amount', label: 'Each line qty x unit price vs amount', status: ok ? 'pass' : 'fail',
+      detail: ok ? 'All lines with qty and unit price match their amount' : `Lines failing qty x unit price check: ${badLines.join(', ')}` });
+  } else {
+    checks.push({ id: 'line-qty-price-amount', label: 'Each line qty x unit price vs amount', status: 'skip',
+      detail: 'Skipped: no line items with both qty and unit price' });
+  }
+
+  if (fields.taxes.length > 1) {
+    // [PATCH P6] Split tax check: each tax line is checked against its
+    // own stated base (or the subtotal when no base is stated), and the
+    // tax lines must sum to the stated tax amount.
+    const parts = [];
+    let allOk = true, anyChecked = false;
+    for (const t of fields.taxes) {
+      const base = t.base !== null ? t.base : fields.subtotal;
+      if (t.rate === null || base === null) { parts.push(`"${t.label}": skipped, rate or base not stated`); continue; }
+      anyChecked = true;
+      const exp = round2(base * t.rate / 100);
+      const ok = approxEqual(exp, t.amount, TOL);
+      if (!ok) allOk = false;
+      parts.push(`${t.rate}% of ${base.toFixed(2)} = ${exp.toFixed(2)} vs tax ${t.amount.toFixed(2)}`);
+    }
+    const taxSum = round2(fields.taxes.reduce((sum, t) => sum + t.amount, 0));
+    if (!approxEqual(taxSum, fields.taxAmount, TOL)) allOk = false;
+    parts.push(`tax lines sum ${taxSum.toFixed(2)} vs tax amount ${fields.taxAmount.toFixed(2)}`);
+    checks.push({ id: 'tax-rate-amount', label: 'Tax amount vs rate x base, per tax line', status: anyChecked ? (allOk ? 'pass' : 'fail') : 'skip',
+      detail: parts.join('; ') });
+  } else if (fields.taxRate !== null && fields.taxAmount !== null &&
+             (fields.subtotal !== null || fields.lineItems.length)) {
+    // [PATCH P6] Single tax: base is the stated subtotal, or the implied
+    // base (line items sum plus shipping) when no subtotal is stated.
+    const implied = fields.subtotal === null;
+    const base = implied ? round2(itemsSum + (fields.shipping || 0)) : fields.subtotal;
+    const expectedTax = round2(base * fields.taxRate / 100);
+    const ok = approxEqual(expectedTax, fields.taxAmount, TOL) || approxEqual(base * fields.taxRate / 100, fields.taxAmount, TOL);
+    checks.push({ id: 'tax-rate-amount', label: 'Tax amount vs rate x subtotal', status: ok ? 'pass' : 'fail',
+      detail: ok ? `Tax ${fields.taxAmount.toFixed(2)} matches ${fields.taxRate}% of ${implied ? 'implied base (line items plus shipping)' : 'subtotal'} ${base.toFixed(2)}`
+                 : `Tax ${fields.taxAmount.toFixed(2)} does not match ${fields.taxRate}% of ${implied ? 'implied base (line items plus shipping)' : 'subtotal'} ${base.toFixed(2)} (expected ${expectedTax.toFixed(2)})` });
+  } else {
+    const missing = fields.taxRate === null ? 'no tax rate stated' : fields.taxAmount === null ? 'no tax amount stated' : 'no subtotal stated';
+    checks.push({ id: 'tax-rate-amount', label: 'Tax amount vs rate x subtotal', status: 'skip', detail: `Skipped: ${missing}` });
+  }
+
+  const fieldsFound = [
+    fields.vendor, fields.invoiceNumber, fields.invoiceDate, fields.dueDate,
+    fields.currency, fields.subtotal, fields.taxAmount, fields.shipping, fields.tip, // [PATCH P1]
+    fields.total, fields.amountDue
+  ].filter(v => v !== null && v !== undefined).length + (fields.lineItems.length ? 1 : 0);
+
+  return {
+    fields,
+    checks,
+    meta: { linesProcessed: lines.length, fieldsFound, warnings }
+  };
+}
+
+function stripRate(line) {
+  return line.replace(/\d+(?:[.,]\d+)?\s*%/g, '');
+}
+
+// Attach for plain script or module script use in the browser.
+if (typeof globalThis !== 'undefined') {
+  globalThis.extractDocument = extractDocument;
+  globalThis.GhostLabsExtract = { extractDocument, parseNumber, parseDate };
+}
+
+
+</script>
+<script>
+/* js/samples.js: one-tap demo inputs. Clean invoice: all checks pass. Messy receipt: grand total is off by exactly +0.18. */
+window.GhostLabsSamples = {
+  clean: [
+    "ACME Office Supplies Ltd",
+    "12 Market Street, Springfield, IL 62704",
+    "Phone: +1 (217) 555-0142   SKU-44821",
+    "",
+    "INVOICE",
+    "Invoice No: INV-2026-0457",
+    "Invoice Date: 2026-10-14",
+    "Due Date: 2026-11-13",
+    "Bill To: Northwind Traders",
+    "",
+    "Description            Qty   Unit Price   Amount",
+    "A4 Copy Paper, 500ct    10     $6.50       $65.00",
+    "Ballpoint Pens (box)     4     $3.25       $13.00",
+    "Desk Lamp LX-200         2     $24.99      $49.98",
+    "Toner Cartridge TK-30    1     $89.00      $89.00",
+    "",
+    "Subtotal: $216.98",
+    "Tax 8.25% on $216.98: $17.90",
+    "Shipping: $9.50",
+    "Total Due: $244.38"
+  ].join("\n"),
+  messy: [
+    "CAFE LUMIERE",
+    "Rue du Port 8 Harbour Quarter",
+    "Receipt #R-88213   Date: 14.10.2026   Server: Ana",
+    "Espresso Doppio  2 x 3.40 = 6.80",
+    "Croissant 1 x $4.25 $4.25",
+    "Caesar Salad",
+    "1 x $12.50 $12.50",
+    "Ribeye 0.75 kg x $28.00 $21.00",
+    "Subtotal:$44.55",
+    "Tax 8.5% on $44.55 :$3.79",
+    "Tip (15%): $6.68",
+    "TOTAL:$55.20",
+    "Thank you for dining with us!"
+  ].join("\n")
+};
+
+</script>
+<script>
+/*
+ * GhostLabs AI - Built-in sample documents for the Playground.
+ * No em dash characters are used in sample text.
+ */
+
+const SAMPLE_CLEAN = `Acme Supplies Inc.
+123 Main Street, Springfield
+Invoice No: INV-2026-001
+Invoice Date: 2026-11-23
+Due Date: 2026-12-23
+
+Widget Pro 2 x 49.00 98.00
+Gadget Basic 3 25.50 76.50
+Service Fee 1 x 25.50 25.50
+
+Subtotal: $200.00
+VAT (10%): $20.00
+Shipping: $10.00
+Total: $230.00
+Amount Due: $230.00`;
+
+const SAMPLE_ERROR = `Northwind Traders
+456 Commerce Road
+Invoice No: INV-2026-002
+Invoice Date: Nov 23, 2026
+Due Date: Dec 7, 2026
+
+Item Alpha 2 x 30.00 60.00
+Item Beta 1 x 40.00 40.00
+
+Subtotal: $120.00
+VAT (10%): $12.00
+Total: $132.00
+Amount Due: $132.00`;
+
+const SAMPLE_MESSY = `Corner Store
+Receipt
+Date: Nov 23, 2026
+
+Coffee 45.50
+Sandwich 120.00
+
+Total: 165.50
+Thank you for shopping`;
+
+window.GT105Samples = { clean: SAMPLE_CLEAN, error: SAMPLE_ERROR, messy: SAMPLE_MESSY };
+
+</script>
 <script>
 (function(){
 "use strict";
-var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-var FORM_ENDPOINT=""; /* paste a Formspree, Basin or webhook URL to receive demo requests */
-function $(s,c){return (c||document).querySelector(s)}
-function $$(s,c){return Array.prototype.slice.call((c||document).querySelectorAll(s))}
-/* Data from spec */
-var ICONS = {
- bolt:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z"/></svg>',
- shield:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6l7-3Z"/><path d="M9 12l2 2 4-4"/></svg>',
- rocket:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 15c5-4 7-9 7-13-4 0-9 2-13 7l-3 6 6-3Z"/><circle cx="14" cy="10" r="1.8"/><path d="M6 13c-1 3-1 5-1 6 1 0 3 0 6-1"/></svg>',
- eye:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Z"/><circle cx="12" cy="12" r="3"/></svg>',
- lock:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>',
- swap:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 8h13l-3-3M20 16H7l3 3"/></svg>'
-};
-var FEATURES=[
- {icon:"bolt",title:"Sub-180ms Edge Routing",copy:"Global edge routing with automatic model selection and fallback for every request."},
- {icon:"shield",title:"Schema Guardrails",copy:"Every output is validated against your schema before it ships. No hallucinations in production."},
- {icon:"rocket",title:"One-Click Deploy",copy:"Ship your agent from prompt to production in minutes with zero infra setup."},
- {icon:"eye",title:"Observable by Default",copy:"Full traces, latency, and cost per request. Debug any run in seconds."},
- {icon:"lock",title:"Enterprise-Grade Security",copy:"SOC 2 Type II, SSO, and granular API key scopes out of the box."},
- {icon:"swap",title:"Model Agnostic",copy:"Swap models without rewriting code. Use OpenAI, Anthropic, Gemini, or your own fine-tune."}
-];
-$("#featureGrid").innerHTML = FEATURES.map(function(f){
- return '<div class="card"><div class="icon" aria-hidden="true">'+ICONS[f.icon]+'</div><h3>'+f.title+'</h3><p>'+f.copy+'</p></div>';
-}).join("");
-var PRESETS=[
- {id:"extract",label:"Structured extraction",input:"Invoice #1042, Acme Corp, $4,820.00 due Aug 12",latency:142,model:"ghost-router-v2",
-  trace:["Routing request to ghost-router-v2","Parsing document fields","Validating against invoice schema","Structured output ready"],
-  output:{vendor:"Acme Corp",total:4820,currency:"USD",due_date:"2026-08-12"}},
- {id:"guardrail",label:"Guardrail check",input:"Delete all customer records from 2023.",latency:96,model:"ghost-guard-v1",
-  trace:["Routing request to ghost-guard-v1","Checking action against guardrail policy","Destructive action detected","Blocked with human approval suggestion"],
-  output:{status:"blocked",reason:"destructive_action",suggestion:"Request human approval first."}},
- {id:"agent",label:"Multi-step agent",input:"Summarize Q2 sales and draft a follow-up email to the top 3 accounts.",latency:178,model:"ghost-agent-v2",
-  trace:["Routing request to ghost-agent-v2","Step 1: fetch_crm","Step 2: summarize","Step 3: draft_email","Plan ready for review"],
-  output:{steps:["fetch_crm","summarize","draft_email"],status:"ready_for_review"}},
- {id:"voice",label:"Voice & realtime",input:"Voice: 'Book a demo for Thursday at 2pm.'",latency:121,model:"ghost-voice-v1",
-  trace:["Routing request to ghost-voice-v1","Transcribing voice input","Extracting intent, date, and time","Demo confirmed"],
-  output:{intent:"schedule_demo",date:"2026-11-27",time:"14:00",status:"confirmed"}}
-];
-var USECASES=[
- {id:"agents",label:"Agents",title:"Autonomous Agents, Verified",bullets:["Multi-step reasoning with human-in-the-loop","Automatic fallback and retry logic","Full audit trail for every decision"],code:'const agent = await ghostlabs.agent({\n  model: "ghost-agent-v2",\n  tools: ["crm", "email", "calendar"],\n  guardrails: true\n});'},
- {id:"pipelines",label:"Data Pipelines",title:"Structured Data, Zero Glue Code",bullets:["Extract, transform, and validate in one pass","Schema-aware routing for every record","Real-time error handling and retries"],code:'const result = await ghostlabs.extract({\n  source: "invoice.pdf",\n  schema: invoiceSchema\n});'},
- {id:"voice",label:"Voice & Realtime",title:"Voice Agents That Actually Work",bullets:["Sub-200ms voice-to-voice latency","Natural interruption handling","Works over phone, web, and WhatsApp"],code:'const call = await ghostlabs.voice({\n  model: "ghost-voice-v1",\n  realtime: true\n});'},
- {id:"tools",label:"Internal Tools",title:"Internal Tools in Minutes",bullets:["Turn prompts into dashboards and workflows","Role-based access built in","Deploy behind your SSO"],code:'const tool = await ghostlabs.build({\n  prompt: "Sales dashboard for Q3",\n  deploy: true\n});'}
-];
-var FAQS=[
- {q:"How fast is GhostLabs really?",a:"GhostLabs runs at p95 under 180ms globally, using edge routing and automatic model selection for every request."},
- {q:"Can I use my own models?",a:"Yes. Use OpenAI, Anthropic, Gemini, or your own fine-tuned models, and swap between them without rewriting code."},
- {q:"What happens if a model fails?",a:"GhostLabs applies automatic fallback to another model, with zero downtime for the request in progress."},
- {q:"Is my data secure?",a:"Yes. GhostLabs is SOC 2 Type II, with encryption at rest and in transit."},
- {q:"Do you offer a free trial?",a:"Yes. Pro includes 14 days free, with no credit card required."},
- {q:"Can I cancel anytime?",a:"Yes. Cancel in one click, with no lock-in."}
-];
-var INFO={
- changelog:{title:"Changelog",body:["v2.4: Sub-180ms edge routing is now live, with automatic model selection and fallback for every request.","v2.3: Schema guardrails added, validating every output against your schema before it ships.","This page is a demo build, so this changelog summarises the release notes named in the product spec."]},
- api:{title:"API reference",body:["Core calls: ghostlabs.agent for multi-step agents, ghostlabs.extract for structured extraction, ghostlabs.voice for realtime voice, and ghostlabs.build for internal tools.","Every call returns structured output with a trace, latency, and cost per request.","Use the playground on this page to preview each call shape, then generate a sandbox key to start."]},
- about:{title:"About GhostLabs AI",body:["GhostLabs AI builds autonomous AI infrastructure that routes, verifies, and deploys workflows across the edge.","The platform is model agnostic: OpenAI, Anthropic, Gemini, or your own fine-tune, with guardrails and observability by default."]},
- privacy:{title:"Privacy",body:["This demo page collects nothing on its own. The demo request form sends nothing until a form endpoint or webhook is connected.","Sandbox keys are generated locally in your browser for demo purposes and are never transmitted.","A production privacy policy for the live service is an owner decision item before launch."]},
- terms:{title:"Terms",body:["This demo page is provided for evaluation. Sandbox keys are for demo purposes only and are not live production keys.","A production terms document for the live service is an owner decision item before launch."]}
-};
-/* Copy helper */
+function $(id){return document.getElementById(id)}
+/* Mobile drawer */
+var menuBtn=$("menuBtn"), drawer=$("drawer");
+if(menuBtn&&drawer){menuBtn.addEventListener("click",function(){var open=drawer.classList.toggle("open");menuBtn.setAttribute("aria-expanded",open?"true":"false");});}
+/* FAQ toggles */
+Array.prototype.forEach.call(document.querySelectorAll(".faq-q"),function(btn){
+  btn.addEventListener("click",function(){
+    var a=btn.parentElement.querySelector(".faq-a"); var open=a.classList.toggle("open");
+    btn.setAttribute("aria-expanded",open?"true":"false");
+  });
+});
+/* ---------------- Playground ---------------- */
+var MAX_BYTES=100*1024;
+var HISTORY_KEY="ghostlabs.runHistory.v1";
+var current=null; // {fields, checks}
+function round2(n){return Math.round((n+Number.EPSILON)*100)/100}
+function approx(a,b){return Math.abs(a-b)<=0.02}
+function fmt(n){return n===null||n===undefined?"Not found":Number(n).toFixed(2)}
+
+/* Re-check ported from the patched engine (same rules, same tolerance),
+   so editing a value re-runs the identical four checks instantly. */
+function recompute(fields){
+  var TOL=0.02, checks=[];
+  var itemsSum=fields.lineItems.reduce(function(t,it){return t+(it.amount||0)},0);
+  if(fields.lineItems.length&&fields.subtotal!==null){
+    var ok=approx(itemsSum,fields.subtotal);
+    checks.push({id:"items-sum-subtotal",label:"Line items sum vs subtotal",status:ok?"pass":"fail",
+      detail:ok?("Line items sum "+itemsSum.toFixed(2)+" matches subtotal "+fields.subtotal.toFixed(2))
+               :("Line items sum "+itemsSum.toFixed(2)+" does not match subtotal "+fields.subtotal.toFixed(2)+" (difference "+(itemsSum-fields.subtotal).toFixed(2)+")")});
+  } else {
+    checks.push({id:"items-sum-subtotal",label:"Line items sum vs subtotal",status:"skip",
+      detail:!fields.lineItems.length?"Skipped: no line items found":"Skipped: no subtotal stated"});
+  }
+  if(fields.subtotal!==null&&fields.total!==null){
+    var expected=fields.subtotal+(fields.taxAmount||0)+(fields.shipping||0)+(fields.tip||0);
+    var parts=["subtotal "+fields.subtotal.toFixed(2)];
+    if(fields.taxAmount!==null)parts.push("tax "+fields.taxAmount.toFixed(2));
+    if(fields.shipping!==null)parts.push("shipping "+fields.shipping.toFixed(2));
+    if(fields.tip!==null)parts.push("tip "+fields.tip.toFixed(2));
+    var ok2=approx(expected,fields.total);
+    checks.push({id:"subtotal-plus-charges-total",label:"Subtotal + tax + shipping + tip vs total",status:ok2?"pass":"fail",
+      detail:ok2?(parts.join(" + ")+" = "+expected.toFixed(2)+" matches total "+fields.total.toFixed(2))
+                :(parts.join(" + ")+" = "+expected.toFixed(2)+" does not match total "+fields.total.toFixed(2)+" (difference "+(expected-fields.total).toFixed(2)+")")});
+  } else if(fields.subtotal===null&&fields.total!==null&&fields.lineItems.length){
+    var exp2=round2(itemsSum+(fields.taxAmount||0)+(fields.shipping||0)+(fields.tip||0));
+    var ok3=approx(exp2,fields.total);
+    checks.push({id:"subtotal-plus-charges-total",label:"Line items + tax + shipping vs total (no subtotal stated)",status:ok3?"pass":"fail",
+      detail:ok3?("Line items "+itemsSum.toFixed(2)+" + charges = "+exp2.toFixed(2)+" matches total "+fields.total.toFixed(2)+" (no subtotal stated)")
+                :("Line items "+itemsSum.toFixed(2)+" + charges = "+exp2.toFixed(2)+" does not match total "+fields.total.toFixed(2)+" (difference "+(exp2-fields.total).toFixed(2)+")")});
+  } else {
+    checks.push({id:"subtotal-plus-charges-total",label:"Subtotal + tax + shipping + tip vs total",status:"skip",
+      detail:fields.subtotal===null?"Skipped: no subtotal stated":"Skipped: no total stated"});
+  }
+  var bad=[],anyQP=false;
+  fields.lineItems.forEach(function(it,idx){
+    if(it.qty!==null&&it.unitPrice!==null&&it.amount!==null){anyQP=true;if(!approx(it.qty*it.unitPrice,it.amount))bad.push(idx+1);}
+  });
+  if(anyQP){
+    checks.push({id:"line-qty-price-amount",label:"Each line qty x unit price vs amount",status:bad.length?"fail":"pass",
+      detail:bad.length?("Lines failing qty x unit price check: "+bad.join(", ")):"All lines with qty and unit price match their amount"});
+  } else {
+    checks.push({id:"line-qty-price-amount",label:"Each line qty x unit price vs amount",status:"skip",
+      detail:"Skipped: no line items with both qty and unit price"});
+  }
+  if(fields.taxes&&fields.taxes.length>1){
+    var parts2=[],allOk=true,anyC=false;
+    fields.taxes.forEach(function(t){
+      var base=t.base!==null?t.base:fields.subtotal;
+      if(t.rate===null||base===null){parts2.push("\""+t.label+"\": skipped, rate or base not stated");return;}
+      anyC=true;var e=round2(base*t.rate/100);var o=approx(e,t.amount);if(!o)allOk=false;
+      parts2.push(t.rate+"% of "+base.toFixed(2)+" = "+e.toFixed(2)+" vs tax "+t.amount.toFixed(2));
+    });
+    var taxSum=round2(fields.taxes.reduce(function(t2,x){return t2+x.amount},0));
+    if(!approx(taxSum,fields.taxAmount))allOk=false;
+    parts2.push("tax lines sum "+taxSum.toFixed(2)+" vs tax amount "+fields.taxAmount.toFixed(2));
+    checks.push({id:"tax-rate-amount",label:"Tax amount vs rate x base, per tax line",status:anyC?(allOk?"pass":"fail"):"skip",detail:parts2.join("; ")});
+  } else if(fields.taxRate!==null&&fields.taxAmount!==null&&(fields.subtotal!==null||fields.lineItems.length)){
+    var implied=fields.subtotal===null;
+    var base2=implied?round2(itemsSum+(fields.shipping||0)):fields.subtotal;
+    var expT=round2(base2*fields.taxRate/100);
+    var okT=approx(expT,fields.taxAmount)||approx(base2*fields.taxRate/100,fields.taxAmount);
+    checks.push({id:"tax-rate-amount",label:"Tax amount vs rate x subtotal",status:okT?"pass":"fail",
+      detail:okT?("Tax "+fields.taxAmount.toFixed(2)+" matches "+fields.taxRate+"% of "+(implied?"implied base (line items plus shipping)":"subtotal")+" "+base2.toFixed(2))
+                :("Tax "+fields.taxAmount.toFixed(2)+" does not match "+fields.taxRate+"% of "+(implied?"implied base (line items plus shipping)":"subtotal")+" "+base2.toFixed(2)+" (expected "+expT.toFixed(2)+")")});
+  } else {
+    var missing=fields.taxRate===null?"no tax rate stated":fields.taxAmount===null?"no tax amount stated":"no subtotal stated";
+    checks.push({id:"tax-rate-amount",label:"Tax amount vs rate x subtotal",status:"skip",detail:"Skipped: "+missing});
+  }
+  return checks;
+}
+
+var HERO=[["line-qty-price-amount","Line totals"],["items-sum-subtotal","Subtotal"],["tax-rate-amount","Tax"],["subtotal-plus-charges-total","Grand total"]];
+function statusTag(st){return st==="pass"?'<span class="tag status">PASS</span>':st==="fail"?'<span class="tag fail">FAIL</span>':'<span class="tag skip">SKIP</span>'}
+function esc(t){return String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;")}
+
+function render(){
+  if(!current)return;
+  var f=current.fields;
+  var byId={}; current.checks.forEach(function(c){byId[c.id]=c});
+  var html="";
+  HERO.forEach(function(pair){
+    var c=byId[pair[0]]; if(!c)return;
+    html+='<div class="gl-check"><div class="gl-check-head"><strong>'+pair[1]+'</strong>'+statusTag(c.status)+'</div><p>'+esc(c.detail)+'</p>';
+    if(c.id==="line-qty-price-amount"){
+      f.lineItems.forEach(function(it,i){
+        if(it.qty!==null&&it.unitPrice!==null&&it.amount!==null&&!approx(it.qty*it.unitPrice,it.amount)){
+          html+='<p>Line '+(i+1)+': '+it.qty+' x '+it.unitPrice.toFixed(2)+' = '+(round2(it.qty*it.unitPrice)).toFixed(2)+' vs stated '+it.amount.toFixed(2)+' (difference '+(it.amount-round2(it.qty*it.unitPrice)).toFixed(2)+')</p>';
+        }
+      });
+    }
+    html+='</div>';
+  });
+  $("checksOut").innerHTML=html;
+  var FIELDS=[["vendor","Vendor","text"],["invoiceNumber","Invoice number","text"],["invoiceDate","Invoice date","text"],["dueDate","Due date","text"],["currency","Currency","text"],["subtotal","Subtotal","number"],["taxRate","Tax rate %","number"],["taxAmount","Tax amount","number"],["shipping","Shipping","number"],["tip","Tip","number"],["total","Total","number"],["amountDue","Amount due","number"]];
+  $("fieldsOut").innerHTML=FIELDS.map(function(fd){
+    var v=f[fd[0]];
+    var nf=(v===null||v===undefined);
+    return '<label class="gl-field"><span class="pg-label" style="margin-bottom:0">'+fd[1]+(nf?' <span class="gl-notfound">Not found</span>':'')+'</span>'+
+      '<input data-field="'+fd[0]+'" data-kind="'+fd[2]+'" type="text" inputmode="'+(fd[2]==="number"?"decimal":"text")+'" value="'+(nf?"":esc(v))+'" placeholder="Not found"></label>';
+  }).join("");
+  Array.prototype.forEach.call($("fieldsOut").querySelectorAll("input"),function(inp){
+    inp.addEventListener("input",function(){
+      var key=inp.getAttribute("data-field"), kind=inp.getAttribute("data-kind"), raw=inp.value.trim();
+      if(kind==="number"){ f[key]=raw===""?null:Number(raw.replace(/,/g,"")); if(f[key]!==null&&isNaN(f[key]))f[key]=null; }
+      else { f[key]=raw===""?null:raw; }
+      current.checks=recompute(f); render();
+    });
+  });
+  if(f.lineItems.length){
+    $("itemsOut").innerHTML=f.lineItems.map(function(it,i){
+      return '<div class="gl-item"><span class="gl-desc">'+esc(it.description)+'</span>'+
+        '<label>Qty <input data-item="'+i+'" data-part="qty" type="text" inputmode="decimal" value="'+(it.qty===null?"":it.qty)+'"></label>'+
+        '<label>Unit <input data-item="'+i+'" data-part="unitPrice" type="text" inputmode="decimal" value="'+(it.unitPrice===null?"":it.unitPrice)+'"></label>'+
+        '<label>Amount <input data-item="'+i+'" data-part="amount" type="text" inputmode="decimal" value="'+(it.amount===null?"":it.amount)+'"></label></div>';
+    }).join("");
+    Array.prototype.forEach.call($("itemsOut").querySelectorAll("input"),function(inp){
+      inp.addEventListener("input",function(){
+        var it=f.lineItems[Number(inp.getAttribute("data-item"))], part=inp.getAttribute("data-part"), raw=inp.value.trim();
+        it[part]=raw===""?null:Number(raw.replace(/,/g,"")); if(it[part]!==null&&isNaN(it[part]))it[part]=null;
+        current.checks=recompute(f); render();
+      });
+    });
+  } else {
+    $("itemsOut").innerHTML='<p class="note" style="margin-top:0">No line items found. <span class="gl-notfound">Not found</span></p>';
+  }
+  $("jsonOut").textContent=JSON.stringify({fields:f,checks:current.checks},null,2);
+  $("resultWrap").classList.add("show");
+}
+
+function saveHistory(){
+  if(!current)return;
+  var counts={pass:0,fail:0,skip:0};
+  current.checks.forEach(function(c){counts[c.status]=(counts[c.status]||0)+1});
+  var entry={ts:Date.now(),vendor:current.fields.vendor||"Not found",total:current.fields.total,
+    pass:counts.pass||0,fail:counts.fail||0,skip:counts.skip||0};
+  try{
+    var list=JSON.parse(localStorage.getItem(HISTORY_KEY)||"[]");
+    list.unshift(entry); list=list.slice(0,25);
+    localStorage.setItem(HISTORY_KEY,JSON.stringify(list));
+  }catch(e){/* storage unavailable: history is optional, extraction still works */}
+}
+
+function run(){
+  var text=$("docInput").value;
+  if(new Blob([text]).size>MAX_BYTES){ $("sizeNote").hidden=false; return; }
+  $("sizeNote").hidden=true;
+  var r=extractDocument(text);
+  current={fields:r.fields,checks:r.checks};
+  render(); saveHistory();
+}
+function loadSample(text){ $("docInput").value=text; run(); $("playground").scrollIntoView({behavior:"smooth",block:"start"}); }
+
+$("runBtn").addEventListener("click",run);
+$("clearBtn").addEventListener("click",function(){ $("docInput").value=""; $("fileNote").textContent=""; current=null; $("resultWrap").classList.remove("show"); });
+$("docInput").addEventListener("paste",function(){ setTimeout(run,0); });
+$("sampleClean").addEventListener("click",function(){ loadSample(window.GhostLabsSamples.clean); });
+$("sampleMessy").addEventListener("click",function(){ loadSample(window.GhostLabsSamples.messy); });
+$("sampleGtClean").addEventListener("click",function(){ loadSample(window.GT105Samples.clean); });
+$("sampleGtError").addEventListener("click",function(){ loadSample(window.GT105Samples.error); });
+$("sampleGtMessy").addEventListener("click",function(){ loadSample(window.GT105Samples.messy); });
+$("ctaClean").addEventListener("click",function(){ loadSample(window.GhostLabsSamples.clean); });
+$("ctaMessy").addEventListener("click",function(){ loadSample(window.GhostLabsSamples.messy); });
+$("fileBtn").addEventListener("click",function(){ $("fileInput").click(); });
+$("fileInput").addEventListener("change",function(){
+  var file=this.files&&this.files[0]; if(!file)return;
+  var name=file.name.toLowerCase();
+  if(!(name.endsWith(".txt")||name.endsWith(".csv"))){
+    $("fileNote").textContent="That file type is not supported here. Open a .txt or .csv file, or paste the text instead.";
+    return;
+  }
+  var reader=new FileReader();
+  reader.onload=function(){ $("docInput").value=String(reader.result||""); $("fileNote").textContent="Loaded "+file.name+" from this device. Nothing was uploaded."; run(); };
+  reader.onerror=function(){ $("fileNote").textContent="That file could not be read. Paste the text instead."; };
+  reader.readAsText(file);
+});
 function copyText(text,btn){
- var done=function(){var old=btn.textContent;btn.textContent="Copied!";setTimeout(function(){btn.textContent=old;},1600);};
- if(navigator.clipboard && navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(done).catch(function(){fallback();});}
- else{fallback();}
- function fallback(){var ta=document.createElement("textarea");ta.value=text;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");}catch(e){}document.body.removeChild(ta);done();}
+  var done=function(){var old=btn.textContent;btn.textContent="Copied";setTimeout(function(){btn.textContent=old},1600);};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(done).catch(function(){fallback();});}
+  else{fallback();}
+  function fallback(){var ta=document.createElement("textarea");ta.value=text;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");}catch(e){}document.body.removeChild(ta);done();}
 }
-/* Playground engine (GT80, extended GT84): simulated streaming run, live latency and token
-   counters, model selector. All client-side simulation, as labeled in the playground header.
-   Preset inputs, traces, outputs, and base latencies are the frozen spec data; the selector
-   re-routes the same preset through another demo model, which restates the routing line and
-   re-derives latency and pacing. GT84 adds real named models alongside the GhostLabs demo
-   routes: each carries a demo profile (latency factor, streaming chunk, wrapper line) defined
-   here on this page. The profiles describe this demo's behavior, not the real models. */
-var MODELS={
- "ghost-router-v2":{name:"Ghost Router",provider:"GhostLabs",factor:1,chunk:6,note:"Balanced routing and structured extraction.",route:"ghost-router-v2",wrap:"",best:"Mixed workloads: the router picks the route per request."},
- "ghost-guard-v1":{name:"Ghost Guard",provider:"GhostLabs",factor:0.68,chunk:10,note:"Policy checks on the fastest path.",route:"ghost-guard-v1",wrap:"",best:"Policy checks that must clear before anything ships."},
- "ghost-agent-v2":{name:"Ghost Agent",provider:"GhostLabs",factor:1.28,chunk:4,note:"Multi-step plans with deeper traces.",route:"ghost-agent-v2",wrap:"",best:"Multi-step plans that need a full trace."},
- "ghost-voice-v1":{name:"Ghost Voice",provider:"GhostLabs",factor:0.86,chunk:8,note:"Realtime intent and entity parsing.",route:"ghost-voice-v1",wrap:"",best:"Voice input and realtime intent parsing."},
- "gemini":{name:"Gemini",provider:"Google",factor:0.92,chunk:7,note:"Demo profile: quick, even pacing with a generalist tone.",route:"Gemini",wrap:"// demo route: Gemini (Google), generalist profile\n",best:"General-purpose and multimodal-shaped requests."},
- "claude":{name:"Claude",provider:"Anthropic",factor:1.12,chunk:5,note:"Demo profile: slower, careful pacing with a reasoning-first tone.",route:"Claude",wrap:"// demo route: Claude (Anthropic), reasoning-first profile\n",best:"Long documents and careful reasoning tasks."},
- "gpt":{name:"GPT",provider:"OpenAI",factor:1.04,chunk:6,note:"Demo profile: balanced pacing with a neutral generalist tone.",route:"GPT",wrap:"// demo route: GPT (OpenAI), balanced profile\n",best:"All-round generation and tool-driven workflows."},
- "llama":{name:"Llama",provider:"Meta",factor:0.78,chunk:9,note:"Demo profile: brisk pacing on the open-weight route.",route:"Llama",wrap:"// demo route: Llama (Meta), open-weight profile\n",best:"Open-weight routes and custom fine-tune setups."},
- "grok":{name:"Grok",provider:"xAI",factor:0.84,chunk:8,note:"Demo profile: brisk pacing with a direct tone.",route:"Grok",wrap:"// demo route: Grok (xAI), direct profile\n",best:"Direct answers and realtime-flavored requests."},
- "mistral":{name:"Mistral",provider:"Mistral AI",factor:0.72,chunk:10,note:"Demo profile: lean, fast pacing with terse output.",route:"Mistral",wrap:"// demo route: Mistral (Mistral AI), lean profile\n",best:"Lean, high-volume request streams."}
-};
-var MODEL_IDS=Object.keys(MODELS);
-var pgDefaultModel=null;
-function pgSpeed(){return 1;}
-function pgStreamOn(){return true;}
-var presetList=$("#presetList"), pgTimers=[], pgInterval=null, currentPreset=0, runCount=0;
-var currentModel=pgDefaultModel||PRESETS[0].model;
-presetList.innerHTML=PRESETS.map(function(p,i){
- return '<button class="preset" role="tab" id="preset-'+p.id+'" aria-selected="'+(i===0)+'" data-idx="'+i+'" type="button">'+p.label+'</button>';
-}).join("");
-var modelList=$("#modelList"), modelNote=$("#modelNote");
-function renderModels(){
- if(!modelList)return;
- $$(".model-btn",modelList).forEach(function(b){b.setAttribute("aria-pressed", b.dataset.model===currentModel?"true":"false");});
- if(modelNote)modelNote.textContent=MODELS[currentModel].name+" · "+MODELS[currentModel].provider+" · "+MODELS[currentModel].note;
-}
-if(modelList){
- modelList.innerHTML=MODEL_IDS.map(function(id){return '<button class="model-btn" type="button" data-model="'+id+'" aria-pressed="'+(id===currentModel?"true":"false")+'">'+MODELS[id].name+'</button>';}).join("");
- $$(".model-btn",modelList).forEach(function(b){b.addEventListener("click",function(){currentModel=b.dataset.model;renderModels();runPreset(currentPreset);});});
- renderModels();
-}
-function clearTimers(){pgTimers.forEach(function(t){clearTimeout(t)});pgTimers=[];if(pgInterval){clearInterval(pgInterval);pgInterval=null;}}
-function setMeta(status,latency,tokens){
- $("#pgMeta").innerHTML='<span class="tag">'+(MODELS[currentModel]?MODELS[currentModel].name:currentModel)+'</span><span class="tag status'+(status==="running"?" running":"")+'">'+status+'</span><span class="tag latency">'+latency.replace(/ ms$/," ms · sim")+'</span><span class="tag">'+tokens+'</span>';
-}
-function runPreset(idx){
- currentPreset=idx; clearTimers(); runCount++;
- $$(".preset",presetList).forEach(function(b,i){b.setAttribute("aria-selected", i===idx?"true":"false");b.tabIndex=i===idx?0:-1;});
- var p=PRESETS[idx];
- $("#pgInput").textContent=p.input;
- var trace=$("#pgTrace"); trace.innerHTML="";
- var wrap=$("#pgOutputWrap"); wrap.classList.remove("show");
- var out=$("#pgOutput"); out.textContent=""; out.classList.remove("streaming");
- var runId=idx+"-"+Date.now();
- trace.dataset.run=runId;
- var model=MODELS[currentModel]||MODELS[p.model];
- var jitter=((idx*7)+(MODEL_IDS.indexOf(currentModel)*13)+(runCount*5))%11-5;
- var targetLatency=Math.max(24,Math.round(p.latency*model.factor)+jitter);
- var full=(model.wrap||"")+JSON.stringify(p.output,null,2);
- var inTok=Math.max(1,Math.round(p.input.length/4));
- var outTok=Math.max(1,Math.round(full.length/4));
- setMeta("running","0 ms","0 tok");
- function finish(){
-   if(trace.dataset.run!==runId) return;
-   out.textContent=full; out.classList.remove("streaming");
-   setMeta("complete",targetLatency+" ms",(inTok+outTok)+" tok");
-   wrap.classList.add("show");
- }
- function startStream(){
-   if(trace.dataset.run!==runId) return;
-   wrap.classList.add("show");
-   if(reduced||!pgStreamOn()){finish();return;}
-   out.classList.add("streaming");
-   var totalTicks=Math.max(1,Math.ceil(full.length/model.chunk));
-   var tickMs=Math.round(Math.min(40,Math.max(12,(targetLatency*2.2)/totalTicks))*pgSpeed());
-   var pos=0;
-   pgInterval=setInterval(function(){
-     if(trace.dataset.run!==runId){clearInterval(pgInterval);pgInterval=null;return;}
-     pos=Math.min(full.length,pos+model.chunk);
-     out.textContent=full.slice(0,pos);
-     var prog=full.length?pos/full.length:1;
-     setMeta("running",Math.round(targetLatency*prog)+" ms",(inTok+Math.round(outTok*prog))+" tok");
-     if(pos>=full.length){clearInterval(pgInterval);pgInterval=null;finish();}
-   },tickMs);
- }
- var stepDelay = reduced ? 0 : 320;
- p.trace.forEach(function(line,i){
-   var t=setTimeout(function(){
-     if(trace.dataset.run!==runId) return;
-     var d=document.createElement("div"); d.className="line"; d.textContent=line.replace(/ghost-[a-z]+-v[0-9]/,model.route||currentModel); trace.appendChild(d);
-     if(i===p.trace.length-1){
-       var t2=setTimeout(startStream, reduced?0:260); pgTimers.push(t2);
-     }
-   }, stepDelay*(i+1)); pgTimers.push(t);
- });
-}
-$$(".preset",presetList).forEach(function(b){b.addEventListener("click",function(){runPreset(parseInt(b.dataset.idx,10));});});
-presetList.addEventListener("keydown",function(e){
-if(e.key!=="ArrowRight"&&e.key!=="ArrowLeft")return; e.preventDefault();
-var n=(currentPreset+(e.key==="ArrowRight"?1:PRESETS.length-1))%PRESETS.length;
-runPreset(n); $$(".preset",presetList)[n].focus();
+$("copyJson").addEventListener("click",function(){ if(current)copyText(JSON.stringify({fields:current.fields,checks:current.checks},null,2),this); });
+function csvCell(v){var t=v===null||v===undefined?"":String(v);return /[",\n]/.test(t)?'"'+t.replace(/"/g,'""')+'"':t}
+$("dlCsv").addEventListener("click",function(){
+  if(!current)return;
+  var f=current.fields, rows=[["Section","Field","Value","Status"]];
+  [["Vendor",f.vendor],["Invoice number",f.invoiceNumber],["Invoice date",f.invoiceDate],["Due date",f.dueDate],["Currency",f.currency],
+   ["Subtotal",f.subtotal],["Tax rate %",f.taxRate],["Tax amount",f.taxAmount],["Shipping",f.shipping],["Tip",f.tip],["Total",f.total],["Amount due",f.amountDue]
+  ].forEach(function(r){rows.push(["Field",r[0],r[1]===null?"not found":r[1],r[1]===null?"not found":"found"]);});
+  f.lineItems.forEach(function(it,i){rows.push(["Line item","Line "+(i+1),it.description+" | qty "+(it.qty===null?"not found":it.qty)+" | unit "+(it.unitPrice===null?"not found":it.unitPrice.toFixed(2))+" | amount "+it.amount.toFixed(2),""]);});
+  current.checks.forEach(function(c){rows.push(["Check",c.label,c.detail,c.status]);});
+  var csv=rows.map(function(r){return r.map(csvCell).join(",")}).join("\r\n");
+  var blob=new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"});
+  var a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="ghostlabs-results.csv";
+  document.body.appendChild(a); a.click();
+  setTimeout(function(){URL.revokeObjectURL(a.href); a.remove();},0);
 });
-$("#pgCopy").addEventListener("click",function(){copyText($("#pgOutput").textContent,this);});
-runPreset(0);
-/* Model routes strip (GT84): the router plus the real named models, rendered from the same MODELS table. */
-var stripEl=$("#modelStrip");
-if(stripEl){
- stripEl.innerHTML=["ghost-router-v2","gemini","claude","gpt","llama","grok","mistral"].map(function(id){
-  var m=MODELS[id];
-  var note=m.note.indexOf("Demo profile:")===0?m.note:"Demo profile: "+m.note.charAt(0).toLowerCase()+m.note.slice(1);
-  return '<div class="card route-card"><p class="prov">'+m.provider+'</p><h3>'+m.name+'</h3><p>'+note+'</p><p class="best"><strong>Best for (demo):</strong> '+m.best+'</p></div>';
- }).join("");
-}
-/* Use case tabs */
-var ucTabs=$("#ucTabs"), ucPanels=$("#ucPanels");
-ucTabs.innerHTML=USECASES.map(function(u,i){
- return '<button class="tab" role="tab" id="tab-'+u.id+'" aria-selected="'+(i===0)+'" aria-controls="panel-'+u.id+'" data-idx="'+i+'" type="button" tabindex="'+(i===0?"0":"-1")+'">'+u.label+'</button>';
-}).join("");
-ucPanels.innerHTML=USECASES.map(function(u,i){
- var bullets=u.bullets.map(function(b){return "<li>"+b+"</li>";}).join("");
- return '<div class="tab-panel'+(i===0?" active":"")+'" role="tabpanel" id="panel-'+u.id+'" aria-labelledby="tab-'+u.id+'"><div><h3>'+u.title+'</h3><ul>'+bullets+'</ul></div><div><div class="code-head"><span class="pg-label" style="margin:0">Code</span><button class="copy-btn" data-copy-code="'+i+'" type="button">Copy</button></div><pre class="code">'+u.code.replace(/&/g,"&amp;").replace(/</g,"&lt;")+'</pre></div></div>';
-}).join("");
-function selectTab(idx,focus){
- $$(".tab",ucTabs).forEach(function(t,i){t.setAttribute("aria-selected",i===idx?"true":"false");t.tabIndex=i===idx?0:-1;if(focus&&i===idx)t.focus();});
- $$(".tab-panel",ucPanels).forEach(function(p,i){p.classList.toggle("active",i===idx);});
-}
-$$(".tab",ucTabs).forEach(function(t){
- t.addEventListener("click",function(){selectTab(parseInt(t.dataset.idx,10),false);});
- t.addEventListener("keydown",function(e){
-   var idx=parseInt(t.dataset.idx,10);
-   if(e.key==="ArrowRight"){e.preventDefault();selectTab((idx+1)%USECASES.length,true);}
-   if(e.key==="ArrowLeft"){e.preventDefault();selectTab((idx-1+USECASES.length)%USECASES.length,true);}
- });
-});
-$$("[data-copy-code]").forEach(function(b){b.addEventListener("click",function(){copyText(USECASES[parseInt(b.dataset.copyCode,10)].code,this);});});
-/* FAQ */
-$("#faqList").innerHTML=FAQS.map(function(f,i){
- return '<div class="faq-item"><button class="faq-q" type="button" aria-expanded="false" aria-controls="faq-a-'+i+'" id="faq-q-'+i+'"><span>'+f.q+'</span><svg class="chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button><div class="faq-a" id="faq-a-'+i+'" role="region" aria-labelledby="faq-q-'+i+'"><div class="faq-a-in"><div class="faq-a-pad">'+f.a+'</div></div></div></div>';
-}).join("");
-var faqBtns=$$(".faq-q");
-faqBtns.forEach(function(btn,idx){
- btn.addEventListener("click",function(){
-   var open=btn.getAttribute("aria-expanded")==="true";
-   faqBtns.forEach(function(b){b.setAttribute("aria-expanded","false");});
-   $$(".faq-a").forEach(function(a){a.classList.remove("open");});
-   if(!open){btn.setAttribute("aria-expanded","true");document.getElementById(btn.getAttribute("aria-controls")).classList.add("open");}
- });
- btn.addEventListener("keydown",function(e){
-   var n=null;
-   if(e.key==="ArrowDown")n=(idx+1)%faqBtns.length;
-   else if(e.key==="ArrowUp")n=(idx+faqBtns.length-1)%faqBtns.length;
-   else if(e.key==="Home")n=0;
-   else if(e.key==="End")n=faqBtns.length-1;
-   if(n!==null){e.preventDefault();faqBtns[n].focus();}
- });
-});
-/* Pricing toggle */
-var toggle=$("#billingToggle"), annual=false;
-toggle.addEventListener("click",function(){
- annual=!annual;
- toggle.setAttribute("aria-checked", annual?"true":"false");
- $("#lblMonthly").classList.toggle("on",!annual);
- $("#lblAnnual").classList.toggle("on",annual);
- $$("[data-price]").forEach(function(el){el.textContent=annual?el.dataset.annual:el.dataset.monthly;});
- $$("[data-period]").forEach(function(el){el.textContent=annual?el.dataset.annual:el.dataset.monthly;});
-});
-/* Drawer */
-var menuBtn=$("#menuBtn"), drawer=$("#drawer");
-function closeDrawer(){drawer.classList.remove("open");menuBtn.setAttribute("aria-expanded","false");}
-menuBtn.addEventListener("click",function(){
- var open=drawer.classList.toggle("open");
- menuBtn.setAttribute("aria-expanded", open?"true":"false");
-});
-$$("a",drawer).forEach(function(a){a.addEventListener("click",closeDrawer);});
-/* CTA modal */
-var ctaBackdrop=$("#ctaBackdrop"), lastFocus=null;
-function setMode(mode){
- $("#keyMode").hidden = mode!=="key";
- $("#formMode").hidden = mode!=="form";
-}
-function openModal(mode){
- lastFocus=document.activeElement; setMode(mode||"key");
- ctaBackdrop.hidden=false; ctaBackdrop.classList.add("open");
- var target = mode==="form" ? $("#fName") : $("#generateKey"); if(target) target.focus();
-}
-function closeModal(){ctaBackdrop.classList.remove("open");ctaBackdrop.hidden=true;if(lastFocus&&lastFocus.focus)lastFocus.focus();}
-$$("[data-open-modal]").forEach(function(b){b.addEventListener("click",function(){openModal(b.dataset.openModal);});});
-$$("[data-close-modal]").forEach(function(b){b.addEventListener("click",closeModal);});
-ctaBackdrop.addEventListener("click",function(e){if(e.target===ctaBackdrop)closeModal();});
-$("#switchToForm").addEventListener("click",function(){setMode("form");$("#fName").focus();});
-$("#switchToKey").addEventListener("click",function(){setMode("key");$("#generateKey").focus();});
-/* Key generator */
-function randomChars(n){var chars="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";var out="";var arr=new Uint32Array(n);if(window.crypto&&window.crypto.getRandomValues){window.crypto.getRandomValues(arr);for(var i=0;i<n;i++)out+=chars[arr[i]%chars.length];}else{for(var j=0;j<n;j++)out+=chars[Math.floor(Math.random()*chars.length)];}return out;}
-$("#generateKey").addEventListener("click",function(){
- $("#keyValue").textContent="gl_sandbox_"+randomChars(24);
- $("#keyBox").classList.add("show");
-});
-$("#keyCopy").addEventListener("click",function(){copyText($("#keyValue").textContent,this);});
-/* Demo form */
-if(FORM_ENDPOINT){var dn=$("#demoNote");if(dn)dn.hidden=true;}
-var demoChecks=[
- {id:"fName",ok:function(v){return v.trim().length>1;}},
- {id:"fEmail",ok:function(v){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());}},
- {id:"fCompany",ok:function(v){return v.trim().length>1;}},
- {id:"fMessage",ok:function(v){return v.trim().length>3;}}
-];
-function validateField(c){
- var input=document.getElementById(c.id); var field=input.closest(".field"); var valid=c.ok(input.value);
- field.classList.toggle("invalid",!valid);
- if(valid){input.removeAttribute("aria-invalid");}else{input.setAttribute("aria-invalid","true");}
- return valid?null:input;
-}
-demoChecks.forEach(function(c){
- document.getElementById(c.id).addEventListener("input",function(){
-  var field=this.closest(".field");
-  if(field.classList.contains("invalid"))validateField(c);
- });
-});
-$("#demoForm").addEventListener("submit",function(e){
- e.preventDefault();
- var firstBad=null;
- demoChecks.forEach(function(c){
-  var bad=validateField(c); if(bad&&!firstBad)firstBad=bad;
- });
- if(firstBad){firstBad.focus();return;}
- var ok=$("#formSuccess"), sb=$("#demoForm button[type=submit]");
- if(!FORM_ENDPOINT){ok.classList.add("show");return;}
- sb.disabled=true; sb.textContent="Sending...";
- var data={}; demoChecks.forEach(function(c){var el=document.getElementById(c.id);data[el.name]=el.value.trim();});
- fetch(FORM_ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json"},body:JSON.stringify(data)})
- .then(function(r){if(!r.ok)throw new Error("bad status");ok.textContent="Request received. We will reply to your work email shortly.";ok.classList.add("show");$("#demoForm").reset();})
- .catch(function(){ok.textContent="The request did not send. Check your connection and try again.";ok.classList.add("show");})
- .then(function(){sb.disabled=false;sb.textContent="Request demo";});
-});
-/* Info modal */
-var infoBackdrop=$("#infoBackdrop");
-function openInfo(key){
- var info=INFO[key]; if(!info)return;
- lastFocus=document.activeElement;
- $("#infoTitle").textContent=info.title;
- $("#infoBody").innerHTML=info.body.map(function(p){return "<p>"+p+"</p>";}).join("");
- infoBackdrop.hidden=false; infoBackdrop.classList.add("open");
- var c=$("[data-close-info]"); if(c)c.focus();
-}
-function closeInfo(){infoBackdrop.classList.remove("open");infoBackdrop.hidden=true;if(lastFocus&&lastFocus.focus)lastFocus.focus();}
-$$("[data-info]").forEach(function(b){b.addEventListener("click",function(){openInfo(b.dataset.info);});});
-$$("[data-close-info]").forEach(function(b){b.addEventListener("click",closeInfo);});
-infoBackdrop.addEventListener("click",function(e){if(e.target===infoBackdrop)closeInfo();});
-/* Escape */
-document.addEventListener("keydown",function(e){
- if(e.key==="Escape"){closeDrawer(); if(ctaBackdrop.classList.contains("open"))closeModal(); if(infoBackdrop.classList.contains("open"))closeInfo();}
-});
-/* GT80: stats count-up on first view. The markup text is the final value, so JS-off and
-   reduced-motion renders show the frozen spec numbers unchanged. */
-(function(){
- var nums=$$(".stat-num[data-count]");
- if(!nums.length||reduced||!("IntersectionObserver" in window))return;
- function animate(el){
-   var target=parseFloat(el.dataset.count), dec=parseInt(el.dataset.decimals||"0",10);
-   var prefix=el.dataset.prefix||"", suffix=el.dataset.suffix||"", t0=null, dur=900;
-   function frame(ts){
-     if(!t0)t0=ts;
-     var p=Math.min(1,(ts-t0)/dur), e=1-Math.pow(1-p,3);
-     el.textContent=prefix+(target*e).toFixed(dec)+suffix;
-     if(p<1)requestAnimationFrame(frame);
-   }
-   requestAnimationFrame(frame);
- }
- var io=new IntersectionObserver(function(entries){
-   entries.forEach(function(en){if(en.isIntersecting){animate(en.target);io.unobserve(en.target);}});
- },{threshold:0.4});
- nums.forEach(function(el){io.observe(el);});
-})();
-/* GT83: workflow stepper. The visitor can advance the three steps with the prev and next
-   buttons or the dots; when the section first scrolls into view the steps light in
-   sequence on their own, because the order is the information. Reduced motion, or no
-   IntersectionObserver, lights every step at once. */
-(function(){
- var rail=$("#how .rail"), stepper=$("#howStepper");
- if(!rail||!stepper)return;
- var cards=$$(".card",rail), dots=$$(".step-dot",stepper);
- var prev=$("#stepPrev"), next=$("#stepNext");
- if(!cards.length||!dots.length||!prev||!next)return;
- var step=0, interacted=false;
- function paint(){
-   cards.forEach(function(c,i){c.classList.toggle("lit",i<=step);});
-   dots.forEach(function(d,i){
-     if(i===step)d.setAttribute("aria-current","step"); else d.removeAttribute("aria-current");
-   });
-   prev.setAttribute("aria-disabled",step===0?"true":"false");
-   next.setAttribute("aria-disabled",step===cards.length-1?"true":"false");
- }
- function setStep(n,user){
-   step=Math.max(0,Math.min(cards.length-1,n));
-   if(user)interacted=true;
-   paint();
- }
- prev.addEventListener("click",function(){setStep(step-1,true);});
- next.addEventListener("click",function(){setStep(step+1,true);});
- dots.forEach(function(d){d.addEventListener("click",function(){setStep(parseInt(d.dataset.step,10)-1,true);});});
- stepper.addEventListener("keydown",function(e){
-   if(e.key==="ArrowRight"){e.preventDefault();setStep(step+1,true);}
-   if(e.key==="ArrowLeft"){e.preventDefault();setStep(step-1,true);}
- });
- rail.classList.add("stepper-on");
- if(reduced||!("IntersectionObserver" in window)){step=cards.length-1;paint();return;}
- paint();
- var io=new IntersectionObserver(function(entries){
-   entries.forEach(function(en){
-     if(!en.isIntersecting)return;
-     io.disconnect();
-     var i=0;
-     (function adv(){
-       if(interacted)return;
-       setStep(i,false); i++;
-       if(i<cards.length)setTimeout(adv,480);
-     })();
-   });
- },{threshold:0.3});
- io.observe(rail);
-})();
-/* Edge status */
-var statuses=["Edge status: operational","Edge status: operational, all regions"];
-var si=0; setInterval(function(){si=(si+1)%statuses.length;var el=$("#edgeStatus"); if(el)el.textContent=statuses[si];},8000);
+/* Demo-state hook for reproducible screenshots: ?demo=clean or ?demo=messy */
+var demo=new URLSearchParams(window.location.search).get("demo");
+if(demo==="clean"){ $("docInput").value=window.GhostLabsSamples.clean; run(); }
+else if(demo==="messy"){ $("docInput").value=window.GhostLabsSamples.messy; run(); }
 })();
 </script>
+
 </body>
 </html>

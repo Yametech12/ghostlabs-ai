@@ -3,13 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Login - GhostLabs AI</title>
-<meta name="description" content="GhostLabs AI demo console.">
+<title>Accounts, GhostLabs AI</title>
+<meta name="description" content="Accounts are not open yet on GhostLabs AI. The invoice and receipt checker works without an account, in your browser.">
 <meta name="theme-color" content="#090A0F">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%2322d3ee'/%3E%3Cpath d='M16 7a7 7 0 0 0-7 7v9l2.5-2 2.5 2 2-2 2 2 2.5-2 .5.4V14a7 7 0 0 0-5-7Z' fill='%23090A0F'/%3E%3C/svg%3E">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#090A0F;--surface:#11131B;--surface-2:#151824;--border:rgba(255,255,255,0.08);--cyan:#22d3ee;--violet:#8b5cf6;--text:#F8FAFC;--text-2:#94A3B8;--muted:#71809A;--cta-bg:#FFFFFF;--cta-text:#090A0F;--radius:14px;--header-h:68px;--ease:cubic-bezier(0.22,1,0.36,1)}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -59,82 +56,39 @@ header{position:sticky;top:0;z-index:60;height:var(--header-h);background:rgba(9
 </head>
 
 <body>
-<noscript><p style="padding:1rem;text-align:center;color:#94A3B8">JavaScript is required for this demo. The login and dashboard run locally in your browser, so nothing works with JavaScript off and no signed-in state is shown.</p></noscript>
+<noscript><p style="padding:1rem;text-align:center;color:#94A3B8">Accounts are not open yet. The checker itself runs in your browser from the home page.</p></noscript>
 <header><div class="container nav"><a class="logo" href="index.html" aria-label="GhostLabs AI home"><span class="logo-mark" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 3a7 7 0 0 0-7 7v9l2.5-2 2.5 2 2-2 2 2 2.5-2L19 19v-9a7 7 0 0 0-7-7Z" fill="#090A0F"/><circle cx="9.5" cy="11" r="1.4" fill="#22d3ee"/><circle cx="14.5" cy="11" r="1.4" fill="#22d3ee"/></svg></span>GhostLabs AI</a><a class="btn btn-ghost btn-sm" href="index.html">Back to site</a></div></header>
 <main>
 <div class="auth-wrap">
   <div class="auth-card">
-    <span class="demo-chip">DEMO LOGIN</span>
-    <h1 id="authTitle">Sign in to GhostLabs</h1>
-    <p class="sub">Access the demo console for your workspace.</p>
-    <p class="demo-line" id="demoLine">Demo only: any plausible email and a password of 8 or more characters signs you in on this device.</p>
-    <div id="authArea">
-      <div class="mode-row" role="group" aria-label="Sign in or create account">
-        <button class="mode-btn" id="modeSignin" type="button" aria-pressed="true">Sign in</button>
-        <button class="mode-btn" id="modeSignup" type="button" aria-pressed="false">Create account</button>
-      </div>
-      <form id="authForm" novalidate>
-        <div class="field" id="nameField" hidden><label for="aName">Name (optional)</label><input id="aName" name="name" type="text" autocomplete="name" placeholder="e.g. Alex Rivera"></div>
-        <div class="field"><label for="aEmail">Email</label><input id="aEmail" name="email" type="email" autocomplete="email" spellcheck="false" placeholder="e.g. alex@company.com"><span class="err" id="errEmail">Please enter a valid email address.</span></div>
-        <div class="field"><label for="aPassword">Password</label><input id="aPassword" name="password" type="password" autocomplete="current-password" placeholder="8 or more characters"><span class="err" id="errPassword">Password must be at least 8 characters.</span></div>
-        <button class="btn btn-primary w-full" type="submit" style="margin-top:1.4rem">Continue</button>
-      </form>
+    <span class="demo-chip">ACCOUNTS</span>
+    <h1 id="authTitle">Accounts aren't open yet</h1>
+    <p class="sub">There is no sign-in, because there are no accounts. The invoice and receipt checker works without one: it runs in your browser and nothing is uploaded.</p>
+    <p class="demo-line">Your recent check summaries live on this device only. See them on the Recent checks page, or clear them there at any time.</p>
+    <div class="session-box">
+      <a class="btn btn-primary w-full" href="index.html#playground">Open the checker</a>
+      <a class="btn btn-ghost w-full" href="dashboard.html">Recent checks on this device</a>
     </div>
-    <div class="session-box" id="sessionBox" hidden>
-      <p class="note" style="margin-top:0">You are signed in on this device as</p>
-      <p class="session-email" id="sessionEmail"></p>
-      <a class="btn btn-primary w-full" href="dashboard.html">Continue to dashboard</a>
-      <button class="btn btn-ghost w-full" id="signOutBtn" type="button">Sign out</button>
+    <div class="field">
+      <label for="waitNote">Waitlist note, local only</label>
+      <input id="waitNote" type="text" placeholder="e.g. Tell me if a batch version opens">
+      <p class="note" style="margin-top:.5rem">This note is stored only in this browser on this device. It is not sent anywhere, and no waitlist server exists yet. Saving it just keeps your note here for you.</p>
+      <button class="btn btn-ghost w-full" id="saveNote" type="button" style="margin-top:.8rem">Save note on this device</button>
+      <p class="note" id="noteStatus" role="status"></p>
     </div>
-    <p class="demo-foot">There is no server and no real account is created. The session is stored in this browser only and is never sent anywhere.</p>
+    <p class="demo-foot">No form on this page authenticates anything, and no password is asked for, because there is nothing to sign in to yet.</p>
   </div>
 </div>
 </main>
 <script>
 (function(){
 "use strict";
-function $(s){return document.querySelector(s)}
-function getSession(){try{var raw=localStorage.getItem("gl_session");if(!raw)return null;var s=JSON.parse(raw);return (s&&s.email)?s:null;}catch(e){return null;}}
-var session=getSession();
-if(session){
-  $("#authArea").hidden=true;
-  var dl=$("#demoLine"); if(dl)dl.hidden=true;
-  $("#sessionBox").hidden=false;
-  $("#sessionEmail").textContent=session.email;
-  $("#authTitle").textContent="Already signed in";
-}
-$("#signOutBtn").addEventListener("click",function(){localStorage.removeItem("gl_session");window.location.reload();});
-var mode="signin";
-function setMode(m){
-  mode=m;
-  $("#modeSignin").setAttribute("aria-pressed", m==="signin"?"true":"false");
-  $("#modeSignup").setAttribute("aria-pressed", m==="signup"?"true":"false");
-  $("#nameField").hidden = m!=="signup";
-  $("#authTitle").textContent = m==="signup" ? "Create your demo account" : "Sign in to GhostLabs";
-  $("#aPassword").setAttribute("autocomplete", m==="signup" ? "new-password" : "current-password");
-}
-$("#modeSignin").addEventListener("click",function(){setMode("signin");});
-$("#modeSignup").addEventListener("click",function(){setMode("signup");});
-function validate(input, ok){
-  var field=input.closest(".field"); var valid=ok(input.value);
-  field.classList.toggle("invalid",!valid);
-  if(valid){input.removeAttribute("aria-invalid");}else{input.setAttribute("aria-invalid","true");}
-  return valid;
-}
-var emailOk=function(v){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());};
-var passOk=function(v){return v.length>=8;};
-[["#aEmail",emailOk],["#aPassword",passOk]].forEach(function(pair){
-  var input=$(pair[0]);
-  input.addEventListener("input",function(){if(input.closest(".field").classList.contains("invalid"))validate(input,pair[1]);});
-});
-$("#authForm").addEventListener("submit",function(e){
-  e.preventDefault();
-  var emailInput=$("#aEmail"), passInput=$("#aPassword");
-  var eOk=validate(emailInput,emailOk), pOk=validate(passInput,passOk);
-  if(!eOk){emailInput.focus();return;}
-  if(!pOk){passInput.focus();return;}
-  localStorage.setItem("gl_session", JSON.stringify({email:emailInput.value.trim(), ts:Date.now()}));
-  window.location.href="dashboard.html";
+var KEY="ghostlabs.waitlistNote.v1";
+var input=document.getElementById("waitNote"), status=document.getElementById("noteStatus");
+try{ input.value=localStorage.getItem(KEY)||""; }catch(e){}
+document.getElementById("saveNote").addEventListener("click",function(){
+  try{ localStorage.setItem(KEY,input.value); status.textContent="Saved on this device only. Nothing was sent."; }
+  catch(e){ status.textContent="This browser would not store the note. Nothing was sent."; }
 });
 })();
 </script>
