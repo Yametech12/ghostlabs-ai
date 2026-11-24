@@ -1,99 +1,160 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Login - GhostLabs AI</title>
-<meta name="description" content="GhostLabs AI demo console.">
-<meta name="theme-color" content="#090A0F">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%2322d3ee'/%3E%3Cpath d='M16 7a7 7 0 0 0-7 7v9l2.5-2 2.5 2 2-2 2 2 2.5-2 .5.4V14a7 7 0 0 0-5-7Z' fill='%23090A0F'/%3E%3C/svg%3E">
+<title>Sign in - GhostLabs</title>
+<meta name="description" content="Demo sign in for GhostLabs. Any plausible email and a password of 8 or more characters signs you in on this device only.">
+<link rel="canonical" href="https://ghostlabs-ai.vercel.app/login.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Sign in - GhostLabs">
+<meta property="og:description" content="Demo sign in, stored in this browser only. No server account is created.">
+<meta property="og:url" content="https://ghostlabs-ai.vercel.app/login.html">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Sign in - GhostLabs">
+<meta name="twitter:description" content="Demo sign in, stored in this browser only.">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#B5D6C2">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#202A25">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='4' fill='%23B63F16'/%3E%3Cpath d='M9 8h14M9 14h14M9 20h8M20 20h3M9 25h14' stroke='%23FFFEF9' stroke-width='2.4'/%3E%3C/svg%3E">
+<script>
+(function(){try{var q=new URLSearchParams(window.location.search).get("theme");var t=(q==="light"||q==="dark")?q:(localStorage.getItem("gl_theme")||(window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"));document.documentElement.setAttribute("data-theme",t);if(q==="light"||q==="dark"){localStorage.setItem("gl_theme",t);}}catch(e){document.documentElement.setAttribute("data-theme","light");}})();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@600&family=Public+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#090A0F;--surface:#11131B;--surface-2:#151824;--border:rgba(255,255,255,0.08);--cyan:#22d3ee;--violet:#8b5cf6;--text:#F8FAFC;--text-2:#94A3B8;--muted:#71809A;--cta-bg:#FFFFFF;--cta-text:#090A0F;--radius:14px;--header-h:68px;--ease:cubic-bezier(0.22,1,0.36,1)}
+:root{--field:#B5D6C2;--paper:#FFFEF9;--ink:#1C2321;--ink-2:#454F4A;--action:#B63F16;--action-text:#FFFFFF;--action-hover:#A53713;--action-edge:#8F2F0E;--fault:#A92B20;--disabled:#C9CFCB;--input:#FFFFFF;--placeholder:#454F4A;--tally:#1C2321;--space-1:4px;--space-2:8px;--space-3:16px;--space-4:24px;--space-5:32px;--ease-press:cubic-bezier(0.34,1.2,0.64,1)}
+html[data-theme="dark"]{--field:#202A25;--paper:#35443C;--input:#4A5E53;--placeholder:#EDE8DA;--tally:#0B0F0D;--ink:#F3F1E8;--ink-2:#D8D2C4;--action:#E97A4A;--action-text:#201512;--action-hover:#F08A5C;--action-edge:#9A4520;--fault:#F08A7E;--disabled:#3E4742}
 *{box-sizing:border-box;margin:0;padding:0}
 [hidden]{display:none !important}
-body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
-h1,h2,h3{font-family:'Plus Jakarta Sans','Inter',sans-serif;letter-spacing:-0.025em;line-height:1.12;color:var(--text)}
-a{color:inherit}
-button{font-family:inherit;cursor:pointer}
-:focus-visible{outline:2px solid var(--cyan);outline-offset:3px;border-radius:4px}
-.container{max-width:80rem;margin:0 auto;padding-left:1rem;padding-right:1rem}
-header{position:sticky;top:0;z-index:60;height:var(--header-h);background:rgba(9,10,15,.82);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
-.nav{display:flex;align-items:center;justify-content:space-between;height:var(--header-h)}
-.logo{display:flex;align-items:center;gap:.6rem;font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:1.1rem;letter-spacing:-0.025em;text-decoration:none}
-.logo-mark{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--cyan),var(--violet));display:grid;place-items:center;flex:none}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;border-radius:10px;padding:.8rem 1.5rem;font-size:.95rem;font-weight:600;border:1px solid transparent;transition:opacity .2s var(--ease),background .2s var(--ease),border-color .2s var(--ease);text-decoration:none;min-height:48px}
-.btn-primary{background:var(--cta-bg);color:var(--cta-text)}
-.btn-primary:hover{opacity:.88}
-.btn-ghost{background:transparent;color:var(--text);border-color:var(--border)}
-.btn-ghost:hover{border-color:rgba(255,255,255,.25);background:rgba(255,255,255,.04)}
-.btn-sm{padding:.55rem 1.1rem;min-height:42px;font-size:.9rem}
-.w-full{width:100%}
-.mono{font-family:'JetBrains Mono',monospace}
-.field{margin-top:1.1rem;text-align:left}
-.field label{display:block;font-size:.88rem;font-weight:600;margin-bottom:.4rem}
-.field input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.75rem .9rem;color:var(--text);font-family:inherit;font-size:.95rem}
-.field .err{display:none;color:#f87171;font-size:.82rem;margin-top:.35rem}
-.field.invalid input{border-color:#f87171}
+body{background:var(--field);color:var(--ink);font-family:'Public Sans',system-ui,-apple-system,'Segoe UI',sans-serif;font-size:16px;line-height:1.6}
+h1{font-family:'Zilla Slab',Georgia,serif;font-weight:600;font-size:32px;line-height:1.1;letter-spacing:-0.015em}
+a{color:var(--ink);text-underline-offset:4px}
+:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+.skip{position:absolute;left:-999px;top:0;background:var(--paper);padding:var(--space-3);z-index:50}
+.skip:focus{left:var(--space-3);top:var(--space-3)}
+header{border-bottom:1px solid var(--ink)}
+.nav{max-width:1200px;margin:0 auto;height:56px;display:flex;align-items:center;gap:var(--space-3);padding:0 var(--space-3);flex-wrap:nowrap}
+@media(max-width:640px){
+  .nav{height:52px;gap:var(--space-2);padding:0 var(--space-2)}
+  .wordmark{font-size:17px}
+  .nav .btn-secondary{min-height:40px;padding:0 var(--space-2);font-size:13px}
+}
+.wordmark{font-family:'Zilla Slab',Georgia,serif;font-weight:600;font-size:20px;text-decoration:none;margin-right:auto}
+.data{font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace;font-variant-numeric:tabular-nums}
+.btn-primary{min-height:48px;width:100%;padding:0 var(--space-4);background:var(--action);color:var(--action-text);border:none;border-radius:8px;font:inherit;font-weight:600;font-size:16px;cursor:pointer;box-shadow:0 3px 0 var(--action-edge);transition:transform 140ms var(--ease-press),background 140ms var(--ease-press),box-shadow 140ms var(--ease-press);text-decoration:none;display:inline-flex;align-items:center;justify-content:center}
+.btn-primary:hover{background:var(--action-hover);box-shadow:0 4px 0 var(--action-edge)}
+.btn-primary:active{transform:translateY(2px);box-shadow:0 1px 0 var(--action-edge)}
+.btn-secondary{min-height:44px;padding:0 var(--space-3);background:var(--paper);color:var(--ink);border:1px solid var(--ink);border-radius:8px;font:inherit;font-weight:600;font-size:15px;cursor:pointer;box-shadow:0 2px 0 rgba(28,35,33,.3);transition:transform 140ms var(--ease-press)}
+.btn-secondary:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(28,35,33,.3)}
+.btn-secondary.w-full{width:100%}
+main{padding:var(--space-4) var(--space-3) var(--space-5)}
+.wrap{max-width:440px;margin:0 auto;display:flex;flex-direction:column;gap:var(--space-4)}
+.wrap .sheet{order:1}
+.wrap .sample-card{order:2}
+@media(min-width:1000px){.wrap{max-width:760px;display:grid;grid-template-columns:1fr 440px;gap:var(--space-4);align-items:start}.wrap .sheet{order:0}.wrap .sample-card{order:0}}
+.sample-card{display:block;background:var(--paper);border:1px solid var(--ink);border-radius:4px;box-shadow:0 16px 32px rgba(28,35,33,0.22);padding:var(--space-3)}
+.sample-card p{font-size:13px;font-weight:600;margin-bottom:var(--space-2)}
+.sample-row{display:flex;justify-content:space-between;border-bottom:1px solid var(--ink);padding:var(--space-1) 0;font-size:14px}
+.sheet{background:var(--paper);border:1px solid var(--ink);border-radius:4px;box-shadow:0 16px 32px rgba(28,35,33,0.22);padding:var(--space-4)}
+.sheet .sub{margin-top:var(--space-2);color:var(--ink-2)}
+.demo-line{margin-top:var(--space-3);font-size:15px}
+.seg{display:flex;border:1px solid var(--ink);border-radius:8px;overflow:hidden;margin-top:var(--space-4)}
+.seg button{flex:1;min-height:44px;padding:var(--space-2);background:var(--paper);color:var(--ink);border:none;border-right:1px solid var(--ink);font:inherit;font-weight:600;font-size:15px;cursor:pointer}
+.seg button:last-child{border-right:none}
+.seg button[aria-pressed="true"]{background:var(--action);color:var(--action-text);box-shadow:inset 0 -3px 0 var(--action-edge)}
+.field{margin-top:var(--space-3)}
+label{display:block;font-size:13px;font-weight:600;margin-bottom:var(--space-1)}
+input{width:100%;min-height:48px;background:var(--input);color:var(--ink);border:1px solid var(--ink);border-radius:8px;padding:0 var(--space-2);font:inherit;font-size:16px}
+input::placeholder{color:var(--placeholder);opacity:1}
+input:focus{border-width:2px;outline:none}
+.err{display:none;color:var(--fault);font-size:14px;margin-top:var(--space-1)}
 .field.invalid .err{display:block}
-.note{font-size:.82rem;color:var(--muted);margin-top:1rem;line-height:1.55}
-.demo-chip{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.06em;color:var(--cyan);border:1px solid rgba(34,211,238,.35);background:rgba(34,211,238,.07);border-radius:999px;padding:.2rem .6rem}
-@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms !important;transition-duration:.01ms !important}}
-.auth-wrap{max-width:440px;margin:0 auto;padding:3rem 1rem 4rem}
-.auth-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:1.8rem;box-shadow:inset 0 3px 0 var(--cyan)}
-@media(max-width:639px){.auth-wrap{padding:1.5rem 1rem 2.5rem}.auth-card{padding:1.35rem 1.15rem}.auth-card h1{font-size:1.4rem}}
-.auth-card h1{font-size:1.6rem;margin-top:.8rem}
-.auth-card .sub{color:var(--text-2);margin-top:.6rem;font-size:.95rem}
-.demo-line{margin-top:.9rem;font-size:.86rem;color:var(--text-2);line-height:1.5;border-left:2px solid var(--violet);padding-left:.7rem}
-.demo-foot{margin-top:1.3rem;padding-top:1rem;border-top:1px solid var(--border);font-size:.78rem;color:var(--muted);line-height:1.55}
-.mode-row{display:flex;gap:.5rem;margin-top:1.4rem}
-.mode-btn{flex:1;border:1px solid var(--border);background:transparent;color:var(--text-2);border-radius:10px;padding:.6rem;font-size:.9rem;font-weight:600;min-height:44px}
-.mode-btn[aria-pressed="true"]{background:var(--surface-2);color:var(--cyan);border-color:rgba(34,211,238,.45)}
-.success{display:none;margin-top:1.2rem;background:rgba(52,211,153,.09);border:1px solid rgba(52,211,153,.35);border-radius:10px;padding:1rem;color:#a7f3d0;font-size:.93rem}
-.success.show{display:block}
-.session-box{margin-top:1.4rem;display:grid;gap:.8rem}
-.session-email{font-family:'JetBrains Mono',monospace;font-size:.9rem;color:var(--cyan);word-break:break-all}
+.field.invalid input{border:2px solid var(--fault)}
+.demo-foot{margin-top:var(--space-4);padding-top:var(--space-3);border-top:1px solid var(--ink);font-size:14px;color:var(--ink-2)}
+.session-box{margin-top:var(--space-4);display:grid;gap:var(--space-3)}
+.session-email{word-break:break-all}
+form .btn-primary{margin-top:var(--space-4)}
+footer{border-top:1px solid var(--ink)}
+.foot{max-width:1200px;margin:0 auto;padding:var(--space-4) var(--space-3);font-size:14px;display:flex;gap:var(--space-4);flex-wrap:wrap}
+.credit{font-weight:600}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms !important;transition-duration:.01ms !important}}
 </style>
 </head>
-
 <body>
-<noscript><p style="padding:1rem;text-align:center;color:#94A3B8">JavaScript is required for this demo. The login and dashboard run locally in your browser, so nothing works with JavaScript off and no signed-in state is shown.</p></noscript>
-<header><div class="container nav"><a class="logo" href="index.html" aria-label="GhostLabs AI home"><span class="logo-mark" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 3a7 7 0 0 0-7 7v9l2.5-2 2.5 2 2-2 2 2 2.5-2L19 19v-9a7 7 0 0 0-7-7Z" fill="#090A0F"/><circle cx="9.5" cy="11" r="1.4" fill="#22d3ee"/><circle cx="14.5" cy="11" r="1.4" fill="#22d3ee"/></svg></span>GhostLabs AI</a><a class="btn btn-ghost btn-sm" href="index.html">Back to site</a></div></header>
+<a class="skip" href="#authTitle">Skip to the sign in form</a>
+<noscript><p style="padding:16px;text-align:center;font-weight:600">JavaScript is required for this demo sign in. The session is stored in this browser only, so nothing works with JavaScript off and no signed-in state is shown.</p></noscript>
+<header>
+  <div class="nav">
+    <a class="wordmark" href="index.html">GhostLabs</a>
+    <a href="index.html" style="font-weight:600;font-size:15px">Back to site</a>
+    <button class="btn-secondary" type="button" id="themeToggle" aria-pressed="false" aria-label="Switch to dark mode">Dark</button>
+  </div>
+</header>
 <main>
-<div class="auth-wrap">
-  <div class="auth-card">
-    <span class="demo-chip">DEMO LOGIN</span>
+<div class="wrap">
+  <div class="sample-card" aria-label="A checked sample total">
+    <p>A checked sample, from the bench</p>
+    <div class="sample-row"><span>Widget Pro, 2 x 49.00</span><span class="data">98.00</span></div>
+    <div class="sample-row"><span>Gadget Basic, 3 x 25.50</span><span class="data">76.50</span></div>
+    <div class="sample-row"><span>Service Fee, 1 x 25.50</span><span class="data">25.50</span></div>
+    <div class="sample-row"><span>Subtotal</span><span class="data">200.00</span></div>
+    <div class="sample-row"><span>VAT (10%)</span><span class="data">20.00</span></div>
+    <div class="sample-row"><span>Shipping</span><span class="data">10.00</span></div>
+    <div class="sample-row" style="border-bottom:none"><span><strong>Total</strong></span><span class="data"><strong>230.00</strong></span></div>
+    <p style="margin-top:8px;font-weight:400">Every check on this sample passes. Run it yourself from the bench on the home page.</p>
+  </div>
+  <div class="sheet">
     <h1 id="authTitle">Sign in to GhostLabs</h1>
-    <p class="sub">Access the demo console for your workspace.</p>
-    <p class="demo-line" id="demoLine">Demo only: any plausible email and a password of 8 or more characters signs you in on this device.</p>
+    <p class="sub">Access the demo workspace for the bench on this device.</p>
+    <p class="demo-line" id="demoLine">Demo login: any plausible email and a password of 8 or more characters signs you in on this device.</p>
     <div id="authArea">
-      <div class="mode-row" role="group" aria-label="Sign in or create account">
-        <button class="mode-btn" id="modeSignin" type="button" aria-pressed="true">Sign in</button>
-        <button class="mode-btn" id="modeSignup" type="button" aria-pressed="false">Create account</button>
+      <div class="seg" role="group" aria-label="Sign in or create account">
+        <button type="button" id="modeSignin" aria-pressed="true">Sign in</button>
+        <button type="button" id="modeSignup" aria-pressed="false">Create account</button>
       </div>
       <form id="authForm" novalidate>
-        <div class="field" id="nameField" hidden><label for="aName">Name (optional)</label><input id="aName" name="name" type="text" autocomplete="name" placeholder="e.g. Alex Rivera"></div>
-        <div class="field"><label for="aEmail">Email</label><input id="aEmail" name="email" type="email" autocomplete="email" spellcheck="false" placeholder="e.g. alex@company.com"><span class="err" id="errEmail">Please enter a valid email address.</span></div>
-        <div class="field"><label for="aPassword">Password</label><input id="aPassword" name="password" type="password" autocomplete="current-password" placeholder="8 or more characters"><span class="err" id="errPassword">Password must be at least 8 characters.</span></div>
-        <button class="btn btn-primary w-full" type="submit" style="margin-top:1.4rem">Continue</button>
+        <div class="field" id="nameField" hidden>
+          <label for="aName">Name (optional)</label>
+          <input id="aName" name="name" type="text" autocomplete="name" placeholder="e.g. Alex Rivera">
+        </div>
+        <div class="field">
+          <label for="aEmail">Email</label>
+          <input id="aEmail" name="email" type="email" autocomplete="email" spellcheck="false" placeholder="e.g. alex@company.com" aria-describedby="errEmail">
+          <span class="err" id="errEmail">Please enter a valid email address.</span>
+        </div>
+        <div class="field">
+          <label for="aPassword">Password</label>
+          <input id="aPassword" name="password" type="password" autocomplete="current-password" placeholder="8 or more characters" aria-describedby="errPassword">
+          <span class="err" id="errPassword">Password must be at least 8 characters.</span>
+        </div>
+        <button class="btn-primary" type="submit">Continue</button>
       </form>
     </div>
     <div class="session-box" id="sessionBox" hidden>
-      <p class="note" style="margin-top:0">You are signed in on this device as</p>
-      <p class="session-email" id="sessionEmail"></p>
-      <a class="btn btn-primary w-full" href="dashboard.html">Continue to dashboard</a>
-      <button class="btn btn-ghost w-full" id="signOutBtn" type="button">Sign out</button>
+      <p>You are signed in on this device as</p>
+      <p class="session-email data" id="sessionEmail"></p>
+      <a class="btn-primary" href="dashboard.html">Continue to dashboard</a>
+      <button class="btn-secondary w-full" id="signOutBtn" type="button">Sign out</button>
     </div>
-    <p class="demo-foot">There is no server and no real account is created. The session is stored in this browser only and is never sent anywhere.</p>
+    <p class="demo-foot">No server. Nothing is sent. There is no real account: the session is stored in this browser only.</p>
   </div>
 </div>
 </main>
+<footer>
+  <div class="foot">
+    <p class="credit">Made by Mohammad Sidique Ibrahim</p>
+    <p>Terms are governed by the laws of Delaware, USA.</p>
+  </div>
+</footer>
 <script>
 (function(){
 "use strict";
-function $(s){return document.querySelector(s)}
+function $(s){return document.querySelector(s);}
+var toggle=$("#themeToggle");
+function syncToggle(){var dark=document.documentElement.getAttribute("data-theme")==="dark";toggle.setAttribute("aria-pressed",dark?"true":"false");toggle.textContent=dark?"Light":"Dark";toggle.setAttribute("aria-label",dark?"Switch to light mode":"Switch to dark mode");}
+syncToggle();
+toggle.addEventListener("click",function(){var next=document.documentElement.getAttribute("data-theme")==="dark"?"light":"dark";document.documentElement.setAttribute("data-theme",next);try{localStorage.setItem("gl_theme",next);}catch(e){}syncToggle();});
 function getSession(){try{var raw=localStorage.getItem("gl_session");if(!raw)return null;var s=JSON.parse(raw);return (s&&s.email)?s:null;}catch(e){return null;}}
 var session=getSession();
 if(session){
